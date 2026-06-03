@@ -1,7 +1,17 @@
 {
   "name": "hrl-restoration-map-prototype",
   "version": "0.1.0",
-  "private": true,
+  "description": "Prototype interactive map for visualizing Healthy Rivers and Landscapes restoration projects",
+  "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucy-dwr/hrl-restoration-map-prototype.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lucy-dwr/hrl-restoration-map-prototype/issues"
+  },
+  "homepage": "https://github.com/lucy-dwr/hrl-restoration-map-prototype#readme",
   "type": "module",
   "scripts": {
     "dev": "vite",
