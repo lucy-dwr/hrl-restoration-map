@@ -58,6 +58,20 @@ Design implication: the dashboard must be visually polished enough for the publi
 - Support a small set of representative interactions: layer visibility, click-to-inspect, and headline metrics where the source data support them.
 - Treat Azure Blob, related Azure infrastructure, and published snapshot manifests as future production concerns, not prototype prerequisites.
 
+**Implementation status as of v0.2:**
+
+| Feature | Status |
+|---|---|
+| Map with project polygons, hover tooltip, and project-type colour symbology | ✅ |
+| Top bar | ✅ |
+| Headline progress tiles | ✅ |
+| Click-to-inspect detail panel | ✅ |
+| Layer toggle panel with watershed boundary | ✅ |
+| URL-encoded state | ✅ |
+| Non-map accessible equivalent | ❌ pending |
+| About / methodology page | ❌ pending |
+| Download data affordance | ❌ pending |
+
 ### 3.2 v1 production target
 
 - Full-bleed map of the Sacramento River watershed and Bay-Delta.
@@ -119,7 +133,7 @@ Every piece of content must be assigned to a tier. If a piece of content cannot 
 - **Full-bleed map.** The map fills the viewport. Chrome sits on top of it as floating panels.
 - **Top bar.** Thin (≈48px). HRL identity left, search and "About" links right. No primary navigation lives here.
 - **Left rail.** ≈360px, collapsible. Layer toggles, filters, legend. Default-open on desktop, default-collapsed on mobile.
-- **Bottom tile strip OR top-right tile cluster.** Headline progress tiles (prototype total acreage where available is the hero; supporting tiles for project count and project-stage breakdown). Position to be confirmed against early mockups — bottom strip reads better on wide screens, top-right reads better on tall screens.
+- **Bottom tile strip.** Headline progress tiles (prototype total acreage where available is the hero; supporting tiles for project count and early-implementation count). Confirmed position: bottom-centre of the map area (Decision 22). Avoids conflict with the left layer panel and bottom-right navigation controls.
 - **Right detail panel.** ≈400px, opens on selection, closes on dismiss. Renders project detail (tier 3). Pushes the map left rather than overlaying it on desktop; overlays on mobile.
 - **No persistent footer.** Footer information lives in the About page.
 
@@ -139,8 +153,9 @@ Custom MapLibre style. Desaturated, low-contrast, designed to recede behind data
 
 - **Light** (default) — warm pale base, muted hydrography, restrained labels.
 - **Dark** — optional, deferred to near-future if there is demand.
+- **Satellite/aerial imagery** — under consideration as an optional toggle; source and timing not yet decided (see Open Questions).
 
-Prototype tile source: use a simple MapLibre-compatible basemap that works locally without Azure setup. Production target: Protomaps tiles served from Azure Blob, which fits the Azure-Blob-as-substrate decision and avoids per-request tile fees.
+Prototype tile source: OpenFreeMap Positron style (Decision 19) — desaturated, no API key, loads without local Azure setup. Production target: Protomaps tiles served from Azure Blob, which fits the Azure-Blob-as-substrate decision and avoids per-request tile fees.
 
 ### 6.2 Data palette
 
@@ -149,12 +164,12 @@ Prototype tile source: use a simple MapLibre-compatible basemap that works local
 - One diverging ramp reserved for any future change-over-time layer.
 - Reserved colors: a single accent for selection state and a single muted gray for "out of scope" features.
 
-To be defined in a `palette.md` sub-spec with hex values and rationale.
+The prototype palette is implemented in `src/features/map/project-colors.ts`. Formal documentation with colour vision deficiency rationale still to be written in a `palette.md` sub-spec.
 
 ### 6.3 Typography
 
-- One open-source sans-serif typeface for the entire UI. Recommended candidates (decide in design review): Inter, IBM Plex Sans, or Source Sans 3.
-- Type scale: 4–5 sizes, defined in a single CSS custom property block. No ad-hoc font sizes in components.
+- One open-source sans-serif typeface for the entire UI. Recommended candidates (decide in design review): Inter, IBM Plex Sans, or Source Sans 3. Prototype currently uses the system-ui stack pending final typeface selection.
+- Type scale: 6 sizes (11–22px) defined in `src/styles/tokens.css` as CSS custom properties. No ad-hoc font sizes in components.
 - Map labels follow the MapLibre style; UI typography is the typeface above.
 
 ### 6.4 Iconography
@@ -201,7 +216,16 @@ What gets encoded:
 - Selected feature ID.
 - Active filters (project type, project stage, system, target species, lead entity).
 
-Encoding approach to be confirmed in a `url-state.md` sub-spec. Initial preference: human-readable query params for low-cardinality state (e.g., `?layers=tidal,riparian&type=wetland`) and a single base64-encoded blob for high-cardinality state (e.g., bbox, filter arrays). Avoid an opaque single-blob approach for everything.
+**Prototype encoding (Decision 20):** all prototype state uses plain human-readable query parameters — no base64 blob. The implemented schema:
+
+```
+?lat=38.4000&lng=-121.8000&zoom=7.00   # map centre and zoom
+&selected=project-3                     # display_id of selected feature (absent = none)
+&hidden=spawning+habitat,tidal+habitat  # comma-separated hidden project types (absent = all visible)
+&watershed=0                            # watershed boundary hidden (absent = visible)
+```
+
+Implemented in `src/lib/url-state.ts`. A `url-state.md` sub-spec would document the full encoding contract for future consumers (e.g., when filter arrays grow large enough to warrant a base64 blob).
 
 ---
 
@@ -289,8 +313,10 @@ The schema comments explicitly mark `funding_secured` and `funding_gap` as not p
 To be elaborated in a `layer-catalog.md` sub-spec. Minimum set:
 
 - Project locations (one logical layer, styled by project type)
-- Watershed boundary (single layer, default light styling)
+- Watershed boundary (single layer, default light styling) — prototype uses Sacramento HUC4 outline
 - Basemap (hydrography, terrain, administrative reference)
+
+Additional layers under consideration (see Open Questions): finer-grained watershed units (HUC8 subbasins, Delta boundary), stream network, and administrative boundaries (county, water district, fish management zone).
 
 ### 9.4 Prototype data origin
 
@@ -408,15 +434,15 @@ Annotated list. Use these as design and behavior references during implementatio
 
 Each of these can become a standalone spec file when the project needs more detail. Order roughly reflects priority.
 
-1. `palette.md` — basemap and data palette with hex values and color-vision-deficiency notes.
+1. `palette.md` — basemap and data palette with hex values and colour vision deficiency rationale. (Prototype palette is in `src/features/map/project-colors.ts`; this sub-spec would formalise it.)
 2. `project-stage.md` — confirmed `ProjectStageEnum` visual treatment.
 3. `layer-catalog.md` — every layer with source, schema, default state, and symbology.
-4. `url-state.md` — what gets encoded, how, and the routing approach.
+4. `url-state.md` — full encoding contract for future consumers. (Prototype implementation is in `src/lib/url-state.ts` and documented in Section 8.)
 5. `data-contract.md` — joint contract with `hrl-data-infrastructure` for snapshot publication and consumption.
 6. `data-model.md` — full project record schema and any companion tables.
 7. `tiles-and-metrics.md` — exact headline tiles, their definitions, and their calculation.
 8. `first-run.md` — copy and layout for the orientation overlay.
-9. `accessibility.md` — WCAG conformance plan, including the non-map project list view.
+9. `accessibility.md` — WCAG conformance plan, known gaps, and remediation roadmap for the non-map project list view.
 10. `testing.md` — what to test, at what level, and the critical paths for end-to-end coverage.
 
 ---
@@ -428,11 +454,12 @@ These do not block v1 scaffolding but must be resolved before v1 ship.
 - **Visual identity.** HRL is a multi-agency program. Does it have its own visual identity (logo, color), or does the dashboard adopt DWR's, or a neutral HRL-specific identity to be designed?
 - **Project-stage display.** How should multivalued `ProjectStageEnum` values be summarized for symbology, filters, and headline tiles?
 - **Data refresh cadence.** Proposed: nightly. Confirm with `hrl-data-infrastructure` plans.
-- **Prototype GeoPackage mapping.** Which layer and fields in the current GeoPackage map to `RestorationProjectSubmission`?
 - **Hosting domain.** Subdomain of an existing DWR or HRL domain, or a new domain? Affects DNS, SSL, and link strategy from partner sites.
-- **Photo / media policy.** Project records may include photos. What is the rights and consent process for displaying them publicly?
+- **Photo / media policy.** Project records may include photos at some point (process and management to be determined). What is the rights and consent process for displaying them publicly?
 - **Spanish-language support timing.** Year 1 stretch goal, or deferred?
 - **Analytics.** Do we instrument the dashboard for usage metrics? If so, what tool (Plausible, Matomo, none)? State-agency privacy constraints apply.
+- **Additional boundary and reference layers.** Which watershed units beyond the HUC4 Sacramento outline are useful (e.g. HUC8 subbasins, Sacramento–San Joaquin Delta boundary)? Should a stream network layer be included, and at what scale? What administrative boundaries are relevant (county, water district, etc.)? These decisions belong in the `layer-catalog.md` sub-spec.
+- **Satellite/aerial imagery basemap.** Should aerial imagery be offered as a basemap toggle? If so, what source is appropriate under state-agency constraints (ESRI World Imagery, open NAIP tiles, other)? When does imagery help vs. distract for the target audiences?
 
 ---
 
@@ -460,3 +487,8 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 16 | v0.1 | Convert the GeoPackage to GeoJSON first, then move to vector tiles only if performance requires it. | GeoJSON is easiest to inspect and wire into MapLibre; vector tiles add complexity that should be justified by dataset size or rendering performance. |
 | 17 | v0.1 | Prototype validation uses the vendored `hrl-restoration-schema` `v1.0.0` LinkML schema and the `RestorationProjectSubmission` class. | The full Azure pipeline that creates canonical records is not available yet; submission fields are the current practical contract. |
 | 18 | v0.1 | Accessibility target is WCAG 2.2 Level AA, selected WCAG 2.2 Level AAA criteria where applicable, and equivalent non-map access to essential map content and workflows. | Disability access is a core public-service requirement, not a minimum-compliance afterthought. |
+| 19 | 2026-06-02 | Prototype basemap: OpenFreeMap Positron style (`https://tiles.openfreemap.org/styles/positron`). | Freely accessible, no API key required, desaturated light style that recedes behind data layers. Production target remains Protomaps on Azure Blob (Decision 8). |
+| 20 | 2026-06-02 | URL state uses plain query parameters for all prototype state; base64 encoding deferred. | All prototype state (centre, zoom, selection, hidden types, watershed visibility) is low-cardinality; human-readable params suffice and are easier to debug and share. |
+| 21 | 2026-06-02 | Sacramento watershed boundary sourced from USGS WBD REST service (HUC4 1802), simplified with Ramer-Douglas-Peucker (ε = 0.002°) to ~1800 points / 38 KB, and committed to `public/data/watershed.geojson`. | USGS WBD is the authoritative federal source; simplification makes it browser-feasible. Reproducible via `scripts/fetch-watershed.py`. |
+| 22 | 2026-06-02 | Headline tiles positioned at bottom-centre of the map area. | Avoids overlap with the left layer panel and the bottom-right MapLibre navigation controls; readable on wide screens. |
+| 23 | 2026-06-02 | Minimum `--text-tertiary` colour is `#767673` (~4.6:1 on white). | Original value `#888884` (~3.6:1) failed the WCAG 2.2 AA 4.5:1 threshold for normal-sized text. The new value clears the threshold while preserving the warm neutral character of the palette. |
