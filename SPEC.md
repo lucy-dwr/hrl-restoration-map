@@ -201,7 +201,7 @@ The map, the tile strip, and any chart panels are views over a single shared app
 ### 7.4 Layer logic
 
 - Layers are independently toggleable.
-- Project-type layers default ON. Sacramento and San Joaquin HUC4 watershed outlines default ON as regional context. The Delta legal boundary and Yolo/Sutter bypass boundaries default OFF because they are reference context. The stream network defaults ON.
+- Project-type layers default ON. Sacramento HUC4, Mokelumne HUC8, and Tuolumne HUC8 watershed outlines default ON as regional context. The Delta legal boundary and Yolo/Sutter bypass boundaries default OFF because they are reference context. The stream network defaults ON.
 - Layer order is fixed and not user-configurable in v1 (defer drag-to-reorder).
 
 ### 7.5 Project browsing and filtering
@@ -233,7 +233,8 @@ What gets encoded:
 &selected=project-3                     # display_id of selected feature (absent = none)
 &hidden=spawning+habitat,tidal+habitat  # comma-separated hidden project types (absent = all visible)
 &sacramento=0                           # Sacramento watershed hidden (absent = visible)
-&sanjoaquin=0                           # San Joaquin watershed hidden (absent = visible)
+&mokelumne=0                            # Mokelumne watershed hidden (absent = visible)
+&tuolumne=0                             # Tuolumne watershed hidden (absent = visible)
 &delta=1                                # Delta legal boundary visible (absent = hidden)
 &yolobypass=1                           # Yolo Bypass boundary visible (absent = hidden)
 &sutterbypass=1                         # Sutter Bypass boundary visible (absent = hidden)
@@ -329,13 +330,13 @@ The schema comments explicitly mark `funding_secured` and `funding_gap` as not p
 To be elaborated in a `layer-catalog.md` sub-spec. Minimum set:
 
 - Project locations (one logical layer, styled by project type)
-- Watershed boundaries — prototype uses Sacramento HUC4 1802 and San Joaquin HUC4 1804 outlines from USGS WBD (Decision 24)
+- Watershed boundaries — prototype uses Sacramento HUC4 1802, Mokelumne HUC8 18040012, and Tuolumne HUC8 18040009 outlines from USGS WBD (Decision 32)
 - Sacramento-San Joaquin Delta legal boundary — prototype uses the DWR `i03_LegalDeltaBoundary` ArcGIS service, default hidden (Decision 25)
 - Yolo and Sutter bypass boundaries — prototype uses the DWR `i12_Flood_Bypasses_2014` ArcGIS service for representational flood-bypass extents, default hidden (Decision 31)
 - Stream network — prototype uses NHDPlus V2 VPU 18 flowlines and water polygons tiled to PMTiles, default visible, with line-following labels for named mainstems and major tributaries (Decision 26)
 - Basemap (hydrography, terrain, administrative reference, optional imagery)
 
-Additional layers under consideration (see Open Questions): finer-grained watershed units (HUC8 subbasins) and administrative boundaries (county, water district, fish management zone).
+Additional layers under consideration (see Open Questions): administrative boundaries (county, water district, fish management zone).
 
 ### 9.4 Prototype data origin
 
@@ -479,7 +480,7 @@ These do not block v1 scaffolding but must be resolved before v1 ship.
 - **Photo / media policy.** Project records may include photos at some point (process and management to be determined). What is the rights and consent process for displaying them publicly?
 - **Spanish-language support timing.** Year 1 stretch goal, or deferred?
 - **Analytics.** Do we instrument the dashboard for usage metrics? If so, what tool (Plausible, Matomo, none)? State-agency privacy constraints apply.
-- **Additional boundary and reference layers.** Which watershed units beyond the HUC4 Sacramento and San Joaquin outlines are useful (e.g. HUC8 subbasins)? What administrative boundaries are relevant (county, water district, etc.)? These decisions belong in the `layer-catalog.md` sub-spec.
+- **Additional boundary and reference layers.** Which administrative boundaries are useful (county, water district, fish management zone, etc.)? These decisions belong in the `layer-catalog.md` sub-spec.
 - **Imagery basemap source for production.** The prototype offers Esri World Imagery as a toggle. Confirm whether that source is appropriate under state-agency constraints for production, or whether open NAIP tiles or another source should replace it.
 
 ---
@@ -521,3 +522,5 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 29 | 2026-06-19 | Prototype light basemap includes MapLibre-rendered DEM hillshade terrain context. | Terrain makes watershed structure legible without switching to a noisy topographic basemap; rendering from DEM tiles avoids the fuzzy appearance of low-resolution relief imagery. |
 | 30 | 2026-06-19 | Prototype left rail includes a Projects tab with search, system and early-implementation filters, list-driven selection, zoom-to-project, and fit-to-visible-projects. | The dashboard needs a non-map browsing path before the project dataset grows; coordinating list, map, and headline tiles over one filtered project set keeps the experience coherent. |
 | 31 | 2026-06-19 | Prototype includes optional Yolo and Sutter bypass boundary context layers from the DWR `i12_Flood_Bypasses_2014` service, written to `public/data/yolo-bypass-boundary.geojson` and `public/data/sutter-bypass-boundary.geojson`. | These flood bypasses are highly relevant HRL floodplain context. The DWR layer is purpose-built for flood-bypass map display, but is representational rather than legal, so the layers default hidden and are labeled as context boundaries. |
+| 32 | 2026-06-19 | Prototype watershed context replaces the San Joaquin HUC4 1804 boundary with Mokelumne HUC8 18040012 and Tuolumne HUC8 18040009 boundaries from USGS WBD, while retaining Sacramento HUC4 1802. | The finer HUC8 units provide more useful project-area context than the broad San Joaquin HUC4 outline. USGS WBD is still the authoritative source, and the new layers remain reproducible through `scripts/fetch-watershed.py`. Supersedes Decision 24 for the San Joaquin boundary layer. |
+| 33 | 2026-06-19 | Watershed boundaries are simplified with Ramer-Douglas-Peucker ε = 0.0007° and written with 5-decimal coordinate precision. | The earlier ε = 0.002° / 4-decimal output made the HUC outlines visibly jagged against the terrain basemap. The smaller tolerance preserves smoother watershed shape while keeping the three GeoJSON context files browser-feasible. Supersedes the simplification tolerance recorded in Decision 21. |

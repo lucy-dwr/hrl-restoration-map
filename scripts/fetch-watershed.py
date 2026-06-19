@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Fetch Sacramento River (HUC4 1802) and San Joaquin (HUC4 1804) watershed
-boundaries from the USGS Watershed Boundary Dataset REST service, simplify
-them, and write browser-readable GeoJSON files to public/data/.
+Fetch Sacramento River (HUC4 1802), Mokelumne (HUC8 18040012), and Tuolumne
+(HUC8 18040009) watershed boundaries from the USGS Watershed Boundary Dataset
+REST service, simplify them, and write browser-readable GeoJSON files to
+public/data/.
 
 Usage:
     python scripts/fetch-watershed.py
@@ -16,28 +17,39 @@ import urllib.request
 DATA_DIR = pathlib.Path(__file__).parent.parent / "public" / "data"
 
 WBD_URL_TEMPLATE = (
-    "https://hydro.nationalmap.gov/arcgis/rest/services/wbd/MapServer/2/query"
-    "?where=huc4%3D'{huc4}'"
-    "&outFields=name%2Chuc4"
+    "https://hydro.nationalmap.gov/arcgis/rest/services/wbd/MapServer/{layer}/query"
+    "?where={huc_field}%3D'{huc}'"
+    "&outFields=name%2C{huc_field}"
     "&f=geojson"
     "&outSR=4326"
 )
 
 WATERSHEDS = [
     {
-        "huc4": "1802",
+        "layer": 2,
+        "huc_field": "huc4",
+        "huc": "1802",
         "label": "Sacramento watershed",
         "output": DATA_DIR / "sacramento-watershed.geojson",
     },
     {
-        "huc4": "1804",
-        "label": "San Joaquin watershed",
-        "output": DATA_DIR / "san-joaquin-watershed.geojson",
+        "layer": 4,
+        "huc_field": "huc8",
+        "huc": "18040012",
+        "label": "Mokelumne watershed",
+        "output": DATA_DIR / "mokelumne-watershed.geojson",
+    },
+    {
+        "layer": 4,
+        "huc_field": "huc8",
+        "huc": "18040009",
+        "label": "Tuolumne watershed",
+        "output": DATA_DIR / "tuolumne-watershed.geojson",
     },
 ]
 
-SIMPLIFY_EPSILON = 0.002  # ~200 m in decimal degrees — keeps outline recognisable
-COORD_PRECISION = 4       # decimal places
+SIMPLIFY_EPSILON = 0.0007  # ~75 m in decimal degrees — keeps watershed curves legible
+COORD_PRECISION = 5        # decimal places
 
 
 def point_line_dist(p, a, b):
@@ -93,12 +105,15 @@ def count_points(geom):
 
 def fetch_watershed(config):
     print(f"Fetching {config['label']} boundary from USGS WBD ...")
-    with urllib.request.urlopen(WBD_URL_TEMPLATE.format(huc4=config["huc4"])) as resp:
+    with urllib.request.urlopen(WBD_URL_TEMPLATE.format(**config)) as resp:
         data = json.load(resp)
 
     features = data.get("features", [])
     if not features:
-        raise RuntimeError(f"No features returned from USGS WBD service for HUC4 {config['huc4']}.")
+        raise RuntimeError(
+            f"No features returned from USGS WBD service for "
+            f"{config['huc_field'].upper()} {config['huc']}."
+        )
 
     feature = features[0]
     geom = feature["geometry"]
