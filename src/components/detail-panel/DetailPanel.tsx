@@ -5,6 +5,7 @@ import styles from './DetailPanel.module.css'
 interface Props {
   project: ProjectProperties
   onClose: () => void
+  onZoomToProject: () => void
 }
 
 function fmt(n: number | null | undefined, decimals = 0): string {
@@ -26,7 +27,7 @@ function capitalize(s: string): string {
   return s.length === 0 ? s : s[0].toUpperCase() + s.slice(1)
 }
 
-export function DetailPanel({ project, onClose }: Props) {
+export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
   const types = Array.isArray(project.project_type) ? project.project_type : []
   const stages = Array.isArray(project.project_stage) ? project.project_stage : []
   const species = Array.isArray(project.target_species) ? project.target_species : []
@@ -60,6 +61,9 @@ export function DetailPanel({ project, onClose }: Props) {
 
       <div className={styles.body}>
         <h2 className={styles.projectName}>{project.display_name}</h2>
+        <button className={styles.zoomBtn} onClick={onZoomToProject}>
+          Zoom to project
+        </button>
 
         <div className={styles.typeBadges}>
           {types.map(t => (

@@ -4,13 +4,15 @@ import styles from './HeadlineTiles.module.css'
 
 interface Props {
   data: FeatureCollection | null
+  totalProjectCount?: number
 }
 
-export function HeadlineTiles({ data }: Props) {
+export function HeadlineTiles({ data, totalProjectCount }: Props) {
   if (!data) return null
 
   const features = data.features
   const total = features.length
+  const isFiltered = totalProjectCount !== undefined && totalProjectCount !== total
 
   const withAcreage = features.filter(
     f => (f.properties as ProjectProperties).display_acreage != null
@@ -29,7 +31,9 @@ export function HeadlineTiles({ data }: Props) {
       <div className={styles.tile}>
         <span className={styles.value}>{total}</span>
         <span className={styles.label}>Projects</span>
-        <span className={styles.sub}>across the watershed</span>
+        <span className={styles.sub}>
+          {isFiltered ? `of ${totalProjectCount} matching filters` : 'across the watershed'}
+        </span>
       </div>
       <div className={styles.divider} />
       <div className={styles.tile}>
@@ -42,14 +46,16 @@ export function HeadlineTiles({ data }: Props) {
         <span className={styles.sub}>
           {withAcreage.length < total
             ? `${withAcreage.length} of ${total} reporting`
-            : 'across all projects'}
+            : isFiltered ? 'matching current filters' : 'across all projects'}
         </span>
       </div>
       <div className={styles.divider} />
       <div className={styles.tile}>
         <span className={styles.value}>{earlyImpl}</span>
         <span className={styles.label}>Early implementation</span>
-        <span className={styles.sub}>priority projects</span>
+        <span className={styles.sub}>
+          {isFiltered ? 'in filtered set' : 'priority projects'}
+        </span>
       </div>
     </div>
   )

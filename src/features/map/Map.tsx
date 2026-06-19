@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { Protocol } from 'pmtiles'
-import type { FeatureCollection, Feature } from 'geojson'
+import type { FeatureCollection, Feature, Geometry, Position } from 'geojson'
 import { TYPE_MATCH_EXPR } from './project-colors'
 import type { ProjectProperties } from '../../data/types'
 import type { BasemapMode } from '../../lib/url-state'
@@ -204,6 +204,46 @@ interface TooltipState {
   acreage: number | null
 }
 
+function eachPosition(coords: unknown, visit: (position: Position) => void) {
+  if (!Array.isArray(coords)) return
+  if (
+    coords.length >= 2
+    && typeof coords[0] === 'number'
+    && typeof coords[1] === 'number'
+  ) {
+    visit(coords as Position)
+    return
+  }
+  for (const child of coords) eachPosition(child, visit)
+}
+
+function extendBounds(bounds: maplibregl.LngLatBounds, geometry: Geometry | null) {
+  if (!geometry) return
+  if (geometry.type === 'GeometryCollection') {
+    for (const child of geometry.geometries) extendBounds(bounds, child)
+    return
+  }
+  eachPosition(geometry.coordinates, position => {
+    bounds.extend([position[0], position[1]])
+  })
+}
+
+function boundsForFeatures(features: Feature[]): maplibregl.LngLatBounds | null {
+  const bounds = new maplibregl.LngLatBounds()
+  for (const feature of features) extendBounds(bounds, feature.geometry)
+  return bounds.isEmpty() ? null : bounds
+}
+
+function fitFeatureBounds(map: maplibregl.Map, features: Feature[], maxZoom = 12) {
+  const bounds = boundsForFeatures(features)
+  if (!bounds) return
+  map.fitBounds(bounds, {
+    padding: { top: 96, right: 80, bottom: 176, left: 360 },
+    maxZoom,
+    duration: 650,
+  })
+}
+
 // MapLibre serializes array properties to JSON strings in event handlers.
 function parseList(value: unknown): string[] {
   if (Array.isArray(value)) return value as string[]
@@ -235,8 +275,10 @@ function addPrimaryType(raw: FeatureCollection): FeatureCollection {
 interface MapProps {
   data: FeatureCollection | null
   basemap: BasemapMode
+  visibleDisplayIds: Set<string>
+  projectFocusRequest: { displayId: string; seq: number } | null
+  fitVisibleRequest: number
   selectedDisplayId: string | null
-  hiddenTypes: Set<string>
   sacramentoWatershedVisible: boolean
   sanJoaquinWatershedVisible: boolean
   deltaBoundaryVisible: boolean
@@ -251,8 +293,10 @@ interface MapProps {
 export function Map({
   data,
   basemap,
+  visibleDisplayIds,
+  projectFocusRequest,
+  fitVisibleRequest,
   selectedDisplayId,
-  hiddenTypes,
   sacramentoWatershedVisible,
   sanJoaquinWatershedVisible,
   deltaBoundaryVisible,
@@ -617,21 +661,43 @@ export function Map({
     })
   }, [data, mapLoaded])
 
-  // Sync hidden types filter
+  // Sync project filters
   useEffect(() => {
     if (!mapLoaded || !mapRef.current) return
     const map = mapRef.current
     if (!map.getLayer('projects-fill')) return
 
-    if (hiddenTypes.size === 0) {
+    if (!data || visibleDisplayIds.size === data.features.length) {
       map.setFilter('projects-fill', null)
       map.setFilter('projects-outline', null)
     } else {
-      const filter = ['!', ['in', ['get', 'primary_type'], ['literal', [...hiddenTypes]]]] as unknown as maplibregl.FilterSpecification
+      const filter = (
+        visibleDisplayIds.size > 0
+          ? ['in', ['get', 'display_id'], ['literal', [...visibleDisplayIds]]]
+          : ['==', ['get', 'display_id'], '']
+      ) as unknown as maplibregl.FilterSpecification
       map.setFilter('projects-fill', filter)
       map.setFilter('projects-outline', filter)
     }
-  }, [hiddenTypes, mapLoaded])
+  }, [data, mapLoaded, visibleDisplayIds])
+
+  // Zoom to a requested project
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current || !data || !projectFocusRequest) return
+    const features = data.features.filter(f => (
+      (f.properties as ProjectProperties).display_id === projectFocusRequest.displayId
+    ))
+    fitFeatureBounds(mapRef.current, features, 13)
+  }, [data, mapLoaded, projectFocusRequest])
+
+  // Fit the map to currently visible/filtered projects
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current || !data || fitVisibleRequest === 0) return
+    const features = data.features.filter(f => (
+      visibleDisplayIds.has((f.properties as ProjectProperties).display_id)
+    ))
+    fitFeatureBounds(mapRef.current, features, 11)
+  }, [data, fitVisibleRequest, mapLoaded, visibleDisplayIds])
 
   // Sync Sacramento watershed visibility
   useEffect(() => {

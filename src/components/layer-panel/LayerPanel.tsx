@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import type { ProjectProperties } from '../../data/types'
 import { PROJECT_TYPE_COLORS, FALLBACK_COLOR } from '../../features/map/project-colors'
 import type { BasemapMode } from '../../lib/url-state'
 import styles from './LayerPanel.module.css'
@@ -21,6 +23,19 @@ function capitalize(s: string): string {
 interface Props {
   basemap: BasemapMode
   onBasemapChange: (mode: BasemapMode) => void
+  projects: ProjectProperties[]
+  totalProjectCount: number
+  selectedDisplayId: string | null
+  projectSearch: string
+  onProjectSearchChange: (value: string) => void
+  systemFilter: string
+  systemOptions: string[]
+  onSystemFilterChange: (value: string) => void
+  earlyOnly: boolean
+  onEarlyOnlyChange: (value: boolean) => void
+  onProjectSelect: (displayId: string) => void
+  onZoomToProject: (displayId: string) => void
+  onFitVisibleProjects: () => void
   hiddenTypes: Set<string>
   onToggleType: (type: string) => void
   sacramentoWatershedVisible: boolean
@@ -38,6 +53,19 @@ interface Props {
 export function LayerPanel({
   basemap,
   onBasemapChange,
+  projects,
+  totalProjectCount,
+  selectedDisplayId,
+  projectSearch,
+  onProjectSearchChange,
+  systemFilter,
+  systemOptions,
+  onSystemFilterChange,
+  earlyOnly,
+  onEarlyOnlyChange,
+  onProjectSelect,
+  onZoomToProject,
+  onFitVisibleProjects,
   hiddenTypes,
   onToggleType,
   sacramentoWatershedVisible,
@@ -51,6 +79,8 @@ export function LayerPanel({
   open,
   onToggleOpen,
 }: Props) {
+  const [activeTab, setActiveTab] = useState<'layers' | 'projects'>('layers')
+
   return (
     <div className={styles.root}>
       {open ? (
@@ -66,33 +96,56 @@ export function LayerPanel({
             </button>
           </div>
 
-          <div className={styles.section}>
-            <h3 className={styles.sectionLabel}>Basemap</h3>
-            <label className={styles.row}>
-              <input
-                type="radio"
-                name="basemap"
-                className={styles.checkbox}
-                checked={basemap === 'map'}
-                onChange={() => onBasemapChange('map')}
-              />
-              <span className={styles.typeLabel}>Map</span>
-            </label>
-            <label className={styles.row}>
-              <input
-                type="radio"
-                name="basemap"
-                className={styles.checkbox}
-                checked={basemap === 'imagery'}
-                onChange={() => onBasemapChange('imagery')}
-              />
-              <span className={styles.typeLabel}>Imagery</span>
-            </label>
+          <div className={styles.tabs} role="tablist" aria-label="Layer panel views">
+            <button
+              className={activeTab === 'layers' ? styles.tabActive : styles.tab}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'layers'}
+              onClick={() => setActiveTab('layers')}
+            >
+              Layers
+            </button>
+            <button
+              className={activeTab === 'projects' ? styles.tabActive : styles.tab}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'projects'}
+              onClick={() => setActiveTab('projects')}
+            >
+              Projects
+            </button>
           </div>
 
-          <div className={styles.divider} />
+          {activeTab === 'layers' ? (
+            <div className={styles.scrollBody}>
+              <div className={styles.section}>
+                <h3 className={styles.sectionLabel}>Basemap</h3>
+                <label className={styles.row}>
+                  <input
+                    type="radio"
+                    name="basemap"
+                    className={styles.checkbox}
+                    checked={basemap === 'map'}
+                    onChange={() => onBasemapChange('map')}
+                  />
+                  <span className={styles.typeLabel}>Map</span>
+                </label>
+                <label className={styles.row}>
+                  <input
+                    type="radio"
+                    name="basemap"
+                    className={styles.checkbox}
+                    checked={basemap === 'imagery'}
+                    onChange={() => onBasemapChange('imagery')}
+                  />
+                  <span className={styles.typeLabel}>Imagery</span>
+                </label>
+              </div>
 
-          <div className={styles.section}>
+              <div className={styles.divider} />
+
+              <div className={styles.section}>
             <h3 className={styles.sectionLabel}>Project types</h3>
             {ALL_TYPES.map(type => {
               const visible = !hiddenTypes.has(type)
@@ -115,11 +168,11 @@ export function LayerPanel({
                 </label>
               )
             })}
-          </div>
+              </div>
 
-          <div className={styles.divider} />
+              <div className={styles.divider} />
 
-          <div className={styles.section}>
+              <div className={styles.section}>
             <h3 className={styles.sectionLabel}>Boundaries</h3>
             <label className={styles.row}>
               <input
@@ -166,11 +219,11 @@ export function LayerPanel({
                 Legal Delta boundary
               </span>
             </label>
-          </div>
+              </div>
 
-          <div className={styles.divider} />
+              <div className={styles.divider} />
 
-          <div className={styles.section}>
+              <div className={styles.section}>
             <h3 className={styles.sectionLabel}>Hydrography</h3>
             <label className={styles.row}>
               <input
@@ -187,7 +240,98 @@ export function LayerPanel({
                 Stream network
               </span>
             </label>
-          </div>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.scrollBody}>
+              <div className={styles.section}>
+                <h3 className={styles.sectionLabel}>Find projects</h3>
+                <input
+                  className={styles.searchInput}
+                  type="search"
+                  value={projectSearch}
+                  placeholder="Search name, lead, type"
+                  onChange={e => onProjectSearchChange(e.target.value)}
+                />
+                <select
+                  className={styles.select}
+                  value={systemFilter}
+                  onChange={e => onSystemFilterChange(e.target.value)}
+                >
+                  <option value="">All systems</option>
+                  {systemOptions.map(system => (
+                    <option key={system} value={system}>{system}</option>
+                  ))}
+                </select>
+                <label className={styles.row}>
+                  <input
+                    type="checkbox"
+                    className={styles.checkbox}
+                    checked={earlyOnly}
+                    onChange={e => onEarlyOnlyChange(e.target.checked)}
+                  />
+                  <span className={styles.typeLabel}>Early implementation only</span>
+                </label>
+                <button
+                  type="button"
+                  className={styles.fitButton}
+                  onClick={onFitVisibleProjects}
+                  disabled={projects.length === 0}
+                >
+                  Fit visible projects
+                </button>
+                <div className={styles.resultCount}>
+                  {projects.length} of {totalProjectCount} projects
+                </div>
+              </div>
+
+              <div className={styles.divider} />
+
+              <div className={styles.projectList} role="list">
+                {projects.length === 0 ? (
+                  <p className={styles.emptyState}>No projects match the current filters.</p>
+                ) : (
+                  projects.map(project => {
+                    const types = Array.isArray(project.project_type) ? project.project_type : []
+                    return (
+                      <div
+                        key={project.display_id}
+                        className={project.display_id === selectedDisplayId ? styles.projectItemSelected : styles.projectItem}
+                        role="listitem"
+                      >
+                        <button
+                          type="button"
+                          className={styles.projectSelect}
+                          onClick={() => onProjectSelect(project.display_id)}
+                        >
+                          <span className={styles.projectName}>{project.display_name}</span>
+                          <span className={styles.projectMeta}>
+                            {project.system}
+                            {project.display_acreage != null
+                              ? ` · ${project.display_acreage.toLocaleString()} ac`
+                              : ''}
+                          </span>
+                          {types.length > 0 && (
+                            <span className={styles.projectTypes}>
+                              {types.map(capitalize).join(', ')}
+                            </span>
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.projectZoom}
+                          onClick={() => onZoomToProject(project.display_id)}
+                          aria-label={`Zoom to ${project.display_name}`}
+                        >
+                          Zoom
+                        </button>
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <button
