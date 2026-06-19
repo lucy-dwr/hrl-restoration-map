@@ -2,26 +2,40 @@
 //
 // Schema:
 //   ?lat=38.4000&lng=-121.8000&zoom=7.00
+//   &basemap=imagery                         (absent = map)
 //   &selected=project-3
 //   &hidden=spawning+habitat,tidal+habitat   (comma-separated type keys)
 //   &watershed=0                             (absent = visible; "0" = hidden)
+//   &sanjoaquin=0                            (absent = visible; "0" = hidden)
+//   &delta=1                                 (absent = hidden; "1" = visible)
+//   &streams=0                               (absent = visible; "0" = hidden)
+
+export type BasemapMode = 'map' | 'imagery'
 
 export interface UrlState {
   lat: number
   lng: number
   zoom: number
+  basemap: BasemapMode
   selected: string | null
   hiddenTypes: Set<string>
   watershedVisible: boolean
+  sanJoaquinWatershedVisible: boolean
+  deltaBoundaryVisible: boolean
+  streamsVisible: boolean
 }
 
 const DEFAULTS: UrlState = {
   lat: 38.4,
   lng: -121.8,
   zoom: 7,
+  basemap: 'map',
   selected: null,
   hiddenTypes: new Set(),
   watershedVisible: true,
+  sanJoaquinWatershedVisible: true,
+  deltaBoundaryVisible: false,
+  streamsVisible: true,
 }
 
 export function readUrlState(): UrlState {
@@ -36,9 +50,13 @@ export function readUrlState(): UrlState {
     lat: Number.isFinite(lat) ? lat : DEFAULTS.lat,
     lng: Number.isFinite(lng) ? lng : DEFAULTS.lng,
     zoom: Number.isFinite(zoom) ? zoom : DEFAULTS.zoom,
+    basemap: p.get('basemap') === 'imagery' ? 'imagery' : DEFAULTS.basemap,
     selected: p.get('selected') ?? null,
     hiddenTypes: new Set(hidden ? hidden.split(',').filter(Boolean) : []),
     watershedVisible: p.get('watershed') !== '0',
+    sanJoaquinWatershedVisible: p.get('sanjoaquin') !== '0',
+    deltaBoundaryVisible: p.get('delta') === '1',
+    streamsVisible: p.get('streams') !== '0',
   }
 }
 
@@ -48,6 +66,11 @@ export function writeUrlState(state: Partial<UrlState>): void {
   if (state.lat !== undefined) p.set('lat', state.lat.toFixed(4))
   if (state.lng !== undefined) p.set('lng', state.lng.toFixed(4))
   if (state.zoom !== undefined) p.set('zoom', state.zoom.toFixed(2))
+
+  if (state.basemap !== undefined) {
+    if (state.basemap === 'map') p.delete('basemap')
+    else p.set('basemap', state.basemap)
+  }
 
   if ('selected' in state) {
     if (state.selected) p.set('selected', state.selected)
@@ -65,6 +88,21 @@ export function writeUrlState(state: Partial<UrlState>): void {
   if (state.watershedVisible !== undefined) {
     if (state.watershedVisible) p.delete('watershed')
     else p.set('watershed', '0')
+  }
+
+  if (state.sanJoaquinWatershedVisible !== undefined) {
+    if (state.sanJoaquinWatershedVisible) p.delete('sanjoaquin')
+    else p.set('sanjoaquin', '0')
+  }
+
+  if (state.deltaBoundaryVisible !== undefined) {
+    if (state.deltaBoundaryVisible) p.set('delta', '1')
+    else p.delete('delta')
+  }
+
+  if (state.streamsVisible !== undefined) {
+    if (state.streamsVisible) p.delete('streams')
+    else p.set('streams', '0')
   }
 
   history.replaceState(null, '', p.toString() ? `?${p.toString()}` : window.location.pathname)

@@ -6,6 +6,7 @@ import { HeadlineTiles } from '../components/tiles/HeadlineTiles'
 import { DetailPanel } from '../components/detail-panel/DetailPanel'
 import { LayerPanel } from '../components/layer-panel/LayerPanel'
 import type { ProjectProperties } from '../data/types'
+import type { BasemapMode } from '../lib/url-state'
 import { readUrlState, writeUrlState } from '../lib/url-state'
 import styles from './App.module.css'
 
@@ -15,8 +16,12 @@ export function App() {
   const [data, setData] = useState<FeatureCollection | null>(null)
   const [selectedDisplayId, setSelectedDisplayId] = useState<string | null>(initial.selected)
   const [selectedProject, setSelectedProject] = useState<ProjectProperties | null>(null)
+  const [basemap, setBasemap] = useState<BasemapMode>(initial.basemap)
   const [hiddenTypes, setHiddenTypes] = useState<Set<string>>(initial.hiddenTypes)
   const [watershedVisible, setWatershedVisible] = useState(initial.watershedVisible)
+  const [sanJoaquinWatershedVisible, setSanJoaquinWatershedVisible] = useState(initial.sanJoaquinWatershedVisible)
+  const [deltaBoundaryVisible, setDeltaBoundaryVisible] = useState(initial.deltaBoundaryVisible)
+  const [streamsVisible, setStreamsVisible] = useState(initial.streamsVisible)
   const [layerPanelOpen, setLayerPanelOpen] = useState(true)
 
   useEffect(() => {
@@ -56,6 +61,11 @@ export function App() {
     writeUrlState({ lat, lng, zoom })
   }, [])
 
+  const handleBasemapChange = useCallback((next: BasemapMode) => {
+    setBasemap(next)
+    writeUrlState({ basemap: next })
+  }, [])
+
   const handleToggleType = useCallback((type: string) => {
     setHiddenTypes(prev => {
       const next = new Set(prev)
@@ -74,6 +84,30 @@ export function App() {
     })
   }, [])
 
+  const handleToggleSanJoaquinWatershed = useCallback(() => {
+    setSanJoaquinWatershedVisible(prev => {
+      const next = !prev
+      writeUrlState({ sanJoaquinWatershedVisible: next })
+      return next
+    })
+  }, [])
+
+  const handleToggleDeltaBoundary = useCallback(() => {
+    setDeltaBoundaryVisible(prev => {
+      const next = !prev
+      writeUrlState({ deltaBoundaryVisible: next })
+      return next
+    })
+  }, [])
+
+  const handleToggleStreams = useCallback(() => {
+    setStreamsVisible(prev => {
+      const next = !prev
+      writeUrlState({ streamsVisible: next })
+      return next
+    })
+  }, [])
+
   const panelOpen = selectedProject !== null
 
   return (
@@ -85,9 +119,13 @@ export function App() {
       >
         <Map
           data={data}
+          basemap={basemap}
           selectedDisplayId={selectedDisplayId}
           hiddenTypes={hiddenTypes}
           watershedVisible={watershedVisible}
+          sanJoaquinWatershedVisible={sanJoaquinWatershedVisible}
+          deltaBoundaryVisible={deltaBoundaryVisible}
+          streamsVisible={streamsVisible}
           initialCenter={[initial.lng, initial.lat]}
           initialZoom={initial.zoom}
           onProjectSelect={handleProjectSelect}
@@ -96,10 +134,18 @@ export function App() {
         />
         <HeadlineTiles data={data} />
         <LayerPanel
+          basemap={basemap}
+          onBasemapChange={handleBasemapChange}
           hiddenTypes={hiddenTypes}
           onToggleType={handleToggleType}
           watershedVisible={watershedVisible}
           onToggleWatershed={handleToggleWatershed}
+          sanJoaquinWatershedVisible={sanJoaquinWatershedVisible}
+          onToggleSanJoaquinWatershed={handleToggleSanJoaquinWatershed}
+          deltaBoundaryVisible={deltaBoundaryVisible}
+          onToggleDeltaBoundary={handleToggleDeltaBoundary}
+          streamsVisible={streamsVisible}
+          onToggleStreams={handleToggleStreams}
           open={layerPanelOpen}
           onToggleOpen={() => setLayerPanelOpen(o => !o)}
         />

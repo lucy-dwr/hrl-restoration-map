@@ -1,10 +1,200 @@
 import { useEffect, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { Protocol } from 'pmtiles'
 import type { FeatureCollection, Feature } from 'geojson'
 import { TYPE_MATCH_EXPR } from './project-colors'
 import type { ProjectProperties } from '../../data/types'
+import type { BasemapMode } from '../../lib/url-state'
 import styles from './Map.module.css'
+
+// Register the pmtiles:// protocol once so MapLibre can read the streams archive
+// as a vector source. addProtocol is global; guard against double registration
+// under React strict-mode / fast refresh.
+let pmtilesRegistered = false
+function ensurePmtilesProtocol() {
+  if (pmtilesRegistered) return
+  maplibregl.addProtocol('pmtiles', new Protocol().tile)
+  pmtilesRegistered = true
+}
+
+function setPaint(map: maplibregl.Map, layerId: string, property: string, value: unknown) {
+  if (!map.getLayer(layerId)) return
+  map.setPaintProperty(layerId, property, value)
+}
+
+function setVisibility(map: maplibregl.Map, layerId: string, visible: boolean) {
+  if (!map.getLayer(layerId)) return
+  map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none')
+}
+
+const LIGHT_BASEMAP_FILL_LAYERS = [
+  'subtle-terrain-shading',
+  'park',
+  'water',
+  'landcover_ice_shelf',
+  'landcover_glacier',
+  'landuse_residential',
+  'landcover_wood',
+  'building',
+  'waterway',
+  'water_name_point_label',
+  'water_name_line_label',
+  'waterway_line_label',
+]
+
+const ROAD_LINE_LAYERS = [
+  'highway_motorway_subtle',
+  'highway_motorway_casing',
+  'highway_motorway_inner',
+  'highway_motorway_bridge_casing',
+  'highway_motorway_bridge_inner',
+  'highway_major_subtle',
+  'highway_major_casing',
+  'highway_major_inner',
+  'highway_minor',
+  'highway_path',
+  'tunnel_motorway_casing',
+  'tunnel_motorway_inner',
+]
+
+const LABEL_LAYERS = [
+  'label_city',
+  'label_city_capital',
+  'label_town',
+  'label_village',
+  'label_state',
+  'label_other',
+  'highway-name-major',
+  'highway-name-minor',
+  'highway-name-path',
+]
+
+function addImageryBasemap(map: maplibregl.Map) {
+  if (!map.getSource('imagery-basemap')) {
+    map.addSource('imagery-basemap', {
+      type: 'raster',
+      tiles: [
+        'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      ],
+      tileSize: 256,
+      maxzoom: 19,
+      attribution: 'Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+    })
+  }
+
+  if (!map.getLayer('imagery-basemap')) {
+    map.addLayer(
+      {
+        id: 'imagery-basemap',
+        type: 'raster',
+        source: 'imagery-basemap',
+        paint: {
+          'raster-opacity': 1,
+          'raster-saturation': -0.16,
+          'raster-contrast': -0.08,
+          'raster-brightness-min': 0.08,
+          'raster-brightness-max': 0.94,
+        },
+      },
+      'park'
+    )
+  }
+}
+
+function addSubtleTerrainShading(map: maplibregl.Map) {
+  if (map.getLayer('subtle-terrain-shading')) return
+  if (!map.getSource('terrain-dem')) {
+    map.addSource('terrain-dem', {
+      type: 'raster-dem',
+      tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      maxzoom: 12,
+      encoding: 'terrarium',
+      attribution: 'Terrain: AWS Terrain Tiles',
+    })
+  }
+
+  map.addLayer(
+    {
+      id: 'subtle-terrain-shading',
+      type: 'hillshade',
+      source: 'terrain-dem',
+      paint: {
+        'hillshade-exaggeration': [
+          'interpolate', ['linear'], ['zoom'],
+          4, 0.72,
+          8, 0.58,
+          10, 0.34,
+          12.5, 0,
+        ],
+        'hillshade-shadow-color': 'rgba(68, 72, 66, 0.34)',
+        'hillshade-highlight-color': 'rgba(255, 255, 255, 0.5)',
+        'hillshade-accent-color': 'rgba(116, 122, 106, 0.16)',
+        'hillshade-illumination-direction': 315,
+      },
+    },
+    'waterway'
+  )
+}
+
+function quietBasemap(map: maplibregl.Map) {
+  setPaint(map, 'background', 'background-color', '#fafaf7')
+  addImageryBasemap(map)
+  addSubtleTerrainShading(map)
+
+  setPaint(map, 'park', 'fill-color', '#f2f4ef')
+  setPaint(map, 'park', 'fill-opacity', 0.42)
+  setPaint(map, 'landcover_wood', 'fill-color', '#eef1ec')
+  setPaint(map, 'landcover_wood', 'fill-opacity', 0.35)
+  setPaint(map, 'landuse_residential', 'fill-color', '#f4f4f0')
+  setPaint(map, 'landuse_residential', 'fill-opacity', 0.32)
+  setPaint(map, 'landcover_glacier', 'fill-opacity', 0.18)
+  setPaint(map, 'landcover_ice_shelf', 'fill-opacity', 0.18)
+
+  setPaint(map, 'water', 'fill-color', '#edf3f5')
+  setPaint(map, 'water', 'fill-opacity', 0.68)
+  setPaint(map, 'waterway', 'line-color', '#cbdde4')
+  setPaint(map, 'waterway', 'line-opacity', 0.18)
+
+  for (const layerId of ROAD_LINE_LAYERS) {
+    setPaint(map, layerId, 'line-color', '#deded8')
+    setPaint(map, layerId, 'line-opacity', 0.42)
+  }
+
+  setPaint(map, 'building', 'fill-color', '#f1f1ed')
+  setPaint(map, 'building', 'fill-outline-color', '#e6e6df')
+  setPaint(map, 'boundary_2', 'line-color', '#c9c9c2')
+  setPaint(map, 'boundary_2', 'line-opacity', 0.42)
+  setPaint(map, 'boundary_3', 'line-color', '#d1d1ca')
+  setPaint(map, 'boundary_disputed', 'line-color', '#d1d1ca')
+
+  for (const layerId of LABEL_LAYERS) {
+    setPaint(map, layerId, 'text-color', '#4e4e49')
+    setPaint(map, layerId, 'text-halo-color', '#fafaf7')
+    setPaint(map, layerId, 'text-halo-width', 1.2)
+  }
+}
+
+function syncBasemapMode(map: maplibregl.Map, mode: BasemapMode) {
+  const imagery = mode === 'imagery'
+  setVisibility(map, 'imagery-basemap', imagery)
+
+  for (const layerId of LIGHT_BASEMAP_FILL_LAYERS) {
+    setVisibility(map, layerId, !imagery)
+  }
+
+  for (const layerId of ROAD_LINE_LAYERS) {
+    setVisibility(map, layerId, true)
+    setPaint(map, layerId, 'line-opacity', imagery ? 0.28 : 0.42)
+  }
+
+  for (const layerId of LABEL_LAYERS) {
+    setPaint(map, layerId, 'text-color', imagery ? '#f4f0e8' : '#4e4e49')
+    setPaint(map, layerId, 'text-halo-color', imagery ? '#171915' : '#fafaf7')
+    setPaint(map, layerId, 'text-halo-width', imagery ? 1.6 : 1.2)
+  }
+}
 
 interface TooltipState {
   x: number
@@ -44,9 +234,13 @@ function addPrimaryType(raw: FeatureCollection): FeatureCollection {
 
 interface MapProps {
   data: FeatureCollection | null
+  basemap: BasemapMode
   selectedDisplayId: string | null
   hiddenTypes: Set<string>
   watershedVisible: boolean
+  sanJoaquinWatershedVisible: boolean
+  deltaBoundaryVisible: boolean
+  streamsVisible: boolean
   initialCenter: [number, number]
   initialZoom: number
   onProjectSelect: (displayId: string) => void
@@ -56,9 +250,13 @@ interface MapProps {
 
 export function Map({
   data,
+  basemap,
   selectedDisplayId,
   hiddenTypes,
   watershedVisible,
+  sanJoaquinWatershedVisible,
+  deltaBoundaryVisible,
+  streamsVisible,
   initialCenter,
   initialZoom,
   onProjectSelect,
@@ -83,6 +281,8 @@ export function Map({
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
+    ensurePmtilesProtocol()
+
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: 'https://tiles.openfreemap.org/styles/positron',
@@ -93,7 +293,11 @@ export function Map({
     mapRef.current = map
     map.addControl(new maplibregl.NavigationControl(), 'bottom-right')
 
-    map.on('load', () => setMapLoaded(true))
+    map.on('load', () => {
+      quietBasemap(map)
+      syncBasemapMode(map, basemap)
+      setMapLoaded(true)
+    })
 
     map.on('moveend', () => {
       const c = map.getCenter()
@@ -156,6 +360,12 @@ export function Map({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Sync basemap mode
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return
+    syncBasemapMode(mapRef.current, basemap)
+  }, [basemap, mapLoaded])
+
   // Add watershed + project source/layers once both data and map are ready
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || !data) return
@@ -171,13 +381,199 @@ export function Map({
       id: 'watershed-fill',
       type: 'fill',
       source: 'watershed',
-      paint: { 'fill-color': '#5b9bd5', 'fill-opacity': 0.06 },
+      paint: { 'fill-color': '#6f9fbd', 'fill-opacity': 0.04 },
     })
     map.addLayer({
       id: 'watershed-outline',
       type: 'line',
       source: 'watershed',
-      paint: { 'line-color': '#4a8cc4', 'line-width': 1.5, 'line-opacity': 0.5 },
+      paint: { 'line-color': '#3f7f9f', 'line-width': 1.8, 'line-opacity': 0.82 },
+    })
+
+    // San Joaquin watershed boundary (HUC4 1804, below projects)
+    map.addSource('san-joaquin-watershed', {
+      type: 'geojson',
+      data: `${import.meta.env.BASE_URL}data/san-joaquin-watershed.geojson`,
+    })
+    map.addLayer({
+      id: 'san-joaquin-watershed-fill',
+      type: 'fill',
+      source: 'san-joaquin-watershed',
+      paint: { 'fill-color': '#83a976', 'fill-opacity': 0.04 },
+    })
+    map.addLayer({
+      id: 'san-joaquin-watershed-outline',
+      type: 'line',
+      source: 'san-joaquin-watershed',
+      paint: { 'line-color': '#5f8e57', 'line-width': 1.8, 'line-opacity': 0.84 },
+    })
+
+    // Sacramento-San Joaquin Delta legal boundary (DWR i03_LegalDeltaBoundary).
+    map.addSource('delta-boundary', {
+      type: 'geojson',
+      data: `${import.meta.env.BASE_URL}data/delta-boundary.geojson`,
+    })
+    map.addLayer({
+      id: 'delta-boundary-fill',
+      type: 'fill',
+      source: 'delta-boundary',
+      paint: { 'fill-color': '#817094', 'fill-opacity': 0.035 },
+    })
+    map.addLayer({
+      id: 'delta-boundary-outline',
+      type: 'line',
+      source: 'delta-boundary',
+      paint: {
+        'line-color': '#72528f',
+        'line-width': [
+          'interpolate', ['linear'], ['zoom'],
+          6, 1.6,
+          11, 2.6,
+        ],
+        'line-opacity': 0.9,
+        'line-dasharray': [2, 1.2],
+      },
+    })
+
+    // Stream network (NHDPlus V2, above watershed fill, below projects).
+    // Generated by scripts/fetch-streams.py; absent until that script is run,
+    // in which case MapLibre logs a load error and the layer is simply empty.
+    map.addSource('streams', {
+      type: 'vector',
+      url: `pmtiles://${import.meta.env.BASE_URL}data/streams.pmtiles`,
+    })
+    map.addLayer({
+      id: 'streams-line',
+      type: 'line',
+      source: 'streams',
+      'source-layer': 'streams',
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': '#4f9ac1',
+        'line-opacity': 0.64,
+        // Width grows with both zoom and Strahler stream order. The tile build
+        // only ships 5th-order-and-larger flowlines to keep this base layer quiet.
+        'line-width': [
+          'interpolate', ['linear'], ['zoom'],
+          5, ['interpolate', ['linear'], ['get', 'streamorder'], 5, 0.6, 8, 1.4],
+          11, ['interpolate', ['linear'], ['get', 'streamorder'], 5, 1.1, 8, 2.8],
+          14, ['interpolate', ['linear'], ['get', 'streamorder'], 5, 1.7, 8, 4],
+        ],
+      },
+    })
+    map.addLayer({
+      id: 'stream-waterbodies-fill',
+      type: 'fill',
+      source: 'streams',
+      'source-layer': 'waterbodies',
+      paint: {
+        'fill-color': '#c5e3ed',
+        'fill-opacity': [
+          'interpolate', ['linear'], ['zoom'],
+          5, 0.62,
+          10, 0.72,
+        ],
+      },
+    })
+    map.addLayer({
+      id: 'stream-waterbodies-outline',
+      type: 'line',
+      source: 'streams',
+      'source-layer': 'waterbodies',
+      paint: {
+        'line-color': '#5f9fb8',
+        'line-opacity': 0.54,
+        'line-width': [
+          'interpolate', ['linear'], ['zoom'],
+          5, 0.4,
+          12, 1.1,
+        ],
+      },
+    })
+    map.addLayer({
+      id: 'streams-mainstem-label',
+      type: 'symbol',
+      source: 'streams',
+      'source-layer': 'streams',
+      minzoom: 5,
+      filter: [
+        'all',
+        ['!=', ['get', 'gnis_name'], ''],
+        ['>=', ['get', 'streamorder'], 7],
+      ],
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': [
+          'interpolate', ['linear'], ['zoom'],
+          5, 480,
+          10, 760,
+        ],
+        'text-field': ['get', 'gnis_name'],
+        'text-font': ['Noto Sans Italic'],
+        'text-size': [
+          'interpolate', ['linear'], ['zoom'],
+          5, 11,
+          10, 13,
+          13, 15,
+        ],
+        'text-max-angle': 35,
+        'text-padding': 12,
+        'text-rotation-alignment': 'map',
+      },
+      paint: {
+        'text-color': '#276f91',
+        'text-halo-color': '#fafaf7',
+        'text-halo-width': 1.6,
+        'text-halo-blur': 0.4,
+        'text-opacity': [
+          'interpolate', ['linear'], ['zoom'],
+          5, 0.72,
+          8, 0.9,
+        ],
+      },
+    })
+    map.addLayer({
+      id: 'streams-tributary-label',
+      type: 'symbol',
+      source: 'streams',
+      'source-layer': 'streams',
+      minzoom: 8,
+      filter: [
+        'all',
+        ['!=', ['get', 'gnis_name'], ''],
+        ['>=', ['get', 'streamorder'], 5],
+        ['<', ['get', 'streamorder'], 7],
+      ],
+      layout: {
+        'symbol-placement': 'line',
+        'symbol-spacing': [
+          'interpolate', ['linear'], ['zoom'],
+          8, 560,
+          12, 820,
+        ],
+        'text-field': ['get', 'gnis_name'],
+        'text-font': ['Noto Sans Italic'],
+        'text-size': [
+          'interpolate', ['linear'], ['zoom'],
+          8, 10.5,
+          12, 13,
+        ],
+        'text-max-angle': 35,
+        'text-padding': 10,
+        'text-rotation-alignment': 'map',
+      },
+      paint: {
+        'text-color': '#3c7f9e',
+        'text-halo-color': '#fafaf7',
+        'text-halo-width': 1.5,
+        'text-halo-blur': 0.4,
+        'text-opacity': [
+          'interpolate', ['linear'], ['zoom'],
+          8, 0.0,
+          9, 0.78,
+          12, 0.9,
+        ],
+      },
     })
 
     // Project layers
@@ -246,6 +642,39 @@ export function Map({
     map.setLayoutProperty('watershed-fill', 'visibility', vis)
     map.setLayoutProperty('watershed-outline', 'visibility', vis)
   }, [watershedVisible, mapLoaded])
+
+  // Sync San Joaquin watershed visibility
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return
+    const map = mapRef.current
+    if (!map.getLayer('san-joaquin-watershed-fill')) return
+    const vis = sanJoaquinWatershedVisible ? 'visible' : 'none'
+    map.setLayoutProperty('san-joaquin-watershed-fill', 'visibility', vis)
+    map.setLayoutProperty('san-joaquin-watershed-outline', 'visibility', vis)
+  }, [sanJoaquinWatershedVisible, mapLoaded])
+
+  // Sync Delta legal boundary visibility
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return
+    const map = mapRef.current
+    if (!map.getLayer('delta-boundary-fill')) return
+    const vis = deltaBoundaryVisible ? 'visible' : 'none'
+    map.setLayoutProperty('delta-boundary-fill', 'visibility', vis)
+    map.setLayoutProperty('delta-boundary-outline', 'visibility', vis)
+  }, [deltaBoundaryVisible, mapLoaded])
+
+  // Sync stream-network visibility
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return
+    const map = mapRef.current
+    if (!map.getLayer('streams-line')) return
+    const vis = streamsVisible ? 'visible' : 'none'
+    map.setLayoutProperty('stream-waterbodies-fill', 'visibility', vis)
+    map.setLayoutProperty('stream-waterbodies-outline', 'visibility', vis)
+    map.setLayoutProperty('streams-line', 'visibility', vis)
+    map.setLayoutProperty('streams-mainstem-label', 'visibility', vis)
+    map.setLayoutProperty('streams-tributary-label', 'visibility', vis)
+  }, [streamsVisible, mapLoaded])
 
   // Sync selection highlight filter
   useEffect(() => {
