@@ -5,7 +5,7 @@ Convert the HRL restoration projects GeoPackage to browser-readable GeoJSON.
 Usage:
     python3 scripts/convert-gpkg.py
 
-Reads:  data/source/2026-06-03_v01.gpkg  (restoration_projects layer)
+Reads:  data/source/2026-06-19-v01.gpkg  (restoration_projects layer)
 Writes: public/data/projects.geojson     (WGS84 / EPSG:4326)
 
 Normalizes multivalued fields from semicolon-delimited strings to arrays.
@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
-GPKG = REPO_ROOT / "data/source/2026-06-03_v01.gpkg"
+GPKG = REPO_ROOT / "data/source/2026-06-19-v01.gpkg"
 LAYER = "restoration_projects"
 OUT = REPO_ROOT / "public/data/projects.geojson"
 

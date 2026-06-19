@@ -6,7 +6,8 @@
 //   &selected=project-3
 //   &hidden=spawning+habitat,tidal+habitat   (comma-separated type keys)
 //   &sacramento=0                            (absent = visible; "0" = hidden)
-//   &sanjoaquin=0                            (absent = visible; "0" = hidden)
+//   &mokelumne=0                             (absent = visible; "0" = hidden)
+//   &tuolumne=0                              (absent = visible; "0" = hidden)
 //   &delta=1                                 (absent = hidden; "1" = visible)
 //   &yolobypass=1                            (absent = hidden; "1" = visible)
 //   &sutterbypass=1                          (absent = hidden; "1" = visible)
@@ -22,7 +23,8 @@ export interface UrlState {
   selected: string | null
   hiddenTypes: Set<string>
   sacramentoWatershedVisible: boolean
-  sanJoaquinWatershedVisible: boolean
+  mokelumneWatershedVisible: boolean
+  tuolumneWatershedVisible: boolean
   deltaBoundaryVisible: boolean
   yoloBypassVisible: boolean
   sutterBypassVisible: boolean
@@ -37,7 +39,8 @@ const DEFAULTS: UrlState = {
   selected: null,
   hiddenTypes: new Set(),
   sacramentoWatershedVisible: true,
-  sanJoaquinWatershedVisible: true,
+  mokelumneWatershedVisible: true,
+  tuolumneWatershedVisible: true,
   deltaBoundaryVisible: false,
   yoloBypassVisible: false,
   sutterBypassVisible: false,
@@ -60,7 +63,8 @@ export function readUrlState(): UrlState {
     selected: p.get('selected') ?? null,
     hiddenTypes: new Set(hidden ? hidden.split(',').filter(Boolean) : []),
     sacramentoWatershedVisible: p.get('sacramento') !== '0',
-    sanJoaquinWatershedVisible: p.get('sanjoaquin') !== '0',
+    mokelumneWatershedVisible: p.get('mokelumne') !== '0',
+    tuolumneWatershedVisible: p.get('tuolumne') !== '0',
     deltaBoundaryVisible: p.get('delta') === '1',
     yoloBypassVisible: p.get('yolobypass') === '1',
     sutterBypassVisible: p.get('sutterbypass') === '1',
@@ -98,9 +102,14 @@ export function writeUrlState(state: Partial<UrlState>): void {
     else p.set('sacramento', '0')
   }
 
-  if (state.sanJoaquinWatershedVisible !== undefined) {
-    if (state.sanJoaquinWatershedVisible) p.delete('sanjoaquin')
-    else p.set('sanjoaquin', '0')
+  if (state.mokelumneWatershedVisible !== undefined) {
+    if (state.mokelumneWatershedVisible) p.delete('mokelumne')
+    else p.set('mokelumne', '0')
+  }
+
+  if (state.tuolumneWatershedVisible !== undefined) {
+    if (state.tuolumneWatershedVisible) p.delete('tuolumne')
+    else p.set('tuolumne', '0')
   }
 
   if (state.deltaBoundaryVisible !== undefined) {

@@ -1,16 +1,17 @@
 import type { ExpressionSpecification } from 'maplibre-gl'
 
-// CVD-tested palette (deuteranopia/protanopia safe), hue-separated at typical zoom.
+// CVD-screened palette, hue-separated at typical zoom, and kept away from
+// the stream-network hydro blues used in Map.tsx.
 // Covers all ProjectTypeEnum values in the vendored LinkML schema.
 export const PROJECT_TYPE_COLORS: Record<string, string> = {
-  'bypass floodplain habitat':                '#1b7eb8', // blue
-  'fish food production':                     '#f5a623', // amber
-  'fish passage improvement':                 '#e05a00', // orange
-  'fish screen installation or improvement':  '#7c4dab', // purple
-  'rearing habitat':                          '#d44090', // magenta
-  'spawning habitat':                         '#c0392b', // red
-  'tidal habitat':                            '#009b8d', // teal
-  'tributary floodplain habitat':             '#2a7a34', // green
+  'bypass floodplain habitat':                '#8c510a', // umber
+  'fish food production':                     '#bf9b00', // mustard
+  'fish passage improvement':                 '#d95f02', // orange
+  'fish screen installation or improvement':  '#6a3d9a', // purple
+  'rearing habitat':                          '#c51b7d', // magenta
+  'spawning habitat':                         '#b2182b', // crimson
+  'tidal habitat':                            '#018571', // green-teal
+  'tributary floodplain habitat':             '#4d9221', // green
   'other':                                    '#737373', // gray
 }
 
@@ -19,14 +20,14 @@ export const FALLBACK_COLOR = '#737373'
 export const TYPE_MATCH_EXPR: ExpressionSpecification = [
   'match',
   ['get', 'primary_type'],
-  'bypass floodplain habitat',                '#1b7eb8',
-  'fish food production',                     '#f5a623',
-  'fish passage improvement',                 '#e05a00',
-  'fish screen installation or improvement',  '#7c4dab',
-  'rearing habitat',                          '#d44090',
-  'spawning habitat',                         '#c0392b',
-  'tidal habitat',                            '#009b8d',
-  'tributary floodplain habitat',             '#2a7a34',
+  'bypass floodplain habitat',                '#8c510a',
+  'fish food production',                     '#bf9b00',
+  'fish passage improvement',                 '#d95f02',
+  'fish screen installation or improvement',  '#6a3d9a',
+  'rearing habitat',                          '#c51b7d',
+  'spawning habitat',                         '#b2182b',
+  'tidal habitat',                            '#018571',
+  'tributary floodplain habitat',             '#4d9221',
   'other',                                    '#737373',
   FALLBACK_COLOR,
 ]
