@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Fetch the Sacramento River watershed boundary (HUC4 1802) from the USGS
-Watershed Boundary Dataset REST service, simplify it, and write the result
-to public/data/watershed.geojson.
+Fetch Sacramento River (HUC4 1802) and San Joaquin (HUC4 1804) watershed
+boundaries from the USGS Watershed Boundary Dataset REST service, simplify
+them, and write browser-readable GeoJSON files to public/data/.
 
 Usage:
     python scripts/fetch-watershed.py
@@ -13,15 +13,28 @@ import math
 import pathlib
 import urllib.request
 
-OUTPUT = pathlib.Path(__file__).parent.parent / "public" / "data" / "watershed.geojson"
+DATA_DIR = pathlib.Path(__file__).parent.parent / "public" / "data"
 
-WBD_URL = (
+WBD_URL_TEMPLATE = (
     "https://hydro.nationalmap.gov/arcgis/rest/services/wbd/MapServer/2/query"
-    "?where=huc4%3D'1802'"
+    "?where=huc4%3D'{huc4}'"
     "&outFields=name%2Chuc4"
     "&f=geojson"
     "&outSR=4326"
 )
+
+WATERSHEDS = [
+    {
+        "huc4": "1802",
+        "label": "Sacramento watershed",
+        "output": DATA_DIR / "watershed.geojson",
+    },
+    {
+        "huc4": "1804",
+        "label": "San Joaquin watershed",
+        "output": DATA_DIR / "san-joaquin-watershed.geojson",
+    },
+]
 
 SIMPLIFY_EPSILON = 0.002  # ~200 m in decimal degrees — keeps outline recognisable
 COORD_PRECISION = 4       # decimal places
@@ -53,30 +66,58 @@ def round_coords(ring, precision):
     return [[round(c, precision) for c in pt] for pt in ring]
 
 
-def main():
-    print(f"Fetching Sacramento watershed boundary from USGS WBD …")
-    with urllib.request.urlopen(WBD_URL) as resp:
+def simplify_geometry(geom):
+    geom_type = geom["type"]
+    if geom_type == "Polygon":
+        geom["coordinates"] = [
+            round_coords(rdp(ring, SIMPLIFY_EPSILON), COORD_PRECISION)
+            for ring in geom["coordinates"]
+        ]
+    elif geom_type == "MultiPolygon":
+        geom["coordinates"] = [
+            [
+                round_coords(rdp(ring, SIMPLIFY_EPSILON), COORD_PRECISION)
+                for ring in polygon
+            ]
+            for polygon in geom["coordinates"]
+        ]
+    else:
+        raise RuntimeError(f"Unsupported geometry type: {geom_type}")
+
+
+def count_points(geom):
+    if geom["type"] == "Polygon":
+        return sum(len(ring) for ring in geom["coordinates"])
+    return sum(len(ring) for polygon in geom["coordinates"] for ring in polygon)
+
+
+def fetch_watershed(config):
+    print(f"Fetching {config['label']} boundary from USGS WBD ...")
+    with urllib.request.urlopen(WBD_URL_TEMPLATE.format(huc4=config["huc4"])) as resp:
         data = json.load(resp)
 
     features = data.get("features", [])
     if not features:
-        raise RuntimeError("No features returned from USGS WBD service.")
+        raise RuntimeError(f"No features returned from USGS WBD service for HUC4 {config['huc4']}.")
 
     feature = features[0]
     geom = feature["geometry"]
-    rings_in = geom["coordinates"]
-
-    rings_out = [round_coords(rdp(ring, SIMPLIFY_EPSILON), COORD_PRECISION) for ring in rings_in]
-    total_pts = sum(len(r) for r in rings_out)
-    geom["coordinates"] = rings_out
+    simplify_geometry(geom)
+    total_pts = count_points(geom)
 
     out = {"type": "FeatureCollection", "features": [feature]}
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUTPUT, "w") as f:
+    output = config["output"]
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with open(output, "w") as f:
         json.dump(out, f)
 
-    size_kb = OUTPUT.stat().st_size // 1024
-    print(f"Written {OUTPUT} — {total_pts} points, {size_kb} KB")
+    size_kb = output.stat().st_size // 1024
+    print(f"Written {output} -- {total_pts} points, {size_kb} KB")
+
+
+def main():
+    for config in WATERSHEDS:
+        fetch_watershed(config)
 
 
 if __name__ == "__main__":

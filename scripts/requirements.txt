@@ -1,0 +1,9 @@
+# Python dependencies for the prototype data-prep scripts.
+#   python -m venv .venv && source .venv/bin/activate
+#   pip install -r scripts/requirements.txt
+#
+# fetch-streams.py also needs the `tippecanoe` CLI on PATH:
+#   brew install tippecanoe
+
+geopandas>=0.14
+py7zr>=0.21

@@ -141,3 +141,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# NHDPlus downloads and intermediates from scripts/fetch-streams.py
+# (the built public/data/streams.pmtiles is committed; these raw inputs are not)
+data/source/nhdplus/
