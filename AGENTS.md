@@ -12,9 +12,12 @@ The prototype is substantially built. What exists:
 - Top bar (HRL identity + About link placeholder).
 - Headline tiles strip (project count, total submitted acreage, early-implementation count).
 - Right-side detail panel with type badges, description, overview, acreage breakdown, target species, and funding sources.
-- Left-rail layer panel with per-type visibility checkboxes and a Sacramento watershed boundary toggle.
-- Sacramento watershed boundary layer (`public/data/watershed.geojson`) sourced from USGS WBD HUC4 1802.
-- URL state encoding map centre/zoom, selected project, hidden types, and watershed visibility as query parameters.
+- Left-rail layer panel with basemap radio controls, per-type visibility checkboxes, Sacramento and San Joaquin watershed toggles, a Delta legal-boundary toggle, and a stream-network toggle.
+- Sacramento watershed boundary layer (`public/data/sacramento-watershed.geojson`) sourced from USGS WBD HUC4 1802.
+- San Joaquin watershed boundary layer (`public/data/san-joaquin-watershed.geojson`) sourced from USGS WBD HUC4 1804.
+- Sacramento-San Joaquin Delta legal boundary layer (`public/data/delta-boundary.geojson`) sourced from the DWR `i03_LegalDeltaBoundary` ArcGIS service.
+- California stream-network base layer (`public/data/streams.pmtiles`) built from NHDPlus V2 (VPU 18), served as vector tiles via the `pmtiles://` protocol with zoom-dependent reveal by Strahler stream order.
+- URL state encoding map centre/zoom, selected project, hidden types, basemap mode, boundary visibility, and stream-network visibility as query parameters.
 - Design tokens in `src/styles/tokens.css`; WCAG-AA-passing colour contrast for all text.
 
 **Not yet built (v1 requirements):** non-map accessible equivalent (project list), About/methodology page, download data affordance.
@@ -31,7 +34,10 @@ hrl-restoration-map-prototype/
 ├── public/
 │   └── data/
 │       ├── projects.geojson   # Generated from GeoPackage via scripts/convert-gpkg.py
-│       └── watershed.geojson  # Fetched from USGS WBD via scripts/fetch-watershed.py
+│       ├── sacramento-watershed.geojson  # Fetched from USGS WBD via scripts/fetch-watershed.py
+│       ├── san-joaquin-watershed.geojson  # Fetched from USGS WBD via scripts/fetch-watershed.py
+│       ├── delta-boundary.geojson  # Fetched from DWR via scripts/fetch-delta-boundary.py
+│       └── streams.pmtiles    # Built from NHDPlus V2 via scripts/fetch-streams.py
 ├── schemas/
 │   └── hrl/                   # Vendored LinkML schema release used by the prototype
 ├── src/
@@ -49,7 +55,10 @@ hrl-restoration-map-prototype/
 ├── tests/                     # (not yet populated)
 └── scripts/
     ├── convert-gpkg.py        # Converts source GeoPackage to public/data/projects.geojson
-    └── fetch-watershed.py     # Fetches Sacramento HUC4 boundary from USGS WBD
+    ├── fetch-watershed.py     # Fetches Sacramento and San Joaquin HUC4 boundaries from USGS WBD
+    ├── fetch-delta-boundary.py # Fetches Sacramento-San Joaquin Delta legal boundary from DWR
+    ├── fetch-streams.py       # Builds California stream network PMTiles from NHDPlus V2
+    └── requirements.txt       # Python deps for the data-prep scripts
 ```
 
 Do not add new top-level implementation directories unless the need is clear and consistent with the spec.
@@ -79,11 +88,12 @@ Use this workflow until the production data infrastructure exists:
 
 1. Put the source GeoPackage under `data/source/`.
 2. Run `python scripts/convert-gpkg.py` to convert the relevant layer into `public/data/projects.geojson`. Normalise and validate fields against `RestorationProjectSubmission` during conversion.
-3. Run `python scripts/fetch-watershed.py` to fetch and simplify the Sacramento HUC4 watershed boundary from the USGS WBD REST service and write it to `public/data/watershed.geojson`.
-4. Use MapLibre's GeoJSON source for the first prototype.
-5. Move to generated vector tiles only if GeoJSON is too slow or too large.
+3. Run `python scripts/fetch-watershed.py` to fetch and simplify the Sacramento HUC4 and San Joaquin HUC4 watershed boundaries from the USGS WBD REST service and write them to `public/data/sacramento-watershed.geojson` and `public/data/san-joaquin-watershed.geojson`.
+4. Run `python scripts/fetch-delta-boundary.py` to fetch and simplify the Sacramento-San Joaquin Delta legal boundary from the DWR ArcGIS service and write it to `public/data/delta-boundary.geojson`.
+5. Run `python scripts/fetch-streams.py` to build the California stream-network base layer from NHDPlus V2 (VPU 18) and write it to `public/data/streams.pmtiles`. This script needs the Python deps in `scripts/requirements.txt` plus the `tippecanoe` CLI.
+6. Use MapLibre's GeoJSON source for vector features that are small enough; use PMTiles vector tiles (read via the `pmtiles://` protocol) for large base layers such as the stream network.
 
-Prefer a repeatable conversion command over hand-edited generated data. Generated files in `public/data/` should be replaceable by re-running the scripts above.
+Prefer a repeatable conversion command over hand-edited generated data. Generated files in `public/data/` should be replaceable by re-running the scripts above. The stream network is the first layer that moved to vector tiles because the raw NHDPlus flowline set is far too large to ship as GeoJSON.
 
 If schema-derived TypeScript types or validators are added, generate them from the vendored LinkML schema rather than maintaining duplicate handwritten frontend schema definitions.
 

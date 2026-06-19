@@ -24,11 +24,14 @@ The prototype includes:
   `public/data/projects.geojson`
 - Project-type color symbology, hover tooltip, and click-to-inspect selection
 - Top bar, headline metric tiles, and right-side project detail panel
-- Left-rail layer controls for project types and the Sacramento watershed
-  boundary
-- Sacramento watershed boundary from USGS WBD HUC4 1802
-- URL state for map center, zoom, selected project, hidden project types, and
-  watershed visibility
+- Left-rail layer controls for project types, watershed boundaries, the Delta
+  legal boundary, the stream network, and the basemap
+- Sacramento and San Joaquin watershed boundaries from USGS WBD HUC4 1802 and
+  1804
+- Sacramento-San Joaquin Delta legal boundary from DWR
+- California stream-network PMTiles from NHDPlus V2
+- URL state for map center, zoom, selected project, hidden project types,
+  basemap mode, boundary visibility, and stream-network visibility
 
 Not yet included:
 
@@ -62,8 +65,13 @@ repeatable prototype workflow:
 3. Run `python scripts/convert-gpkg.py` to generate
    `public/data/projects.geojson`.
 4. Run `python scripts/fetch-watershed.py` to generate
-   `public/data/watershed.geojson`.
-5. Run the app locally with Vite.
+   `public/data/sacramento-watershed.geojson` and
+   `public/data/san-joaquin-watershed.geojson`.
+5. Run `python scripts/fetch-delta-boundary.py` to generate
+   `public/data/delta-boundary.geojson`.
+6. Run `python scripts/fetch-streams.py` to generate
+   `public/data/streams.pmtiles`.
+7. Run the app locally with Vite.
 
 Generated files in `public/data/` should be replaceable by re-running the
 scripts.

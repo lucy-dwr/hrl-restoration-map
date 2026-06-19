@@ -5,7 +5,7 @@
 //   &basemap=imagery                         (absent = map)
 //   &selected=project-3
 //   &hidden=spawning+habitat,tidal+habitat   (comma-separated type keys)
-//   &watershed=0                             (absent = visible; "0" = hidden)
+//   &sacramento=0                            (absent = visible; "0" = hidden)
 //   &sanjoaquin=0                            (absent = visible; "0" = hidden)
 //   &delta=1                                 (absent = hidden; "1" = visible)
 //   &streams=0                               (absent = visible; "0" = hidden)
@@ -19,7 +19,7 @@ export interface UrlState {
   basemap: BasemapMode
   selected: string | null
   hiddenTypes: Set<string>
-  watershedVisible: boolean
+  sacramentoWatershedVisible: boolean
   sanJoaquinWatershedVisible: boolean
   deltaBoundaryVisible: boolean
   streamsVisible: boolean
@@ -32,7 +32,7 @@ const DEFAULTS: UrlState = {
   basemap: 'map',
   selected: null,
   hiddenTypes: new Set(),
-  watershedVisible: true,
+  sacramentoWatershedVisible: true,
   sanJoaquinWatershedVisible: true,
   deltaBoundaryVisible: false,
   streamsVisible: true,
@@ -53,7 +53,7 @@ export function readUrlState(): UrlState {
     basemap: p.get('basemap') === 'imagery' ? 'imagery' : DEFAULTS.basemap,
     selected: p.get('selected') ?? null,
     hiddenTypes: new Set(hidden ? hidden.split(',').filter(Boolean) : []),
-    watershedVisible: p.get('watershed') !== '0',
+    sacramentoWatershedVisible: p.get('sacramento') !== '0',
     sanJoaquinWatershedVisible: p.get('sanjoaquin') !== '0',
     deltaBoundaryVisible: p.get('delta') === '1',
     streamsVisible: p.get('streams') !== '0',
@@ -85,9 +85,9 @@ export function writeUrlState(state: Partial<UrlState>): void {
     }
   }
 
-  if (state.watershedVisible !== undefined) {
-    if (state.watershedVisible) p.delete('watershed')
-    else p.set('watershed', '0')
+  if (state.sacramentoWatershedVisible !== undefined) {
+    if (state.sacramentoWatershedVisible) p.delete('sacramento')
+    else p.set('sacramento', '0')
   }
 
   if (state.sanJoaquinWatershedVisible !== undefined) {

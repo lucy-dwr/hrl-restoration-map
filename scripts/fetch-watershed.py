@@ -27,7 +27,7 @@ WATERSHEDS = [
     {
         "huc4": "1802",
         "label": "Sacramento watershed",
-        "output": DATA_DIR / "watershed.geojson",
+        "output": DATA_DIR / "sacramento-watershed.geojson",
     },
     {
         "huc4": "1804",

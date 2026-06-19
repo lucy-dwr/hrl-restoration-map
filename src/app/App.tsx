@@ -18,7 +18,7 @@ export function App() {
   const [selectedProject, setSelectedProject] = useState<ProjectProperties | null>(null)
   const [basemap, setBasemap] = useState<BasemapMode>(initial.basemap)
   const [hiddenTypes, setHiddenTypes] = useState<Set<string>>(initial.hiddenTypes)
-  const [watershedVisible, setWatershedVisible] = useState(initial.watershedVisible)
+  const [sacramentoWatershedVisible, setSacramentoWatershedVisible] = useState(initial.sacramentoWatershedVisible)
   const [sanJoaquinWatershedVisible, setSanJoaquinWatershedVisible] = useState(initial.sanJoaquinWatershedVisible)
   const [deltaBoundaryVisible, setDeltaBoundaryVisible] = useState(initial.deltaBoundaryVisible)
   const [streamsVisible, setStreamsVisible] = useState(initial.streamsVisible)
@@ -76,10 +76,10 @@ export function App() {
     })
   }, [])
 
-  const handleToggleWatershed = useCallback(() => {
-    setWatershedVisible(prev => {
+  const handleToggleSacramentoWatershed = useCallback(() => {
+    setSacramentoWatershedVisible(prev => {
       const next = !prev
-      writeUrlState({ watershedVisible: next })
+      writeUrlState({ sacramentoWatershedVisible: next })
       return next
     })
   }, [])
@@ -122,7 +122,7 @@ export function App() {
           basemap={basemap}
           selectedDisplayId={selectedDisplayId}
           hiddenTypes={hiddenTypes}
-          watershedVisible={watershedVisible}
+          sacramentoWatershedVisible={sacramentoWatershedVisible}
           sanJoaquinWatershedVisible={sanJoaquinWatershedVisible}
           deltaBoundaryVisible={deltaBoundaryVisible}
           streamsVisible={streamsVisible}
@@ -138,8 +138,8 @@ export function App() {
           onBasemapChange={handleBasemapChange}
           hiddenTypes={hiddenTypes}
           onToggleType={handleToggleType}
-          watershedVisible={watershedVisible}
-          onToggleWatershed={handleToggleWatershed}
+          sacramentoWatershedVisible={sacramentoWatershedVisible}
+          onToggleSacramentoWatershed={handleToggleSacramentoWatershed}
           sanJoaquinWatershedVisible={sanJoaquinWatershedVisible}
           onToggleSanJoaquinWatershed={handleToggleSanJoaquinWatershed}
           deltaBoundaryVisible={deltaBoundaryVisible}

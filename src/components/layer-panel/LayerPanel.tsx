@@ -23,8 +23,8 @@ interface Props {
   onBasemapChange: (mode: BasemapMode) => void
   hiddenTypes: Set<string>
   onToggleType: (type: string) => void
-  watershedVisible: boolean
-  onToggleWatershed: () => void
+  sacramentoWatershedVisible: boolean
+  onToggleSacramentoWatershed: () => void
   sanJoaquinWatershedVisible: boolean
   onToggleSanJoaquinWatershed: () => void
   deltaBoundaryVisible: boolean
@@ -40,8 +40,8 @@ export function LayerPanel({
   onBasemapChange,
   hiddenTypes,
   onToggleType,
-  watershedVisible,
-  onToggleWatershed,
+  sacramentoWatershedVisible,
+  onToggleSacramentoWatershed,
   sanJoaquinWatershedVisible,
   onToggleSanJoaquinWatershed,
   deltaBoundaryVisible,
@@ -125,14 +125,14 @@ export function LayerPanel({
               <input
                 type="checkbox"
                 className={styles.checkbox}
-                checked={watershedVisible}
-                onChange={onToggleWatershed}
+                checked={sacramentoWatershedVisible}
+                onChange={onToggleSacramentoWatershed}
               />
               <span
                 className={styles.dot}
-                style={{ background: watershedVisible ? '#3f7f9f' : '#cccccc', borderRadius: 2 }}
+                style={{ background: sacramentoWatershedVisible ? '#3f7f9f' : '#cccccc', borderRadius: 2 }}
               />
-              <span className={styles.typeLabel} style={{ color: watershedVisible ? undefined : 'var(--text-tertiary)' }}>
+              <span className={styles.typeLabel} style={{ color: sacramentoWatershedVisible ? undefined : 'var(--text-tertiary)' }}>
                 Sacramento watershed
               </span>
             </label>

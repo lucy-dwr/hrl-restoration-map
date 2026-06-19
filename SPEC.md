@@ -66,7 +66,8 @@ Design implication: the dashboard must be visually polished enough for the publi
 | Top bar | ✅ |
 | Headline progress tiles | ✅ |
 | Click-to-inspect detail panel | ✅ |
-| Layer toggle panel with watershed boundary | ✅ |
+| Layer toggle panel with project types, watershed boundaries, Delta boundary, and stream network | ✅ |
+| Map / imagery basemap toggle | ✅ |
 | URL-encoded state | ✅ |
 | Non-map accessible equivalent | ❌ pending |
 | About / methodology page | ❌ pending |
@@ -153,7 +154,7 @@ Custom MapLibre style. Desaturated, low-contrast, designed to recede behind data
 
 - **Light** (default) — warm pale base, muted hydrography, restrained labels.
 - **Dark** — optional, deferred to near-future if there is demand.
-- **Satellite/aerial imagery** — under consideration as an optional toggle; source and timing not yet decided (see Open Questions).
+- **Satellite/aerial imagery** — prototype optional toggle using Esri World Imagery, visually subdued so project and context layers remain primary (Decision 27).
 
 Prototype tile source: OpenFreeMap Positron style (Decision 19) — desaturated, no API key, loads without local Azure setup. Production target: Protomaps tiles served from Azure Blob, which fits the Azure-Blob-as-substrate decision and avoids per-request tile fees.
 
@@ -222,7 +223,11 @@ What gets encoded:
 ?lat=38.4000&lng=-121.8000&zoom=7.00   # map centre and zoom
 &selected=project-3                     # display_id of selected feature (absent = none)
 &hidden=spawning+habitat,tidal+habitat  # comma-separated hidden project types (absent = all visible)
-&watershed=0                            # watershed boundary hidden (absent = visible)
+&sacramento=0                           # Sacramento watershed hidden (absent = visible)
+&sanjoaquin=0                           # San Joaquin watershed hidden (absent = visible)
+&delta=1                                # Delta legal boundary visible (absent = hidden)
+&streams=0                              # stream-network layer hidden (absent = visible)
+&basemap=imagery                        # imagery basemap selected (absent = map)
 ```
 
 Implemented in `src/lib/url-state.ts`. A `url-state.md` sub-spec would document the full encoding contract for future consumers (e.g., when filter arrays grow large enough to warrant a base64 blob).
@@ -313,10 +318,12 @@ The schema comments explicitly mark `funding_secured` and `funding_gap` as not p
 To be elaborated in a `layer-catalog.md` sub-spec. Minimum set:
 
 - Project locations (one logical layer, styled by project type)
-- Watershed boundary (single layer, default light styling) — prototype uses Sacramento HUC4 outline
-- Basemap (hydrography, terrain, administrative reference)
+- Watershed boundaries — prototype uses Sacramento HUC4 1802 and San Joaquin HUC4 1804 outlines from USGS WBD (Decision 24)
+- Sacramento-San Joaquin Delta legal boundary — prototype uses the DWR `i03_LegalDeltaBoundary` ArcGIS service, default hidden (Decision 25)
+- Stream network — prototype uses NHDPlus V2 VPU 18 flowlines and water polygons tiled to PMTiles, default visible (Decision 26)
+- Basemap (hydrography, terrain, administrative reference, optional imagery)
 
-Additional layers under consideration (see Open Questions): finer-grained watershed units (HUC8 subbasins, Delta boundary), stream network, and administrative boundaries (county, water district, fish management zone).
+Additional layers under consideration (see Open Questions): finer-grained watershed units (HUC8 subbasins) and administrative boundaries (county, water district, fish management zone).
 
 ### 9.4 Prototype data origin
 
@@ -327,12 +334,13 @@ The current machine-readable data contract is the vendored LinkML schema at `sch
 Recommended prototype path:
 
 1. Store the source GeoPackage under `data/source/`.
-2. Convert it into `public/data/projects.geojson` for the first prototype.
-3. If the dataset becomes too large for smooth browser loading, convert it to vector tiles under `public/tiles/` instead.
-4. Normalize and validate properties against `RestorationProjectSubmission` during conversion.
-5. Keep generated data reproducible from the GeoPackage plus the vendored schema.
+2. Convert it into `public/data/projects.geojson`.
+3. Normalize and validate project properties against `RestorationProjectSubmission` during conversion.
+4. Generate small context boundaries as GeoJSON under `public/data/`.
+5. Generate large context layers, such as the stream network, as PMTiles under `public/data/`.
+6. Keep generated data reproducible from source data plus the vendored schema.
 
-GeoJSON is the simplest first representation because MapLibre can read it directly and it is easy to inspect. Vector tiles are the next step when feature count, geometry complexity, or load time justify them.
+GeoJSON is the simplest representation for small vector features because MapLibre can read it directly and it is easy to inspect. Vector tiles are the preferred representation when feature count, geometry complexity, or load time justify them; the prototype stream-network layer uses PMTiles for this reason.
 
 ### 9.5 Production data origin
 
@@ -350,7 +358,7 @@ Data refresh cadence: TBD (see Open Questions). Likely nightly for v1.
 - **Language:** TypeScript. Strict mode enabled.
 - **Map rendering:** MapLibre GL JS (open-source, no API key, fork of Mapbox GL JS pre-license-change).
 - **Heavy/analytical layers:** deck.gl, composed with MapLibre.
-- **Prototype data:** Local GeoPackage validated against the vendored LinkML `RestorationProjectSubmission` schema and converted to static GeoJSON first; vector tiles only if needed for performance.
+- **Prototype data:** Local GeoPackage validated against the vendored LinkML `RestorationProjectSubmission` schema and converted to static GeoJSON for project features; large context layers may use generated PMTiles.
 - **Production tile hosting:** Protomaps tiles on Azure Blob.
 - **Styling:** CSS modules or vanilla-extract; no runtime CSS-in-JS. Design tokens in CSS custom properties.
 - **State management:** Start with React context plus URL-as-source-of-truth via a small router. Escalate to Zustand if state complexity warrants. Do not reach for Redux.
@@ -458,8 +466,8 @@ These do not block v1 scaffolding but must be resolved before v1 ship.
 - **Photo / media policy.** Project records may include photos at some point (process and management to be determined). What is the rights and consent process for displaying them publicly?
 - **Spanish-language support timing.** Year 1 stretch goal, or deferred?
 - **Analytics.** Do we instrument the dashboard for usage metrics? If so, what tool (Plausible, Matomo, none)? State-agency privacy constraints apply.
-- **Additional boundary and reference layers.** Which watershed units beyond the HUC4 Sacramento outline are useful (e.g. HUC8 subbasins, Sacramento–San Joaquin Delta boundary)? Should a stream network layer be included, and at what scale? What administrative boundaries are relevant (county, water district, etc.)? These decisions belong in the `layer-catalog.md` sub-spec.
-- **Satellite/aerial imagery basemap.** Should aerial imagery be offered as a basemap toggle? If so, what source is appropriate under state-agency constraints (ESRI World Imagery, open NAIP tiles, other)? When does imagery help vs. distract for the target audiences?
+- **Additional boundary and reference layers.** Which watershed units beyond the HUC4 Sacramento and San Joaquin outlines are useful (e.g. HUC8 subbasins)? What administrative boundaries are relevant (county, water district, etc.)? These decisions belong in the `layer-catalog.md` sub-spec.
+- **Imagery basemap source for production.** The prototype offers Esri World Imagery as a toggle. Confirm whether that source is appropriate under state-agency constraints for production, or whether open NAIP tiles or another source should replace it.
 
 ---
 
@@ -489,6 +497,11 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 18 | v0.1 | Accessibility target is WCAG 2.2 Level AA, selected WCAG 2.2 Level AAA criteria where applicable, and equivalent non-map access to essential map content and workflows. | Disability access is a core public-service requirement, not a minimum-compliance afterthought. |
 | 19 | 2026-06-02 | Prototype basemap: OpenFreeMap Positron style (`https://tiles.openfreemap.org/styles/positron`). | Freely accessible, no API key required, desaturated light style that recedes behind data layers. Production target remains Protomaps on Azure Blob (Decision 8). |
 | 20 | 2026-06-02 | URL state uses plain query parameters for all prototype state; base64 encoding deferred. | All prototype state (centre, zoom, selection, hidden types, watershed visibility) is low-cardinality; human-readable params suffice and are easier to debug and share. |
-| 21 | 2026-06-02 | Sacramento watershed boundary sourced from USGS WBD REST service (HUC4 1802), simplified with Ramer-Douglas-Peucker (ε = 0.002°) to ~1800 points / 38 KB, and committed to `public/data/watershed.geojson`. | USGS WBD is the authoritative federal source; simplification makes it browser-feasible. Reproducible via `scripts/fetch-watershed.py`. |
+| 21 | 2026-06-02 | Sacramento watershed boundary sourced from USGS WBD REST service (HUC4 1802), simplified with Ramer-Douglas-Peucker (ε = 0.002°) to ~1800 points / 38 KB, and committed to `public/data/watershed.geojson`. | USGS WBD is the authoritative federal source; simplification makes it browser-feasible. Reproducible via `scripts/fetch-watershed.py`. Superseded by Decision 28's clearer filename. |
 | 22 | 2026-06-02 | Headline tiles positioned at bottom-centre of the map area. | Avoids overlap with the left layer panel and the bottom-right MapLibre navigation controls; readable on wide screens. |
 | 23 | 2026-06-02 | Minimum `--text-tertiary` colour is `#767673` (~4.6:1 on white). | Original value `#888884` (~3.6:1) failed the WCAG 2.2 AA 4.5:1 threshold for normal-sized text. The new value clears the threshold while preserving the warm neutral character of the palette. |
+| 24 | 2026-06-19 | Prototype watershed context includes both Sacramento HUC4 1802 and San Joaquin HUC4 1804 boundaries from USGS WBD. | HRL project geography spans the Sacramento watershed and Bay-Delta context; the San Joaquin outline improves regional orientation without adding much data weight. |
+| 25 | 2026-06-19 | Prototype includes the Sacramento-San Joaquin Delta legal boundary from the DWR `i03_LegalDeltaBoundary` ArcGIS service, default hidden. | The Delta is a key programme geography, but the legal boundary is reference context rather than an ambient default layer. |
+| 26 | 2026-06-19 | Prototype stream-network base layer is generated from NHDPlus V2 VPU 18 and shipped as `public/data/streams.pmtiles`, with zoom-dependent reveal by Strahler stream order. | NHDPlus V2 provides statewide California flow-network attributes needed for scale-aware rendering; PMTiles keeps the large hydrography layer browser-feasible. |
+| 27 | 2026-06-19 | Prototype offers an optional Esri World Imagery basemap toggle while keeping the subdued OpenFreeMap map basemap as default. | Imagery helps users inspect real landscape context for selected areas, but the quieter map basemap remains better for first-load programme communication. |
+| 28 | 2026-06-19 | Sacramento watershed data and code identifiers use explicit Sacramento naming: `public/data/sacramento-watershed.geojson`, `sacramento-watershed` map source/layers, and `sacramento=0` URL state. | Adding the San Joaquin watershed made the previous generic `watershed` names ambiguous; parallel naming keeps the two HUC4 context layers clear. |

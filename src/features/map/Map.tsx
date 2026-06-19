@@ -237,7 +237,7 @@ interface MapProps {
   basemap: BasemapMode
   selectedDisplayId: string | null
   hiddenTypes: Set<string>
-  watershedVisible: boolean
+  sacramentoWatershedVisible: boolean
   sanJoaquinWatershedVisible: boolean
   deltaBoundaryVisible: boolean
   streamsVisible: boolean
@@ -253,7 +253,7 @@ export function Map({
   basemap,
   selectedDisplayId,
   hiddenTypes,
-  watershedVisible,
+  sacramentoWatershedVisible,
   sanJoaquinWatershedVisible,
   deltaBoundaryVisible,
   streamsVisible,
@@ -372,21 +372,21 @@ export function Map({
     const map = mapRef.current
     if (map.getSource('projects')) return
 
-    // Watershed boundary (below projects)
-    map.addSource('watershed', {
+    // Sacramento watershed boundary (HUC4 1802, below projects)
+    map.addSource('sacramento-watershed', {
       type: 'geojson',
-      data: `${import.meta.env.BASE_URL}data/watershed.geojson`,
+      data: `${import.meta.env.BASE_URL}data/sacramento-watershed.geojson`,
     })
     map.addLayer({
-      id: 'watershed-fill',
+      id: 'sacramento-watershed-fill',
       type: 'fill',
-      source: 'watershed',
+      source: 'sacramento-watershed',
       paint: { 'fill-color': '#6f9fbd', 'fill-opacity': 0.04 },
     })
     map.addLayer({
-      id: 'watershed-outline',
+      id: 'sacramento-watershed-outline',
       type: 'line',
-      source: 'watershed',
+      source: 'sacramento-watershed',
       paint: { 'line-color': '#3f7f9f', 'line-width': 1.8, 'line-opacity': 0.82 },
     })
 
@@ -633,15 +633,15 @@ export function Map({
     }
   }, [hiddenTypes, mapLoaded])
 
-  // Sync watershed visibility
+  // Sync Sacramento watershed visibility
   useEffect(() => {
     if (!mapLoaded || !mapRef.current) return
     const map = mapRef.current
-    if (!map.getLayer('watershed-fill')) return
-    const vis = watershedVisible ? 'visible' : 'none'
-    map.setLayoutProperty('watershed-fill', 'visibility', vis)
-    map.setLayoutProperty('watershed-outline', 'visibility', vis)
-  }, [watershedVisible, mapLoaded])
+    if (!map.getLayer('sacramento-watershed-fill')) return
+    const vis = sacramentoWatershedVisible ? 'visible' : 'none'
+    map.setLayoutProperty('sacramento-watershed-fill', 'visibility', vis)
+    map.setLayoutProperty('sacramento-watershed-outline', 'visibility', vis)
+  }, [sacramentoWatershedVisible, mapLoaded])
 
   // Sync San Joaquin watershed visibility
   useEffect(() => {

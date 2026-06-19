@@ -45,8 +45,13 @@ repeatable prototype workflow instead:
 2. Run `python scripts/convert-gpkg.py` to generate
    `public/data/projects.geojson`.
 3. Run `python scripts/fetch-watershed.py` to generate
-   `public/data/watershed.geojson`.
-4. Keep generated files replaceable by re-running the scripts.
+   `public/data/sacramento-watershed.geojson` and
+   `public/data/san-joaquin-watershed.geojson`.
+4. Run `python scripts/fetch-delta-boundary.py` to generate
+   `public/data/delta-boundary.geojson`.
+5. Run `python scripts/fetch-streams.py` to generate
+   `public/data/streams.pmtiles`.
+6. Keep generated files replaceable by re-running the scripts.
 
 Normalize and validate project data against the vendored LinkML
 `RestorationProjectSubmission` schema in
