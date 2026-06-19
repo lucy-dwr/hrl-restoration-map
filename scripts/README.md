@@ -20,10 +20,17 @@ Converts the source GeoPackage in `data/source/` into
 
 ## `fetch-watershed.py`
 
-Fetches the Sacramento River HUC4 (1802) and San Joaquin HUC4 (1804) boundaries
-from the USGS Watershed Boundary Dataset REST service, simplifies them, and
-writes `public/data/sacramento-watershed.geojson` and
-`public/data/san-joaquin-watershed.geojson`.
+Fetches the Sacramento River HUC4 (1802), Mokelumne HUC8 (18040012), and
+Tuolumne HUC8 (18040009) boundaries from the USGS Watershed Boundary Dataset
+REST service, simplifies them, and writes
+`public/data/sacramento-watershed.geojson`,
+`public/data/mokelumne-watershed.geojson`, and
+`public/data/tuolumne-watershed.geojson`.
+
+Watershed outlines are simplified with Ramer-Douglas-Peucker
+`SIMPLIFY_EPSILON = 0.0007` and written with 5-decimal coordinate precision.
+This keeps the boundaries smooth enough against the terrain basemap while
+remaining small enough for direct GeoJSON loading.
 
 ## `fetch-delta-boundary.py`
 

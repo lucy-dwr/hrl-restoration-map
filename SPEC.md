@@ -1,4 +1,4 @@
-# HRL Dashboard — Specification
+# Healthy Rivers and Landscapes Restoration Dashboard — Specification
 
 **Status:** v0.1 draft  
 **Working repo name:** `hrl-restoration-map-prototype`  
@@ -11,7 +11,7 @@
 
 ## 0. How to use this document
 
-This is the source of truth for product, design, data, and engineering decisions on the HRL Dashboard. It is written for the HRL data team, partner agencies, contributors, and reviewers who need to understand what the dashboard is meant to be.
+This is the source of truth for product, design, data, and engineering decisions on the Healthy Rivers and Landscapes Restoration Dashboard. It is written for the HRL data team, partner agencies, contributors, and reviewers who need to understand what the dashboard is meant to be.
 
 The Decision Log at the end is the canonical record of what is settled. Do not reverse a logged decision without recording a superseding decision.
 
@@ -23,7 +23,7 @@ This repo is currently a **local prototype**, not the production dashboard. The 
 
 ## 1. Purpose
 
-The HRL Dashboard is the public-facing surface of the Healthy Rivers and Landscapes (HRL) Science Program. Its job is to:
+The Healthy Rivers and Landscapes Restoration Dashboard is the public-facing surface of the Healthy Rivers and Landscapes (HRL) Science Program. Its job is to:
 
 1. **Make the work feel real.** A map-first interface that shows where HRL restoration projects are happening, so partners, the regulator, and the public can see the program as a tangible thing in the world rather than as a set of documents.
 2. **Show progress at a high level.** Headline metrics that communicate what the program is achieving without requiring the visitor to read a report. The current prototype uses submitted project acreage where available; the production target can evolve toward verified acres restored or under restoration once canonical data are available.
@@ -71,7 +71,8 @@ Design implication: the dashboard must be visually polished enough for the publi
 | Searchable/filterable project list and non-map browsing equivalent | ✅ prototype |
 | Fit-to-visible-projects and zoom-to-project map actions | ✅ |
 | URL-encoded state | ✅ |
-| About / methodology page | ❌ pending |
+| Concise About popup | ✅ |
+| Full methodology page | ❌ pending |
 | Download data affordance | ❌ pending |
 
 ### 3.2 v1 production target
@@ -93,7 +94,7 @@ Design implication: the dashboard must be visually polished enough for the publi
 - Layer toggling for project types and (at minimum) one administrative boundary layer.
 - URL-encoded state (center, zoom, active layers, selected project, time range if applicable).
 - "Download data" affordances linking back to canonical datasets in the HRL data infrastructure.
-- Methodology link / "About this dashboard" page.
+- Concise "About this dashboard" popup, plus fuller methodology content before production launch.
 - Accessibility: WCAG 2.2 Level AA conformance, with selected WCAG 2.2 Level AAA criteria where applicable.
 - Static deploy to Azure Blob.
 
@@ -133,11 +134,11 @@ Every piece of content must be assigned to a tier. If a piece of content cannot 
 ## 5. Layout system
 
 - **Full-bleed map.** The map fills the viewport. Chrome sits on top of it as floating panels.
-- **Top bar.** Thin (≈48px). HRL identity left, search and "About" links right. No primary navigation lives here.
+- **Top bar.** Thin (≈48px). Dashboard identity left and "About" action right. No primary navigation lives here.
 - **Left rail.** ≈360px, collapsible. Layer toggles, filters, legend. Default-open on desktop, default-collapsed on mobile.
 - **Bottom tile strip.** Headline progress tiles (prototype total acreage where available is the hero; supporting tiles for project count and early-implementation count). Confirmed position: bottom-centre of the map area (Decision 22). Avoids conflict with the left layer panel and bottom-right navigation controls.
 - **Right detail panel.** ≈400px, opens on selection, closes on dismiss. Renders project detail (tier 3). Pushes the map left rather than overlaying it on desktop; overlays on mobile.
-- **No persistent footer.** Footer information lives in the About page.
+- **No persistent footer.** Footer information lives in About/methodology surfaces.
 
 Responsive breakpoints (initial proposal):
 
@@ -165,6 +166,7 @@ Prototype tile source: OpenFreeMap Positron style (Decision 19) with local style
 - One sequential ramp for any quantitative overlay (e.g., acres).
 - One diverging ramp reserved for any future change-over-time layer.
 - Reserved colors: a single accent for selection state and a single muted gray for "out of scope" features.
+- Prototype UI chrome uses a light-touch HRL-inspired palette drawn from the public HRL site: deep teal for primary accents, restrained olive/gold for context, and blue-grey hydrography so streams read as base-map context rather than project data.
 
 The prototype palette is implemented in `src/features/map/project-colors.ts`. Formal documentation with colour vision deficiency rationale still to be written in a `palette.md` sub-spec.
 
@@ -473,7 +475,7 @@ Each of these can become a standalone spec file when the project needs more deta
 
 These do not block v1 scaffolding but must be resolved before v1 ship.
 
-- **Visual identity.** HRL is a multi-agency program. Does it have its own visual identity (logo, color), or does the dashboard adopt DWR's, or a neutral HRL-specific identity to be designed?
+- **Formal visual identity.** The prototype uses a light-touch HRL-inspired palette, but production still needs a decision on logo use and any formal multi-agency brand requirements.
 - **Project-stage display.** How should multivalued `ProjectStageEnum` values be summarized for symbology, filters, and headline tiles?
 - **Data refresh cadence.** Proposed: nightly. Confirm with `hrl-data-infrastructure` plans.
 - **Hosting domain.** Subdomain of an existing DWR or HRL domain, or a new domain? Affects DNS, SSL, and link strategy from partner sites.
@@ -524,3 +526,5 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 31 | 2026-06-19 | Prototype includes optional Yolo and Sutter bypass boundary context layers from the DWR `i12_Flood_Bypasses_2014` service, written to `public/data/yolo-bypass-boundary.geojson` and `public/data/sutter-bypass-boundary.geojson`. | These flood bypasses are highly relevant HRL floodplain context. The DWR layer is purpose-built for flood-bypass map display, but is representational rather than legal, so the layers default hidden and are labeled as context boundaries. |
 | 32 | 2026-06-19 | Prototype watershed context replaces the San Joaquin HUC4 1804 boundary with Mokelumne HUC8 18040012 and Tuolumne HUC8 18040009 boundaries from USGS WBD, while retaining Sacramento HUC4 1802. | The finer HUC8 units provide more useful project-area context than the broad San Joaquin HUC4 outline. USGS WBD is still the authoritative source, and the new layers remain reproducible through `scripts/fetch-watershed.py`. Supersedes Decision 24 for the San Joaquin boundary layer. |
 | 33 | 2026-06-19 | Watershed boundaries are simplified with Ramer-Douglas-Peucker ε = 0.0007° and written with 5-decimal coordinate precision. | The earlier ε = 0.002° / 4-decimal output made the HUC outlines visibly jagged against the terrain basemap. The smaller tolerance preserves smoother watershed shape while keeping the three GeoJSON context files browser-feasible. Supersedes the simplification tolerance recorded in Decision 21. |
+| 34 | 2026-06-19 | The prototype top bar uses the full name "Healthy Rivers and Landscapes Restoration Dashboard" and exposes a concise About popup instead of a separate About page. | The full name is clearer for public and regulator audiences than the HRL abbreviation alone. A compact modal provides immediate programme and data-context orientation without pulling users out of the map; a fuller methodology page remains a production requirement. |
+| 35 | 2026-06-19 | Prototype visual styling uses a light-touch palette inspired by the public HRL site, with deep teal as the primary UI accent and blue-grey hydrography for the stream network. | The palette gives the dashboard HRL identity without overpowering project symbology. Blue-grey stream styling keeps hydrography legible as contextual base information and avoids visual competition with watershed outlines and project colours. |

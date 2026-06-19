@@ -23,7 +23,9 @@ The prototype includes:
 - Full-bleed MapLibre map with project polygons from
   `public/data/projects.geojson`
 - Project-type color symbology, hover tooltip, and click-to-inspect selection
-- Top bar, headline metric tiles, and right-side project detail panel
+- Top bar branded as the Healthy Rivers and Landscapes Restoration Dashboard,
+  headline metric tiles, and right-side project detail panel
+- Concise About popup with programme context and links to CNRA and HRL sources
 - Left-rail controls with separate Layers and Projects tabs
 - Searchable/filterable project list with project selection, zoom-to-project,
   and fit-to-visible-projects actions
@@ -31,20 +33,21 @@ The prototype includes:
 - Layer controls for project types, watershed boundaries, the Delta legal
   boundary, Yolo and Sutter bypass boundaries, the stream network, and the
   basemap
-- Sacramento and San Joaquin watershed boundaries from USGS WBD HUC4 1802 and
-  1804
+- Sacramento watershed boundary from USGS WBD HUC4 1802, plus Mokelumne and
+  Tuolumne watershed boundaries from USGS WBD HUC8 18040012 and 18040009
 - Sacramento-San Joaquin Delta legal boundary from DWR
 - Yolo and Sutter bypass boundary context layers from DWR flood-bypass data
 - California stream-network PMTiles from NHDPlus V2, including dynamic river
   labels for named mainstems and major tributaries
-- Quiet light basemap with DEM hillshade terrain context plus optional Esri
-  World Imagery inspection mode
+- Quiet light basemap with DEM hillshade terrain context, HRL-inspired
+  accessible UI palette, blue-grey hydrography, and optional Esri World Imagery
+  inspection mode
 - URL state for map center, zoom, selected project, hidden project types,
   basemap mode, boundary visibility, and stream-network visibility
 
 Not yet included:
 
-- About and methodology page
+- Full methodology page
 - Download data affordance
 
 ## Quick Start
@@ -73,8 +76,9 @@ repeatable prototype workflow:
 3. Run `python scripts/convert-gpkg.py` to generate
    `public/data/projects.geojson`.
 4. Run `python scripts/fetch-watershed.py` to generate
-   `public/data/sacramento-watershed.geojson` and
-   `public/data/san-joaquin-watershed.geojson`.
+   `public/data/sacramento-watershed.geojson`,
+   `public/data/mokelumne-watershed.geojson`, and
+   `public/data/tuolumne-watershed.geojson`.
 5. Run `python scripts/fetch-delta-boundary.py` to generate
    `public/data/delta-boundary.geojson`.
 6. Run `python scripts/fetch-bypass-boundaries.py` to generate

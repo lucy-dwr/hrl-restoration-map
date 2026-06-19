@@ -16,7 +16,7 @@ applicable.
 - Added `CONTRIBUTING.md` with development setup, data workflow, coding
   standards, and pull request guidance.
 - Added `CODE_OF_CONDUCT.md`, adapted from Contributor Covenant 3.0.
-- Added Sacramento and San Joaquin watershed context layers, the
+- Added Sacramento, Mokelumne, and Tuolumne watershed context layers, the
   Sacramento-San Joaquin Delta legal boundary, Yolo and Sutter bypass boundary
   context layers, and NHDPlus V2 stream-network PMTiles with dynamic labels for
   named mainstems and major tributaries.
@@ -26,12 +26,18 @@ applicable.
   accessible project browsing, project selection, zoom-to-project, and
   fit-to-visible-projects actions.
 - Added filter-aware headline metric tiles.
+- Added a concise About popup with Healthy Rivers and Landscapes programme
+  context and links to CNRA and HRL source pages.
 
 ### Changed
 
 - Expanded URL state to include basemap mode and context-layer visibility.
 - Updated layer controls to include basemap, watershed, Delta boundary, and
   bypass boundary, and hydrography controls.
+- Updated the top-bar title to "Healthy Rivers and Landscapes Restoration
+  Dashboard".
+- Updated UI and map styling with a light-touch HRL-inspired accessible palette,
+  smoother watershed boundaries, and blue-grey stream-network hydrography.
 
 ## [0.1.0] - 2026-06-03
 
@@ -62,5 +68,5 @@ applicable.
 
 - Project list accessibility exists at prototype level but still needs broader
   keyboard and screen-reader audit coverage.
-- About and methodology page is not yet built.
+- Full methodology page is not yet built.
 - Download data affordance is not yet built.
