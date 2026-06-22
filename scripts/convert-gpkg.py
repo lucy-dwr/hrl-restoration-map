@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Convert the HRL restoration projects GeoPackage to browser-readable GeoJSON
-and a downloadable GeoPackage.
+Convert the HRL restoration projects GeoPackage to browser-readable GeoJSON,
+a downloadable GeoPackage, and a non-spatial CSV.
 
 Usage:
     python3 scripts/convert-gpkg.py
@@ -9,14 +9,17 @@ Usage:
 Reads:  data/source/2026-06-19-v01.gpkg  (restoration_projects layer)
 Writes: public/data/projects.geojson     (WGS84 / EPSG:4326, arrays normalized)
         public/data/projects.gpkg        (WGS84 / EPSG:4326, arrays as semicolons)
+        public/data/projects.csv         (no geometry, arrays as semicolons)
 
 Normalizes multivalued fields from semicolon-delimited strings to arrays for the
-GeoJSON output. The GeoPackage output uses semicolon-delimited strings so that
-standard GIS tools can read the field values without further processing.
+GeoJSON output. The GeoPackage and CSV outputs use semicolon-delimited strings
+so that standard GIS and spreadsheet tools can read the field values without
+further processing.
 Strips private fields. Adds display_* derived fields.
 Validates required RestorationProjectSubmission fields and emits warnings.
 """
 
+import csv
 import json
 import os
 import sqlite3
@@ -30,6 +33,7 @@ GPKG = REPO_ROOT / "data/source/2026-06-19-v01.gpkg"
 LAYER = "restoration_projects"
 OUT = REPO_ROOT / "public/data/projects.geojson"
 GPKG_OUT = REPO_ROOT / "public/data/projects.gpkg"
+CSV_OUT = REPO_ROOT / "public/data/projects.csv"
 
 # Multivalued fields stored as semicolon-delimited strings in the source
 # Schema annotation: submission_serialization: semicolon_delimited
@@ -109,6 +113,24 @@ def write_gpkg(features: list[dict]) -> None:
             print(f"Wrote {len(features)} features → {GPKG_OUT.relative_to(REPO_ROOT)}")
     finally:
         os.unlink(tmp_path)
+
+
+def write_csv(features: list[dict]) -> None:
+    rows = [f.get("properties") or {} for f in flatten_arrays_for_gpkg(features)]
+    fieldnames: list[str] = []
+    seen: set[str] = set()
+    for row in rows:
+        for field in row:
+            if field not in seen:
+                seen.add(field)
+                fieldnames.append(field)
+
+    with open(CSV_OUT, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(rows)
+
+    print(f"Wrote {len(features)} rows → {CSV_OUT.relative_to(REPO_ROOT)}")
 
 
 def split_semicolon(value: object) -> list[str] | None:
@@ -226,6 +248,7 @@ def main() -> None:
 
     print(f"\nWrote {len(processed)} features → {OUT.relative_to(REPO_ROOT)}")
     write_gpkg(processed)
+    write_csv(processed)
 
 
 if __name__ == "__main__":

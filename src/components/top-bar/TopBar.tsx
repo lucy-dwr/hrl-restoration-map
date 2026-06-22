@@ -49,6 +49,16 @@ function DownloadMenu() {
             <span className={styles.downloadFormat}>GeoPackage</span>
             <span className={styles.downloadDesc}>For QGIS, ArcGIS, and other GIS tools</span>
           </a>
+          <a
+            href="data/projects.csv"
+            download="projects.csv"
+            className={styles.downloadItem}
+            role="menuitem"
+            onClick={() => setOpen(false)}
+          >
+            <span className={styles.downloadFormat}>CSV</span>
+            <span className={styles.downloadDesc}>Attributes only, no spatial data</span>
+          </a>
         </div>
       )}
     </div>
