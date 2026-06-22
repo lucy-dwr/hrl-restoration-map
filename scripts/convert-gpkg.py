@@ -1,28 +1,35 @@
 #!/usr/bin/env python3
 """
-Convert the HRL restoration projects GeoPackage to browser-readable GeoJSON.
+Convert the HRL restoration projects GeoPackage to browser-readable GeoJSON
+and a downloadable GeoPackage.
 
 Usage:
     python3 scripts/convert-gpkg.py
 
 Reads:  data/source/2026-06-19-v01.gpkg  (restoration_projects layer)
-Writes: public/data/projects.geojson     (WGS84 / EPSG:4326)
+Writes: public/data/projects.geojson     (WGS84 / EPSG:4326, arrays normalized)
+        public/data/projects.gpkg        (WGS84 / EPSG:4326, arrays as semicolons)
 
-Normalizes multivalued fields from semicolon-delimited strings to arrays.
+Normalizes multivalued fields from semicolon-delimited strings to arrays for the
+GeoJSON output. The GeoPackage output uses semicolon-delimited strings so that
+standard GIS tools can read the field values without further processing.
 Strips private fields. Adds display_* derived fields.
 Validates required RestorationProjectSubmission fields and emits warnings.
 """
 
 import json
+import os
 import sqlite3
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
 GPKG = REPO_ROOT / "data/source/2026-06-19-v01.gpkg"
 LAYER = "restoration_projects"
 OUT = REPO_ROOT / "public/data/projects.geojson"
+GPKG_OUT = REPO_ROOT / "public/data/projects.gpkg"
 
 # Multivalued fields stored as semicolon-delimited strings in the source
 # Schema annotation: submission_serialization: semicolon_delimited
@@ -62,6 +69,46 @@ REQUIRED_PRIVATE_FIELDS = {
     "contact_email",
     "funding_secured"
 }
+
+
+def flatten_arrays_for_gpkg(features: list[dict]) -> list[dict]:
+    """Revert array-valued fields to semicolon strings for GIS interoperability."""
+    result = []
+    for f in features:
+        props = dict(f.get("properties") or {})
+        for field in MULTIVALUED_FIELDS:
+            val = props.get(field)
+            if isinstance(val, list):
+                props[field] = "; ".join(val) if val else None
+        result.append({**f, "properties": props})
+    return result
+
+
+def write_gpkg(features: list[dict]) -> None:
+    fc = {"type": "FeatureCollection", "features": flatten_arrays_for_gpkg(features)}
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".geojson", delete=False) as tf:
+        json.dump(fc, tf)
+        tmp_path = tf.name
+
+    GPKG_OUT.unlink(missing_ok=True)
+    try:
+        result = subprocess.run(
+            [
+                "ogr2ogr",
+                "-f", "GPKG",
+                str(GPKG_OUT),
+                tmp_path,
+                "-nln", "restoration_projects",
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            print(f"WARNING: GPKG write failed:\n{result.stderr}", file=sys.stderr)
+        else:
+            print(f"Wrote {len(features)} features → {GPKG_OUT.relative_to(REPO_ROOT)}")
+    finally:
+        os.unlink(tmp_path)
 
 
 def split_semicolon(value: object) -> list[str] | None:
@@ -178,6 +225,7 @@ def main() -> None:
         f.write("\n")
 
     print(f"\nWrote {len(processed)} features → {OUT.relative_to(REPO_ROOT)}")
+    write_gpkg(processed)
 
 
 if __name__ == "__main__":
