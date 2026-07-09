@@ -55,7 +55,7 @@ hrl-restoration-map-prototype/
 │   │   ├── detail-panel/      # Click-to-inspect project panel
 │   │   ├── layer-panel/       # Collapsible layer toggle rail
 │   │   ├── tiles/             # Headline metric tiles
-│   │   └── top-bar/           # Programme identity and navigation bar
+│   │   └── top-bar/           # Program identity and navigation bar
 │   ├── data/                  # types.ts — ProjectProperties and related types
 │   ├── features/
 │   │   └── map/               # MapLibre map component and project-type colour palette

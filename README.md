@@ -25,7 +25,7 @@ The prototype includes:
 - Project-type color symbology, hover tooltip, and click-to-inspect selection
 - Top bar branded as the Healthy Rivers and Landscapes Restoration Dashboard,
   headline metric tiles, and right-side project detail panel
-- Concise About popup with programme context and links to CNRA and HRL sources
+- Concise About popup with program context and links to CNRA and HRL sources
 - Left-rail controls with separate Layers and Projects tabs
 - Searchable/filterable project list with project selection, zoom-to-project,
   and fit-to-visible-projects actions

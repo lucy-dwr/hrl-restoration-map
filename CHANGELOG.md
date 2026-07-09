@@ -26,7 +26,7 @@ applicable.
   accessible project browsing, project selection, zoom-to-project, and
   fit-to-visible-projects actions.
 - Added filter-aware headline metric tiles.
-- Added a concise About popup with Healthy Rivers and Landscapes programme
+- Added a concise About popup with Healthy Rivers and Landscapes program
   context and links to CNRA and HRL source pages.
 - Added a Download data menu with public project downloads as GeoJSON,
   GeoPackage, and non-spatial CSV.
