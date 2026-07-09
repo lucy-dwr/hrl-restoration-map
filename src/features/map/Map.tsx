@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { Protocol } from 'pmtiles'
 import type { FeatureCollection, Feature, Geometry, Position } from 'geojson'
 import { TYPE_MATCH_EXPR } from './project-colors'
+import { ACREAGE_LABEL, formatAcreage } from '../../data/acreage'
 import type { ProjectProperties } from '../../data/types'
 import type { BasemapMode } from '../../lib/url-state'
 import styles from './Map.module.css'
@@ -1136,7 +1137,7 @@ export function Map({
           <span className={styles.tooltipType}>{tooltip.types}</span>
           {tooltip.acreage != null && (
             <span className={styles.tooltipAcreage}>
-              {tooltip.acreage.toLocaleString()} ac
+              {ACREAGE_LABEL}: {formatAcreage(tooltip.acreage, 2)}
             </span>
           )}
         </div>

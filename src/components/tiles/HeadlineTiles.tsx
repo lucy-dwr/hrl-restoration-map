@@ -1,4 +1,5 @@
 import type { FeatureCollection } from 'geojson'
+import { ACREAGE_TILE_LABEL, formatAcreage } from '../../data/acreage'
 import type { ProjectProperties } from '../../data/types'
 import styles from './HeadlineTiles.module.css'
 
@@ -29,11 +30,9 @@ export function HeadlineTiles({ data }: Props) {
       <div className={styles.divider} />
       <div className={styles.tile}>
         <span className={styles.value}>
-          {withAcreage.length > 0
-            ? totalAcreage.toLocaleString('en-US', { maximumFractionDigits: 0 })
-            : '—'}
+          {withAcreage.length > 0 ? formatAcreage(totalAcreage) : '—'}
         </span>
-        <span className={styles.label}>acres</span>
+        <span className={styles.label}>{ACREAGE_TILE_LABEL}</span>
       </div>
     </div>
   )

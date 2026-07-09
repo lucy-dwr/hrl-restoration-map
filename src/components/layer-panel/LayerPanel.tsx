@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { ACREAGE_COMPACT_LABEL, formatAcreage } from '../../data/acreage'
 import type { ProjectProperties } from '../../data/types'
 import { PROJECT_TYPE_COLORS, FALLBACK_COLOR } from '../../features/map/project-colors'
 import type { BasemapMode } from '../../lib/url-state'
@@ -483,7 +484,7 @@ export function LayerPanel({
                           <span className={styles.projectMeta}>
                             {project.system}
                             {project.acreage != null
-                              ? ` · ${project.acreage.toLocaleString()} ac`
+                              ? ` · ${formatAcreage(project.acreage, 2)} ${ACREAGE_COMPACT_LABEL}`
                               : ''}
                           </span>
                           {types.length > 0 && (

@@ -1,3 +1,8 @@
+import {
+  ACREAGE_DEFINITION,
+  ACREAGE_LABEL,
+  formatAcreage,
+} from '../../data/acreage'
 import type { ProjectProperties } from '../../data/types'
 import { PROJECT_TYPE_COLORS, FALLBACK_COLOR } from '../../features/map/project-colors'
 import styles from './DetailPanel.module.css'
@@ -6,11 +11,6 @@ interface Props {
   project: ProjectProperties
   onClose: () => void
   onZoomToProject: () => void
-}
-
-function fmt(n: number | null | undefined, decimals = 0): string {
-  if (n == null) return '—'
-  return n.toLocaleString('en-US', { maximumFractionDigits: decimals })
 }
 
 function fmtBudget(n: number | null | undefined): string {
@@ -115,18 +115,19 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
         </section>
 
         <section className={styles.section}>
-          <h3 className={styles.sectionLabel}>Acreage</h3>
+          <h3 className={styles.sectionLabel}>{ACREAGE_LABEL}</h3>
           <div className={styles.acreageTotal}>
             {project.acreage != null
-              ? <><strong>{fmt(project.acreage)}</strong> ac total</>
+              ? <><strong>{formatAcreage(project.acreage)}</strong> total project acres</>
               : <span className={styles.muted}>Not reported</span>}
           </div>
+          <p className={styles.comment}>{ACREAGE_DEFINITION}</p>
           {acreageRows.length > 0 && (
             <dl className={styles.dl}>
               {acreageRows.map(r => (
                 <>
                   <dt key={`${r.label}-dt`}>{r.label}</dt>
-                  <dd key={`${r.label}-dd`}>{fmt(r.value)} ac</dd>
+                  <dd key={`${r.label}-dd`}>{formatAcreage(r.value)} ac</dd>
                 </>
               ))}
             </dl>
