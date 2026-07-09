@@ -6,9 +6,10 @@ import styles from './HeadlineTiles.module.css'
 interface Props {
   data: FeatureCollection | null
   totalProjectCount?: number
+  layerPanelOpen?: boolean
 }
 
-export function HeadlineTiles({ data }: Props) {
+export function HeadlineTiles({ data, layerPanelOpen = false }: Props) {
   if (!data) return null
 
   const features = data.features
@@ -22,7 +23,7 @@ export function HeadlineTiles({ data }: Props) {
   )
 
   return (
-    <div className={styles.strip}>
+    <div className={`${styles.strip} ${layerPanelOpen ? styles.stripWithLeftPanel : ''}`}>
       <div className={styles.metrics}>
         <div className={styles.tile}>
           <span className={styles.value}>{total}</span>
@@ -37,7 +38,7 @@ export function HeadlineTiles({ data }: Props) {
         </div>
       </div>
       <p className={styles.note}>
-        Filters change these totals. Acres are submitted by HRL entities, not confirmed habitat-accounting acres.
+        Map filters change these totals. Acres are submitted by HRL entities and are not confirmed habitat accounting acres.
       </p>
     </div>
   )

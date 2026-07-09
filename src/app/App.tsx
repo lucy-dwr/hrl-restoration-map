@@ -393,7 +393,11 @@ export function App() {
           onProjectDeselect={handleProjectDeselect}
           onMoveEnd={handleMoveEnd}
         />
-        <HeadlineTiles data={filteredData} totalProjectCount={projects.length} />
+        <HeadlineTiles
+          data={filteredData}
+          totalProjectCount={projects.length}
+          layerPanelOpen={layerPanelOpen}
+        />
         <LayerPanel
           basemap={basemap}
           onBasemapChange={handleBasemapChange}

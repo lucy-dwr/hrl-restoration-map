@@ -1,13 +1,13 @@
 .root {
   position: absolute;
   top: calc(var(--top-bar-height) + 12px);
-  left: 12px;
+  left: var(--layer-panel-left);
   z-index: 20;
 }
 
 /* ── Expanded panel ── */
 .panel {
-  width: 320px;
+  width: var(--layer-panel-width);
   max-height: calc(100vh - var(--top-bar-height) - 28px);
   background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(8px);

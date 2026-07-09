@@ -15,6 +15,10 @@
   pointer-events: none;
 }
 
+.stripWithLeftPanel {
+  left: calc(50% + var(--headline-tiles-left-panel-offset));
+}
+
 .metrics {
   display: flex;
   align-items: stretch;
