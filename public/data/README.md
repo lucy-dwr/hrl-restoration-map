@@ -13,9 +13,9 @@ browser map source and preserves multivalued fields as arrays. GeoPackage keeps
 geometry and stores multivalued fields as semicolon-delimited strings for GIS
 tools. CSV is non-spatial and contains attributes only.
 
-Context layers are generated separately: `sacramento-watershed.geojson`,
-`mokelumne-watershed.geojson`, and `tuolumne-watershed.geojson` from the USGS
-WBD service with smoothed prototype simplification,
+Context layers are generated separately:
+`hrl-tributary-watersheds.geojson` from the USGS WBD service for Sacramento,
+American, Feather, Yuba, Putah, Mokelumne, and Tuolumne systems,
 `delta-boundary.geojson` from the DWR legal Delta boundary service,
 `yolo-bypass-boundary.geojson` and `sutter-bypass-boundary.geojson` from the
 DWR flood bypasses service, and `streams.pmtiles` from NHDPlus V2 source data.

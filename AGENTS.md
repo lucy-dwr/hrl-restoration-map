@@ -8,12 +8,12 @@ Read `SPEC.md` before writing code. Treat its Decision Log as canonical, and do 
 
 The prototype is substantially built. What exists:
 
-- Full-bleed MapLibre map rendering project polygons from `public/data/hrl_restoration_projects.geojson`, with project-type colour symbology, hover tooltip, and click-to-inspect selection.
+- Full-bleed MapLibre map rendering project polygons from `public/data/hrl_restoration_projects.geojson`, with project-type colour symbology, hover tooltip, selection halo, and click-to-inspect selection.
 - Top bar branded as "Healthy Rivers and Landscapes Restoration Dashboard" with compact purpose text, a Download data menu, and About popup.
 - First-run orientation overlay that frames the map as a public overview of early implementation and proposed restoration project locations, not verified habitat accounting.
-- Filter-aware headline tiles strip (project count and total submitted acreage).
+- Filter-aware headline tiles strip (project count and total project acres).
 - Right-side detail panel with type badges, description, overview, acreage breakdown, target species, funding sources, and zoom-to-project action.
-- Left-rail panel with Layers and Projects tabs. The Layers tab has basemap radio controls, per-type visibility checkboxes, individual HRL tributary watershed toggles, Delta legal-boundary and Yolo/Sutter bypass-boundary toggles, and a stream-network toggle. The Projects tab has search, system and early-implementation filters, an accessible project list, project selection/zoom actions, and fit-to-visible-projects.
+- Left-rail panel with Layers and Projects tabs. The Layers tab has basemap radio controls, per-type visibility checkboxes, select/clear layer-group actions, individual HRL tributary watershed toggles and zoom actions, Delta legal-boundary and Yolo/Sutter bypass-boundary toggles and zoom actions, and a stream-network toggle. The Projects tab has search, system and early-implementation filters, an accessible project list, project selection/zoom actions, and fit-to-visible-projects.
 - HRL tributary watershed boundary layer (`public/data/hrl-tributary-watersheds.geojson`) sourced from USGS WBD for Sacramento, American, Feather, Yuba, Putah, Mokelumne, and Tuolumne systems.
 - Sacramento-San Joaquin Delta legal boundary layer (`public/data/delta-boundary.geojson`) sourced from the DWR `i03_LegalDeltaBoundary` ArcGIS service.
 - Yolo and Sutter bypass boundary layers (`public/data/yolo-bypass-boundary.geojson`, `public/data/sutter-bypass-boundary.geojson`) sourced from the DWR `i12_Flood_Bypasses_2014` ArcGIS service for representational context.

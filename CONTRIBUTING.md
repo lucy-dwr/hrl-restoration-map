@@ -47,9 +47,7 @@ repeatable prototype workflow instead:
    `public/data/hrl_restoration_projects.gpkg`, and
    `public/data/hrl_restoration_projects.csv`.
 3. Run `python scripts/fetch-watershed.py` to generate
-   `public/data/sacramento-watershed.geojson`,
-   `public/data/mokelumne-watershed.geojson`, and
-   `public/data/tuolumne-watershed.geojson`.
+   `public/data/hrl-tributary-watersheds.geojson`.
 4. Run `python scripts/fetch-delta-boundary.py` to generate
    `public/data/delta-boundary.geojson`.
 5. Run `python scripts/fetch-bypass-boundaries.py` to generate

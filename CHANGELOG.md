@@ -16,7 +16,8 @@ applicable.
 - Added `CONTRIBUTING.md` with development setup, data workflow, coding
   standards, and pull request guidance.
 - Added `CODE_OF_CONDUCT.md`, adapted from Contributor Covenant 3.0.
-- Added Sacramento, Mokelumne, and Tuolumne watershed context layers, the
+- Added HRL tributary watershed context layers for Sacramento, American,
+  Feather, Yuba, Putah, Mokelumne, and Tuolumne systems, the
   Sacramento-San Joaquin Delta legal boundary, Yolo and Sutter bypass boundary
   context layers, and NHDPlus V2 stream-network PMTiles with dynamic labels for
   named mainstems and major tributaries.
@@ -35,16 +36,23 @@ applicable.
   GeoPackage, and non-spatial CSV.
 - Added a structured beta testing process and external form content in
   `beta-testing/`.
+- Added select/clear actions for project-type, watershed, and reference-boundary
+  layer groups.
+- Added zoom-to-boundary actions for HRL tributary watershed, Delta, Yolo
+  Bypass, and Sutter Bypass context layers.
 
 ### Changed
 
 - Expanded URL state to include basemap mode and context-layer visibility.
 - Updated layer controls to include basemap, watershed, Delta boundary, and
   bypass boundary, and hydrography controls.
+- Updated watershed controls to use a combined HRL tributary watershed source
+  with individual default-off tributary toggles.
 - Updated the top-bar title to "Healthy Rivers and Landscapes Restoration
   Dashboard".
 - Updated UI and map styling with a light-touch HRL-inspired accessible palette,
   smoother watershed boundaries, and blue-grey stream-network hydrography.
+- Updated project selection styling with a clearer polygon halo.
 - Renamed public project data objects to
   `public/data/hrl_restoration_projects.*` and trimmed public download fields
   to exclude private, source-submission, comment, and non-public funding-gap

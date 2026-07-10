@@ -38,7 +38,7 @@ The dashboard currently includes:
 - Filter-aware headline metric tiles
 - Layer controls for project types, HRL tributary watersheds, the Delta legal
   boundary, Yolo and Sutter bypass boundaries, the stream network, and the
-  basemap
+  basemap, with select/clear and zoom-to-boundary actions where useful
 - HRL tributary watershed boundaries from USGS WBD for Sacramento, American,
   Feather, Yuba, Putah, Mokelumne, and Tuolumne systems
 - Sacramento-San Joaquin Delta legal boundary from DWR
