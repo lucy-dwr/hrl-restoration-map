@@ -5,8 +5,8 @@ export interface ProjectProperties {
   lead_entity: string
   contractors: string[] | null
   early_implementation: boolean
-  construction_start_year: number
-  construction_completion_year: number
+  construction_start_year: number | string | null
+  construction_completion_year: number | string | null
   estimated_budget: number | null
   funding_sources: string[] | null
   system: string

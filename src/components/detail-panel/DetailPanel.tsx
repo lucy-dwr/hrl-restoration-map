@@ -27,6 +27,30 @@ function fmtBudget(n: number | null | undefined): string {
   }).format(n)
 }
 
+function fmtConstructionYear(value: number | string | null | undefined): string | null {
+  if (value == null) return null
+  const normalized = String(value).trim()
+  if (normalized === '' || /^n\/?a$/i.test(normalized) || /^null$/i.test(normalized)) {
+    return null
+  }
+  return normalized
+}
+
+function fmtConstructionRange(
+  start: number | string | null | undefined,
+  completion: number | string | null | undefined,
+): string | null {
+  const startYear = fmtConstructionYear(start)
+  const completionYear = fmtConstructionYear(completion)
+
+  if (startYear && completionYear) {
+    return startYear === completionYear ? startYear : `${startYear} – ${completionYear}`
+  }
+  if (startYear) return `Starts ${startYear}`
+  if (completionYear) return `Completes ${completionYear}`
+  return null
+}
+
 function capitalize(s: string): string {
   return s.length === 0 ? s : s[0].toUpperCase() + s.slice(1)
 }
@@ -41,10 +65,10 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
   const species = Array.isArray(project.target_species) ? project.target_species : []
   const funding = Array.isArray(project.funding_sources) ? project.funding_sources : []
 
-  const constructionRange =
-    project.construction_start_year === project.construction_completion_year
-      ? `${project.construction_start_year}`
-      : `${project.construction_start_year} – ${project.construction_completion_year}`
+  const constructionRange = fmtConstructionRange(
+    project.construction_start_year,
+    project.construction_completion_year,
+  )
 
   const acreageRows: { label: string; value: number | null }[] = [
     { label: 'Bypass floodplain', value: project.acreage_bypass_floodplain },
@@ -53,7 +77,7 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
     { label: 'Tributary rearing', value: project.acreage_tributary_rearing },
     { label: 'Tributary spawning', value: project.acreage_tributary_spawning },
     { label: 'Tidal wetland', value: project.acreage_tidal_wetland },
-  ].filter(r => r.value != null)
+  ].filter(r => r.value != null && r.value > 0)
 
   return (
     <aside className={styles.panel} aria-label="Project details">
@@ -112,10 +136,12 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
               </>
             )}
             <dt>Anticipated construction years</dt>
-            <dd>{constructionRange}</dd>
+            <dd>
+              {constructionRange ?? <span className={styles.muted}>Not reported</span>}
+            </dd>
             {project.estimated_budget != null && (
               <>
-                <dt>Est. budget</dt>
+                <dt>Estimated budget</dt>
                 <dd>{fmtBudget(project.estimated_budget)}</dd>
               </>
             )}

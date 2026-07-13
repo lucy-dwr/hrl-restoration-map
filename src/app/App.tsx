@@ -597,7 +597,7 @@ export function App() {
             onMouseDown={event => event.stopPropagation()}
           >
             <header className={styles.aboutHeader}>
-              <h2 id="about-title" className={styles.aboutTitle}>About This Dashboard</h2>
+              <h2 id="about-title" className={styles.aboutTitle}>About This Map</h2>
               <button
                 type="button"
                 ref={aboutCloseRef}

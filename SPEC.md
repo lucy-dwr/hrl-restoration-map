@@ -97,7 +97,7 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 - Layer toggling for project types, HRL tributary watersheds, and reference boundaries.
 - URL-encoded state (center, zoom, active layers, selected project, time range if applicable).
 - "Download data" affordances linking back to canonical datasets in the HRL data infrastructure.
-- Concise "About this dashboard" popup, plus fuller methodology and data-source context before production launch.
+- Concise "About this map" popup, plus fuller methodology and data-source context before production launch.
 - Accessibility: WCAG 2.2 Level AA conformance, with selected WCAG 2.2 Level AAA criteria where applicable.
 - Static deploy to Azure Blob.
 

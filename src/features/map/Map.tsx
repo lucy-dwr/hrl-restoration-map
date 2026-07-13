@@ -1326,7 +1326,7 @@ export function Map({
       filter: layerSelectionFilter('projects-selected-outer-halo', null),
       paint: {
         'line-color': SELECTED_PROJECT_CONTRAST_COLOR,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 5, 4.4, 10, 5.6, 14, 6.8],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 5, 2.42, 10, 3.08, 14, 3.74],
         'line-opacity': 0.86,
       },
     })
@@ -1337,7 +1337,7 @@ export function Map({
       filter: layerSelectionFilter('projects-selected-halo', null),
       paint: {
         'line-color': SELECTED_PROJECT_HALO_COLOR,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 5, 2.4, 10, 3.2, 14, 4],
+        'line-width': ['interpolate', ['linear'], ['zoom'], 5, 1.32, 10, 1.76, 14, 2.2],
         'line-opacity': 0.98,
       },
     })
