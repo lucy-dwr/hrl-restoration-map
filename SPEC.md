@@ -1,7 +1,7 @@
 # Healthy Rivers and Landscapes Restoration Dashboard — Specification
 
 **Status:** v0.2 draft  
-**Working repo name:** `hrl-restoration-map-prototype`  
+**Working repo name:** `hrl-restoration-map`
 **Related repos:**
 
 - `hrl-data-infrastructure` — pipelines, storage, and publication architecture at `lucy-dwr.github.io/hrl-data-infrastructure`
@@ -99,7 +99,7 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 - "Download data" affordances linking back to canonical datasets in the HRL data infrastructure.
 - Concise "About this map" popup, plus fuller methodology and data-source context before production launch.
 - Accessibility: WCAG 2.2 Level AA conformance, with selected WCAG 2.2 Level AAA criteria where applicable.
-- Static deploy to Azure Blob.
+- Static deploy to Azure Static Web Apps; Azure Blob remains the anticipated production data and tile substrate.
 
 ### 3.3 Potential future features
 
@@ -395,7 +395,7 @@ Data refresh cadence: TBD (see Open Questions). Likely nightly for v1.
 - **Linting / formatting:** ESLint + Prettier with a shared config.
 - **Package manager:** pnpm.
 - **Prototype hosting:** Local Vite dev server.
-- **Production hosting:** Azure Blob static website. Optional Azure Front Door or Cloudflare in front for caching and HTTPS.
+- **Production application hosting:** Azure Static Web Apps. Azure Blob remains the production data and tile substrate; optional Azure Front Door or Cloudflare can sit in front for caching and HTTPS if needed.
 
 ### 10.2 Why not other options
 
@@ -561,3 +561,4 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 49 | 2026-07-13 | Public UI labels use "project acres" or compact "total project acres" for acreage values, with help text explaining that the values are reported by HRL participating entities for public orientation and are not final HRL habitat accounting acres. | This keeps visible labels plain and confident while avoiding the procedural ambiguity of "submitted" in compact UI. The methodology surface can still explain provenance and validation separately. |
 | 50 | 2026-07-13 | Acreage caveats appear as targeted inline help on the headline acreage tile, project detail acreage heading, and habitat-type acreage breakdown rather than in every compact map or project-list context. | Inline help addresses Round 1 acreage confusion where users are most likely to infer accounting meaning, while keeping the map, tooltip, and project list readable and non-defensive. |
 | 51 | 2026-07-15 | The headline acreage tile is labeled "total HRL project acres" and sums the six reported HRL habitat-type acreage fields across the filtered project set. | The dashboard is centered on HRL habitat types, so the headline should reflect the habitat-specific project area rather than each project's overall reported acreage. This supersedes Decision 9 for the prototype headline metric and Decision 49 for the headline tile label. |
+| 52 | 2026-07-15 | Production application hosting uses the existing Azure Static Web App, `stapp-hrl-restoration-map-prod`, deployed through GitHub Actions. | Azure Static Web Apps is the already-provisioned service for CI/CD deployment of the public application. This supersedes the Azure Blob static-website application-hosting part of the prior production-hosting decision; Azure Blob remains the anticipated storage and serving substrate for production data and tiles (Decision 8). |

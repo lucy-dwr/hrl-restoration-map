@@ -6,12 +6,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lucy-dwr/hrl-restoration-map-prototype.git"
+    "url": "git+https://github.com/lucy-dwr/hrl-restoration-map.git"
   },
   "bugs": {
-    "url": "https://github.com/lucy-dwr/hrl-restoration-map-prototype/issues"
+    "url": "https://github.com/lucy-dwr/hrl-restoration-map/issues"
   },
-  "homepage": "https://github.com/lucy-dwr/hrl-restoration-map-prototype#readme",
+  "homepage": "https://github.com/lucy-dwr/hrl-restoration-map#readme",
   "type": "module",
   "scripts": {
     "dev": "vite",
