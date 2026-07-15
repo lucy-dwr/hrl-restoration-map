@@ -1564,7 +1564,7 @@ export function Map({
           <span className={styles.tooltipType}>{tooltip.types}</span>
           {tooltip.acreage != null && (
             <span className={styles.tooltipAcreage}>
-              {ACREAGE_LABEL}: {formatAcreage(tooltip.acreage, 2)}
+              {ACREAGE_LABEL}: {formatAcreage(tooltip.acreage, 1)}
             </span>
           )}
         </div>

@@ -157,7 +157,7 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
           </div>
           <div className={styles.acreageTotal}>
             {project.acreage != null
-              ? <><strong>{formatAcreage(project.acreage)}</strong> acres</>
+              ? <><strong>{formatAcreage(project.acreage, 1)}</strong> acres</>
               : <span className={styles.muted}>Not reported</span>}
           </div>
           <p className={styles.comment}>{ACREAGE_DEFINITION}</p>
@@ -173,7 +173,7 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
                 {acreageRows.map(r => (
                   <Fragment key={r.label}>
                     <dt>{r.label}</dt>
-                    <dd>{formatAcreage(r.value)} acres</dd>
+                    <dd>{formatAcreage(r.value, 1)} acres</dd>
                   </Fragment>
                 ))}
               </dl>
