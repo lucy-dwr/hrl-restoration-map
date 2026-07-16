@@ -1,11 +1,5 @@
 # Healthy Rivers and Landscapes Brand Assets
 
-## Recommended language
-
-- **Program name:** Healthy Rivers and Landscapes (HRL)
-- **Acreage label:** “total HRL project acres,” when describing HRL habitat-type acreage
-- **Project location description:** “Early implementation and proposed restoration project locations”
-
 ## Visual character
 
 The visual character is calm, credible, and grounded in California rivers and landscapes: warm pale surfaces, deep teal emphasis, restrained olive and gold context accents, and blue-grey water features. Use ample white space and clear hierarchy. In maps, project data may be more saturated than the basemap; in presentations, reserve stronger color for the central message, key numbers, and calls to action.
@@ -101,7 +95,3 @@ Favor an uncluttered, editorial layout with one clear idea per slide. Use the co
 - Use large, legible type and leave sufficient space around text and graphics.
 - Avoid dense tables, decorative text over photography, and animations that distract from the message.
 - Provide accessible source material or an equivalent text description for complex maps, charts, and diagrams when sharing digitally.
-
-## Asset and approval status
-
-There are no approved logo files, official lockups, photography rules, or formal multi-agency identity requirements in this guide. Before using these guidelines for public-facing materials, confirm logo use, partner-agency attribution, imagery rights, and any formal State of California branding requirements with the HRL program team.
