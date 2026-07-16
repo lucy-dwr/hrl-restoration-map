@@ -108,6 +108,7 @@ scripts.
 ## Repository Guide
 
 - [SPEC.md](SPEC.md) contains product, design, data, and architecture decisions.
+- [docs/brand-guidelines.md](docs/brand-guidelines.md) provides working HRL communications and visual guidance.
 - [AGENTS.md](AGENTS.md) contains implementation conventions for coding agents
   and contributors.
 - [beta-testing/](beta-testing/) records structured beta testing processes and
