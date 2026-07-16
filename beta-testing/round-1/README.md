@@ -11,5 +11,5 @@ prototype.
 - `hrl-restoration-map-prototype-feedback-round-1.csv` — raw feedback export.
 - `round-1-feedback-synthesis.md` — narrative summary of what worked, what
   should change, what should be deferred, and possible `SPEC.md` implications.
-- `round-1-candidate-issues.md` — issue-shaped backlog candidates for later
-  GitHub issue creation. No GitHub issues have been opened from this triage.
+- `round-1-candidate-issues.md` — issue-shaped backlog candidates for 
+  GitHub issue creation.
