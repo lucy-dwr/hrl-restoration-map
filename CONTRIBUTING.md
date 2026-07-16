@@ -1,10 +1,10 @@
 # Contributing
 
-Thank you for your interest in contributing to `hrl-restoration-map-prototype`.
-This repository is an in-development prototype for the Healthy Rivers and
-Landscapes restoration map. It is not an authoritative State of California
-product, official public record, regulatory filing, or source of legal or policy
-guidance.
+Thank you for your interest in contributing to `hrl-restoration-map`. This
+repository contains the early-implementation Healthy Rivers and Landscapes
+restoration map, deployed through Azure Static Web Apps. It is not an
+authoritative State of California product, official public record, regulatory
+filing, or source of legal or policy guidance.
 
 ## Code of Conduct
 
@@ -17,7 +17,7 @@ Read [SPEC.md](SPEC.md) before proposing or writing code. Treat the Decision Log
 in that file as canonical. Do not reverse a logged decision without proposing a
 superseding entry.
 
-This prototype currently runs locally from generated static data in
+The deployed application currently serves generated static data from
 `public/data/`. Do not assume Azure Blob, published snapshot manifests, or the
 production `hrl-data-infrastructure` serving contract exist yet.
 
@@ -39,7 +39,7 @@ pnpm run build
 ## Data Workflow
 
 The browser app should not load source GeoPackage files directly. Use the
-repeatable prototype workflow instead:
+repeatable data workflow instead:
 
 1. Put source GeoPackage files under `data/source/`.
 2. Run `python scripts/convert-gpkg.py` to generate
@@ -66,8 +66,8 @@ until the production validation and ingestion pipeline exists.
 
 ## Privacy and Public Data
 
-Some source fields are not approved for public display in the prototype. Do not
-render or expose these fields without explicit approval:
+Some source fields are not approved for public display in the application. Do
+not render or expose these fields without explicit approval:
 
 - `contact_name`
 - `contact_email`

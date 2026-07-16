@@ -17,7 +17,10 @@ The Decision Log at the end is the canonical record of what is settled. Do not r
 
 This document is intentionally an umbrella spec. It points to future sub-specs (see Section 16) that will be elaborated as work progresses. Repository workflow, coding-agent instructions, and contribution mechanics live in [`AGENTS.md`](AGENTS.md).
 
-This repo is currently a **local prototype**, not the production dashboard. The production architecture described here is the target direction, but Azure hosting, published snapshot manifests, and the full `hrl-data-infrastructure` serving contract are not set up yet. Current development should run locally from data and generated assets stored in this repo.
+This repository is the deployed early-implementation dashboard. The application
+is hosted on Azure Static Web Apps; published snapshot manifests and the full
+`hrl-data-infrastructure` serving contract are not set up yet. Current
+development and deployment use generated data and assets stored in this repo.
 
 ---
 
@@ -49,7 +52,7 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 
 ## 3. Scope
 
-### 3.1 Current prototype
+### 3.1 Current implementation
 
 - Run locally with Vite.
 - Use a local GeoPackage as the current source dataset.
@@ -58,7 +61,7 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 - Include scripts that convert the GeoPackage into browser-readable static data.
 - Render restoration project features on a MapLibre map.
 - Support a small set of representative interactions: layer visibility, click-to-inspect, and headline metrics where the source data support them.
-- Treat Azure Blob, related Azure infrastructure, and published snapshot manifests as future production concerns, not prototype prerequisites.
+- Treat Azure Blob data/tile hosting, related data infrastructure, and published snapshot manifests as future work; the application itself deploys to Azure Static Web Apps.
 
 **Implementation status as of v0.2:**
 

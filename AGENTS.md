@@ -6,7 +6,8 @@ Read `SPEC.md` before writing code. Treat its Decision Log as canonical, and do 
 
 ## Current Implementation Status
 
-The prototype is substantially built. What exists:
+The early-implementation dashboard is deployed to Azure Static Web Apps. What
+exists:
 
 - Full-bleed MapLibre map rendering project polygons from `public/data/hrl_restoration_projects.geojson`, with project-type colour symbology, hover tooltip, selection halo, and click-to-inspect selection.
 - Low-zoom overview point markers for polygon projects, placed at a guaranteed-interior "point on surface" of each footprint (not a bounding-box/area centroid, which can fall outside concave shapes) and cross-fading into the true polygon fill/outline on a per-project schedule driven by footprint size, so small projects stay discoverable at the default extent (addresses Round 1 R1-08). A zoom-reactive on-map hint and a first-run overlay sentence explain that points expand into boundaries on zoom-in.
@@ -29,13 +30,13 @@ The prototype is substantially built. What exists:
 ## Repository Layout
 
 ```text
-hrl-restoration-map-prototype/
+hrl-restoration-map/
 ├── AGENTS.md                  # Coding-agent and contribution instructions
 ├── SPEC.md                    # Umbrella product and architecture spec
 ├── README.md                  # Human-facing setup and contribution overview
 ├── beta-testing/              # Structured beta testing protocol and form content
 ├── data/
-│   └── source/                # Local prototype source data, including GeoPackage files
+│   └── source/                # Local source data, including GeoPackage files
 ├── public/
 │   └── data/
 │       ├── hrl_restoration_projects.geojson  # Generated from GeoPackage via scripts/convert-gpkg.py
@@ -47,7 +48,7 @@ hrl-restoration-map-prototype/
 │       ├── sutter-bypass-boundary.geojson  # Fetched from DWR via scripts/fetch-bypass-boundaries.py
 │       └── streams.pmtiles    # Built from NHDPlus V2 via scripts/fetch-streams.py
 ├── schemas/
-│   └── hrl/                   # Vendored LinkML schema release used by the prototype
+│   └── hrl/                   # Vendored LinkML schema release used by the app
 ├── src/
 │   ├── app/                   # App.tsx, App.module.css, main.tsx
 │   ├── components/
@@ -85,7 +86,9 @@ Use the stack decisions in `SPEC.md` Section 10:
 - Vitest for unit tests and Playwright for critical end-to-end paths
 - pnpm as the package manager
 
-This is currently a local prototype. Do not assume Azure Blob, published snapshot manifests, or `hrl-data-infrastructure` serving outputs exist yet.
+The application deploys to Azure Static Web Apps through GitHub Actions. Do not
+assume Azure Blob data/tile hosting, published snapshot manifests, or
+`hrl-data-infrastructure` serving outputs exist yet.
 
 ## Prototype Data Workflow
 
