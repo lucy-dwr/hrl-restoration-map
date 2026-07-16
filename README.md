@@ -1,12 +1,12 @@
-# hrl-restoration-map-prototype
+# hrl-restoration-map
 
 Interactive map for visualizing Healthy Rivers and Landscapes restoration
 projects.
 
 > [!WARNING]
-> **Development prototype**
+> **Early implementation dashboard**
 >
-> This application is an in-development prototype. It is not an authoritative
+> This application is in early implementation. It is not an authoritative
 > State of California product, official public record, regulatory filing, or
 > source of legal or policy guidance. Data, design, terminology, and behavior may
 > change as the Healthy Rivers and Landscapes dashboard and supporting data
@@ -14,9 +14,20 @@ projects.
 
 ## Status
 
-This repository is currently a local prototype. Azure hosting, published
-snapshot manifests, and the production HRL data-serving infrastructure are not
-set up yet.
+The production application is deployed through Azure Static Web Apps:
+<https://kind-sky-052e1711e.7.azurestaticapps.net>.
+
+Pushes to `main` run the GitHub Actions deployment workflow, which builds the
+Vite app with Node 22 and pnpm, then publishes the prebuilt `dist/` directory
+to `stapp-hrl-restoration-map-prod`. The deployment credential is stored only
+in the repository's `AZURE_STATIC_WEB_APPS_API_TOKEN` Actions secret.
+
+The separate prototype repository remains on GitHub Pages for beta testing and
+is not affected by this deployment.
+
+Published snapshot manifests and the production HRL data-serving infrastructure
+are still future work. This application currently serves generated static data
+from `public/data/`.
 
 The dashboard currently includes:
 
