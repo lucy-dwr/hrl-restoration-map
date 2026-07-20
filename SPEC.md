@@ -15,7 +15,10 @@ This is the source of truth for product, design, data, and engineering decisions
 
 The Decision Log at the end is the canonical record of what is settled. Do not reverse a logged decision without recording a superseding decision.
 
-This document is intentionally an umbrella spec. It points to future sub-specs (see Section 16) that will be elaborated as work progresses. Repository workflow, coding-agent instructions, and contribution mechanics live in [`AGENTS.md`](AGENTS.md).
+This document is intentionally an umbrella spec. It links to adopted and planned
+sub-specs (see Section 16), which are elaborated as the project needs more
+detail. Repository workflow, coding-agent instructions, and contribution
+mechanics live in [`AGENTS.md`](AGENTS.md).
 
 This repository is the deployed early-implementation dashboard. The application
 is hosted on Azure Static Web Apps; published snapshot manifests and the full
@@ -139,6 +142,10 @@ Every piece of content must be assigned to a tier. If a piece of content cannot 
 
 ## 5. Layout system
 
+The definitions and calculation rules for the headline tile strip are maintained
+in the adopted [`tiles-and-metrics.md`](docs/specs/tiles-and-metrics.md)
+sub-spec.
+
 - **Full-bleed map.** The map fills the viewport. Chrome sits on top of it as floating panels.
 - **Top bar.** Compact (≈74px). Dashboard identity left, using the full
   two-line dashboard name, persistent purpose text, and the official HRL
@@ -171,6 +178,9 @@ Prototype tile source: OpenFreeMap Positron style (Decision 19) with local style
 
 ### 6.2 Data palette
 
+The implemented palette and its governance are maintained in the adopted
+[`palette.md`](docs/specs/palette.md) sub-spec.
+
 - Project-type colors for `ProjectTypeEnum` values, chosen for hue separation at typical zoom, and re-tested for color-vision deficiency (deuteranopia and protanopia).
 - One sequential ramp for any quantitative overlay (e.g., acres).
 - One diverging ramp reserved for any future change-over-time layer.
@@ -181,7 +191,8 @@ Prototype tile source: OpenFreeMap Positron style (Decision 19) with local style
   `public/hrl-logo-mark.png` and is not recolored or placed on a background
   plate.
 
-The prototype palette is implemented in `src/features/map/project-colors.ts`. Formal documentation with colour vision deficiency rationale still to be written in a `palette.md` sub-spec.
+The prototype palette is implemented in `src/features/map/project-colors.ts` and
+documented in [`palette.md`](docs/specs/palette.md).
 
 ### 6.3 Typography
 
@@ -215,6 +226,9 @@ The map, the tile strip, and any chart panels are views over a single shared app
 
 ### 7.4 Layer logic
 
+The authoritative inventory of implemented layers, their sources, defaults, and
+symbology is [`layer-catalog.md`](docs/specs/layer-catalog.md).
+
 - Layers are independently toggleable.
 - Project-type layers default ON. HRL tributary watershed outlines, the Delta legal boundary, and Yolo/Sutter bypass boundaries default OFF because they are reference context. The stream network defaults ON.
 - Layer order is fixed and not user-configurable in v1 (defer drag-to-reorder).
@@ -244,6 +258,10 @@ Implemented in `src/features/map/Map.tsx`. Fade timing constants are tunable (`C
 
 ## 8. URL state
 
+The complete current encoding and compatibility contract is maintained in the
+adopted [`url-state.md`](docs/specs/url-state.md) sub-spec. This section gives
+the product-level requirement and a readable summary.
+
 URL state is a v1 requirement. Without it the dashboard cannot be used as a communication tool with the Science Committee, the regulator, or the press.
 
 What gets encoded:
@@ -268,7 +286,7 @@ What gets encoded:
 &basemap=imagery                        # imagery basemap selected (absent = map)
 ```
 
-Implemented in `src/lib/url-state.ts`. Current project list search, system filter, and early-implementation filter are local UI state rather than URL-encoded state; encoding those filters remains a v1 hardening task. A `url-state.md` sub-spec would document the full encoding contract for future consumers (e.g., when filter arrays grow large enough to warrant a base64 blob).
+Implemented in `src/lib/url-state.ts`. Current project list search, system filter, and early-implementation filter are local UI state rather than URL-encoded state; encoding those filters remains a v1 hardening task. The adopted [`url-state.md`](docs/specs/url-state.md) sub-spec documents the current contract and its planned evolution.
 
 ---
 
@@ -353,7 +371,8 @@ The schema comments explicitly mark `funding_secured` and `funding_gap` as not p
 
 ### 9.3 Layer catalog (v1)
 
-To be elaborated in a `layer-catalog.md` sub-spec. Minimum set:
+The current catalog is maintained in the adopted
+[`layer-catalog.md`](docs/specs/layer-catalog.md) sub-spec. Minimum set:
 
 - Project locations (one logical layer, styled by project type)
 - HRL tributary watersheds — prototype uses a combined USGS WBD GeoJSON layer for Sacramento HUC4 1802 plus dissolved HUC8 boundaries for American, Feather, Yuba, Putah, Mokelumne, and Tuolumne systems, with individual layer controls and no on-map watershed labels (Decisions 43 and 44)
@@ -431,7 +450,8 @@ For the current prototype, that infrastructure is not available. Use the local G
 - The production dashboard's build step pulls a versioned snapshot manifest from Azure Blob and resolves the URIs of the latest published datasets.
 - Each released production version of the dashboard pins to a snapshot manifest version, so a deployed dashboard is reproducible.
 
-The exact contract between the two repos lives in a `data-contract.md` sub-spec, owned jointly by both repos.
+The future exact contract between the two repos will live in a jointly owned
+`data-contract.md` sub-spec once the serving architecture is proposed.
 
 ---
 
@@ -447,6 +467,10 @@ The exact contract between the two repos lives in a `data-contract.md` sub-spec,
 ---
 
 ## 13. Accessibility, performance, internationalization
+
+The v1 accessibility conformance plan, known gaps, and audit roadmap are
+maintained in the adopted [`accessibility.md`](docs/specs/accessibility.md)
+sub-spec.
 
 - **Accessibility target:** This product will be designed to exceed minimum compliance and manifest disability access as a core public-service requirement. The application must conform to WCAG 2.2 Level AA and should meet selected WCAG 2.2 Level AAA criteria where applicable, especially for contrast, readability, instructions, help, and cognitive accessibility.
 - **Interface accessibility:** All custom interface components must use native HTML controls where possible or follow WAI-ARIA Authoring Practices. All interactive elements must be keyboard-reachable and screen-reader-labeled.
@@ -483,20 +507,28 @@ Annotated list. Use these as design and behavior references during implementatio
 
 ---
 
-## 16. Sub-specs to write
+## 16. Sub-spec index
 
-Each of these can become a standalone spec file when the project needs more detail. Order roughly reflects priority.
+`SPEC.md` remains the umbrella source of truth for product, design, data, and
+engineering decisions. Sub-specs define an adopted, narrower contract. They
+inherit this document; a conflict must be resolved by a superseding entry in
+the Decision Log below.
 
-1. `palette.md` — basemap and data palette with hex values and colour vision deficiency rationale. (Prototype palette is in `src/features/map/project-colors.ts`; this sub-spec would formalise it.)
-2. `project-stage.md` — confirmed `ProjectStageEnum` visual treatment.
-3. `layer-catalog.md` — every layer with source, schema, default state, and symbology.
-4. `url-state.md` — full encoding contract for future consumers. (Prototype implementation is in `src/lib/url-state.ts` and documented in Section 8.)
-5. `data-contract.md` — joint contract with `hrl-data-infrastructure` for snapshot publication and consumption.
-6. `data-model.md` — full project record schema and any companion tables.
-7. `tiles-and-metrics.md` — exact headline tiles, their definitions, and their calculation.
-8. `first-run.md` — copy and layout for the orientation overlay.
-9. `accessibility.md` — WCAG conformance plan, known gaps, and remediation roadmap for the non-map project list view.
-10. `testing.md` — what to test, at what level, and the critical paths for end-to-end coverage.
+### Adopted
+
+1. [`palette.md`](docs/specs/palette.md) — implemented basemap, UI, and project-type palette; color-vision and contrast governance.
+2. [`layer-catalog.md`](docs/specs/layer-catalog.md) — every implemented map layer, its source, default state, and symbology.
+3. [`url-state.md`](docs/specs/url-state.md) — current query-parameter contract, defaults, serialization rules, and compatibility behavior.
+4. [`tiles-and-metrics.md`](docs/specs/tiles-and-metrics.md) — headline-tile definitions, calculation rules, and public interpretation guidance.
+5. [`accessibility.md`](docs/specs/accessibility.md) — WCAG conformance plan, known gaps, and remediation roadmap.
+
+### Planned
+
+1. `project-stage.md` — confirmed `ProjectStageEnum` visual treatment beyond the current detail display.
+2. `data-contract.md` — joint contract with `hrl-data-infrastructure` for snapshot publication and consumption; defer until that serving architecture is proposed.
+3. `data-model.md` — full canonical project record schema and companion tables; defer while the prototype uses the vendored submission schema.
+4. `first-run.md` — copy and layout for the orientation overlay, if that surface begins to change independently.
+5. `testing.md` — test levels and critical end-to-end paths, to accompany a formal test suite.
 
 ---
 
