@@ -6,7 +6,7 @@ project locations in California. It is for program partners, regulators, the
 public, and the contributors who help keep the dashboard useful and accurate.
 
 > [!WARNING]
-> **Early implementation dashboard**
+> **Beta dashboard**
 >
 > This is not an authoritative State of California product, official public
 > record, regulatory filing, or source of legal or policy guidance. The data,

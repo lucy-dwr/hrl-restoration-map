@@ -1,7 +1,7 @@
 # Healthy Rivers and Landscapes Restoration Dashboard — Specification
 
 **Status:** v0.2 draft  
-**Working repo name:** `hrl-restoration-map`
+**Working repo name:** `hrl-restoration-map`  
 **Related repos:**
 
 - `hrl-data-infrastructure` — pipelines, storage, and publication architecture at `lucy-dwr.github.io/hrl-data-infrastructure`
