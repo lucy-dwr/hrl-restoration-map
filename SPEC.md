@@ -1,6 +1,6 @@
 # Healthy Rivers and Landscapes Restoration Dashboard — Specification
 
-**Status:** v0.2 draft  
+**Status:** v0.2.0 beta
 **Working repo name:** `hrl-restoration-map`  
 **Related repos:**
 
@@ -580,3 +580,4 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 54 | 2026-07-20 | The prototype's displayed dataset update date is July 20, 2026, corresponding to the current `2026-07-20-v11.gpkg` source package and regenerated public downloads. | The prior displayed June 19 date was superseded when the current source package was converted and published. This supersedes the date portion of Decision 35. |
 | 55 | 2026-07-20 | The prototype header uses the 300 × 300 transparent HRL favicon mark published on the public HRL site, paired with the full two-line "Healthy Rivers and Landscapes Restoration Dashboard" name and persistent purpose text. | Reusing the established program mark makes the dashboard immediately recognizable while preserving a map-first interface. The transparent source works on the dashboard's light header without a decorative background. This is a prototype implementation choice and does not settle broader multi-agency production branding requirements. |
 | 56 | 2026-07-20 | The current prototype source package is `data/source/2026-07-20-v13.gpkg`; public GeoJSON, GeoPackage, and CSV downloads are regenerated from it. | This supersedes the source-package reference in Decision 54 while retaining its July 20, 2026 displayed update date. |
+| 57 | 2026-07-20 | The dashboard's current milestone is version `0.2.0`. | Version 0.2.0 captures the substantial expansion beyond the initial 0.1.0 prototype, including the fuller map experience, project browsing and filtering, context layers, data downloads, public orientation, and deployment to Azure Static Web Apps. It remains a beta milestone ahead of the planned 1.0.0 public release. |

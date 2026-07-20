@@ -1,6 +1,6 @@
 {
   "name": "hrl-restoration-map-prototype",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Prototype interactive map for visualizing Healthy Rivers and Landscapes restoration projects",
   "private": false,
   "license": "MIT",
