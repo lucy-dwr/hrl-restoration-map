@@ -3,7 +3,7 @@
 **Status:** Adopted for the current prototype  
 **Parent:** [`SPEC.md`](../../SPEC.md), Sections 6 and 16
 
-This document is the shared palette, brand-asset, and presentation-guidance contract for the dashboard and related HRL materials. It inherits the umbrella specification and does not settle the pending formal multi-agency production identity decision.
+This document is the shared palette, brand asset, and presentation guidance contract for the dashboard and related HRL materials. It inherits the umbrella specification and does not settle the pending formal multi-agency production identity decision.
 
 ## Visual character
 
@@ -11,7 +11,7 @@ The visual character is calm, credible, and grounded in California rivers and la
 
 ## Logo use
 
-The dashboard header uses `public/hrl-logo-mark.png`, the 300 × 300 transparent favicon mark published on the Healthy Rivers and Landscapes public site. Use this asset as supplied: do not crop, recolor, add a background plate, or place effects over it. Its transparent background is intended for use on the dashboard's light surfaces.
+The dashboard header uses `public/hrl-logo-mark.png`, the 300 × 300 transparent favicon mark published on the [Healthy Rivers and Landscapes public water agencies program site](https://healthyriverslandscapes.org). Use this asset as supplied: do not crop, recolor, add a background plate, or place effects over it. Its transparent background is intended for use on the dashboard's light surfaces.
 
 In the current dashboard header, the mark appears beside the full "Healthy Rivers and Landscapes Restoration Dashboard" name. Keep clear space around the mark and do not substitute it for the full program name in text.
 
@@ -103,7 +103,7 @@ Use weights 400 (regular), 500 (medium), 600 (semibold), and 700 (bold). Favor s
 
 ## Accessibility and change control
 
-- Aim for WCAG 2.2 AA contrast and readability in digital materials; selected AAA criteria are encouraged for contrast, instructions, help, and cognitive accessibility.
+- Require WCAG 2.2 AA contrast and readability in digital materials; selected AAA criteria are encouraged for contrast, instructions, help, and cognitive accessibility.
 - Do not convey essential information through color alone; label maps, charts, and diagrams directly or provide a clear legend.
 - Use large, legible type and sufficient space around text and graphics. Avoid dense tables, decorative text over photography, and distracting animation.
 - Provide accessible source material or an equivalent text description for complex maps, charts, and diagrams when sharing digitally.

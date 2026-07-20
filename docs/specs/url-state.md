@@ -26,7 +26,7 @@ Valid tributary keys are `sacramento`, `american`, `feather`, `yuba`, `putah`, `
 - Use plain, human-readable query parameters; do not introduce encoded blobs without a superseding decision.
 - Preserve unrelated query parameters when writing dashboard state.
 - Omit a parameter when its value is the documented default.
-- Update state with `history.replaceState`; routine map interaction must not create a browser-history entry for every movement.
+- Update state with `history.replaceState`; routine map interaction must not create a browser history entry for every movement.
 - Invalid numeric view values fall back independently to their defaults.
 
 ## Compatibility
@@ -35,4 +35,4 @@ Older shared prototype URLs using `hiddenTributaries` remain readable. The legac
 
 ## Deliberate gap
 
-Project-list search, system filtering, and early-implementation filtering are currently local UI state. Encoding them is v1 hardening work; define stable keys and test URL round trips before adding them.
+Project-list search, system filtering, and early implementation filtering are currently local UI state. Encoding them is v1 hardening work; define stable keys and test URL round trips before adding them.
