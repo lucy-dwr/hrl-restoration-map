@@ -167,7 +167,7 @@ Prototype tile source: OpenFreeMap Positron style (Decision 19) with local style
 
 ### 6.2 Data palette
 
-The implemented palette and its governance are maintained in the adopted [`palette.md`](docs/specs/palette.md) sub-spec.
+The implemented palette, branding guidance, and its governance are maintained in the adopted [`palette-branding.md`](docs/specs/palette-branding.md) sub-spec.
 
 - Project-type colors for `ProjectTypeEnum` values, chosen for hue separation at typical zoom, and re-tested for color-vision deficiency (deuteranopia and protanopia).
 - One sequential ramp for any quantitative overlay (e.g., acres).
@@ -176,7 +176,7 @@ The implemented palette and its governance are maintained in the adopted [`palet
 - Prototype UI chrome uses a light-touch HRL-inspired palette drawn from the public HRL site: deep teal for primary accents, restrained olive/gold for context, and blue-grey hydrography so streams read as base-map context rather than project data.
 - The prototype header uses the transparent HRL favicon mark published on the public HRL site, alongside the full dashboard name. The asset is stored as `public/hrl-logo-mark.png` and is not recolored or placed on a background plate.
 
-The prototype palette is implemented in `src/features/map/project-colors.ts` and documented in [`palette.md`](docs/specs/palette.md).
+The prototype palette is implemented in `src/features/map/project-colors.ts` and documented in [`palette-branding.md`](docs/specs/palette-branding.md).
 
 ### 6.3 Typography
 
@@ -485,7 +485,7 @@ Annotated list. Use these as design and behavior references during implementatio
 
 ### Adopted
 
-1. [`palette.md`](docs/specs/palette.md) — implemented basemap, UI, and project-type palette; color-vision and contrast governance.
+1. [`palette-branding.md`](docs/specs/palette-branding.md) — implemented brand assets, basemap, UI, and project-type palette; color-vision and contrast governance.
 2. [`layer-catalog.md`](docs/specs/layer-catalog.md) — every implemented map layer, its source, default state, and symbology.
 3. [`url-state.md`](docs/specs/url-state.md) — current query-parameter contract, defaults, serialization rules, and compatibility behavior.
 4. [`tiles-and-metrics.md`](docs/specs/tiles-and-metrics.md) — headline-tile definitions, calculation rules, and public interpretation guidance.
