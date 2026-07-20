@@ -3,8 +3,11 @@ import {
   ACREAGE_DEFINITION,
   ACREAGE_LABEL,
   HABITAT_TYPE_ACRES_HELP,
+  HRL_ACRES_HELP,
   PROJECT_ACRES_HELP,
   formatAcreage,
+  hasHrlHabitatAcreage,
+  totalHrlHabitatAcreage,
 } from '../../data/acreage'
 import type { ProjectProperties } from '../../data/types'
 import { PROJECT_TYPE_COLORS, FALLBACK_COLOR } from '../../features/map/project-colors'
@@ -78,6 +81,8 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
     { label: 'Tributary spawning', value: project.acreage_tributary_spawning },
     { label: 'Tidal wetland', value: project.acreage_tidal_wetland },
   ].filter(r => r.value != null && r.value > 0)
+  const hasHrlAcres = hasHrlHabitatAcreage(project)
+  const hrlAcres = totalHrlHabitatAcreage(project)
 
   return (
     <aside className={styles.panel} aria-label="Project details">
@@ -151,7 +156,7 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
         <section className={styles.section}>
           <div className={styles.sectionLabelWithHelp}>
             <h3 className={styles.sectionLabel}>{ACREAGE_LABEL}</h3>
-            <InfoPopover label="About project acres">
+            <InfoPopover label="About project acres" className={styles.detailInfoPopover}>
               {PROJECT_ACRES_HELP}
             </InfoPopover>
           </div>
@@ -160,25 +165,39 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
               ? <><strong>{formatAcreage(project.acreage, 1)}</strong> acres</>
               : <span className={styles.muted}>Not reported</span>}
           </div>
-          <p className={styles.comment}>{ACREAGE_DEFINITION}</p>
-          {acreageRows.length > 0 && (
+          {hasHrlAcres && (
             <div className={styles.acreageBreakdown}>
+              <div className={styles.sectionLabelWithHelp}>
+                <h3 className={styles.sectionLabel}>HRL acres</h3>
+                <InfoPopover label="About HRL acres" className={styles.detailInfoPopover}>
+                  {HRL_ACRES_HELP}
+                </InfoPopover>
+              </div>
+              <div className={styles.acreageTotal}>
+                <strong>{formatAcreage(hrlAcres, 1)}</strong> acres
+              </div>
               <div className={styles.subsectionLabelWithHelp}>
                 <h4 className={styles.subsectionLabel}>HRL habitat type acres</h4>
-                <InfoPopover label="About HRL habitat type acres">
+                <InfoPopover
+                  label="About HRL habitat type acres"
+                  className={styles.detailInfoPopover}
+                >
                   {HABITAT_TYPE_ACRES_HELP}
                 </InfoPopover>
               </div>
-              <dl className={styles.dl}>
-                {acreageRows.map(r => (
-                  <Fragment key={r.label}>
-                    <dt>{r.label}</dt>
-                    <dd>{formatAcreage(r.value, 1)} acres</dd>
-                  </Fragment>
-                ))}
-              </dl>
+              {acreageRows.length > 0 && (
+                <dl className={styles.dl}>
+                  {acreageRows.map(r => (
+                    <Fragment key={r.label}>
+                      <dt>{r.label}</dt>
+                      <dd>{formatAcreage(r.value, 1)} acres</dd>
+                    </Fragment>
+                  ))}
+                </dl>
+              )}
             </div>
           )}
+          <p className={styles.comment}>{ACREAGE_DEFINITION}</p>
         </section>
 
         {species.length > 0 && (

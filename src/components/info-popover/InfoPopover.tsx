@@ -5,9 +5,10 @@ interface Props {
   label: string
   children: string
   placement?: 'top' | 'bottom'
+  className?: string
 }
 
-export function InfoPopover({ label, children, placement = 'bottom' }: Props) {
+export function InfoPopover({ label, children, placement = 'bottom', className }: Props) {
   const [open, setOpen] = useState(false)
   const popoverId = useId()
   const rootRef = useRef<HTMLSpanElement>(null)
@@ -39,7 +40,7 @@ export function InfoPopover({ label, children, placement = 'bottom' }: Props) {
   }, [open])
 
   return (
-    <span className={styles.root} ref={rootRef}>
+    <span className={`${styles.root} ${className ?? ''}`} ref={rootRef}>
       <button
         ref={triggerRef}
         type="button"

@@ -144,6 +144,10 @@
   margin: 0;
 }
 
+.detailInfoPopover {
+  --info-popover-width: min(220px, calc(100vw - 32px));
+}
+
 .description {
   font-size: var(--text-base);
   color: var(--text-secondary);
@@ -183,14 +187,14 @@
 }
 
 .acreageBreakdown {
-  margin-top: 12px;
+  margin-top: 20px;
 }
 
 .subsectionLabelWithHelp {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 8px;
+  margin: 16px 0 8px;
 }
 
 .subsectionLabel {
@@ -224,6 +228,6 @@
   font-size: var(--text-xs);
   color: var(--text-tertiary);
   font-style: italic;
-  margin: 6px 0 0;
+  margin: 16px 0 0;
   line-height: 1.5;
 }
