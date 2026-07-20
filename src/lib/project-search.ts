@@ -18,7 +18,7 @@ const SEARCH_ALIASES: Record<string, readonly string[]> = {
   scwa: ['solano county water agency'],
   'solano water': ['solano county water agency'],
   swrcb: ['state water resources control board'],
-  syrcl: ['south yuba river citizen league'],
+  syrcl: ['south yuba river citizens league'],
   tid: ['turlock irrigation district'],
   usbr: ['united states bureau of reclamation'],
   usfws: ['united states fish and wildlife service'],
