@@ -16,7 +16,7 @@ import styles from './App.module.css'
 
 const initial = readUrlState()
 const ORIENTATION_DISMISSED_KEY = 'hrl-dashboard-first-run-orientation-dismissed'
-const DATA_LAST_UPDATED = 'June 19, 2026'
+const DATA_LAST_UPDATED = 'July 20, 2026'
 const OFFICIAL_CONTEXT_LINKS = [
   {
     label: 'California Natural Resources Agency (CNRA) HRL site',

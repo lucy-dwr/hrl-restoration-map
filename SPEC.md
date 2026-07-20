@@ -140,7 +140,10 @@ Every piece of content must be assigned to a tier. If a piece of content cannot 
 ## 5. Layout system
 
 - **Full-bleed map.** The map fills the viewport. Chrome sits on top of it as floating panels.
-- **Top bar.** Thin (≈48px). Dashboard identity left; "Download data" and "About" actions right. No primary navigation lives here.
+- **Top bar.** Compact (≈74px). Dashboard identity left, using the full
+  two-line dashboard name, persistent purpose text, and the official HRL
+  favicon mark; "Download data" and "About" actions right. No primary
+  navigation lives here.
 - **Left rail.** ≈360px, collapsible. Layer toggles, filters, legend. Default-open on desktop, default-collapsed on mobile.
 - **Bottom tile strip.** Headline progress tiles currently show visible project count and total HRL project acres where available. Confirmed position: bottom-centre of the map area (Decision 22). Avoids conflict with the left layer panel and bottom-right navigation controls.
 - **Right detail panel.** ≈400px, opens on selection, closes on dismiss. Renders project detail (tier 3). Pushes the map left rather than overlaying it on desktop; overlays on mobile.
@@ -173,6 +176,10 @@ Prototype tile source: OpenFreeMap Positron style (Decision 19) with local style
 - One diverging ramp reserved for any future change-over-time layer.
 - Reserved colors: a single accent for selection state and a single muted gray for "out of scope" features.
 - Prototype UI chrome uses a light-touch HRL-inspired palette drawn from the public HRL site: deep teal for primary accents, restrained olive/gold for context, and blue-grey hydrography so streams read as base-map context rather than project data.
+- The prototype header uses the transparent HRL favicon mark published on the
+  public HRL site, alongside the full dashboard name. The asset is stored as
+  `public/hrl-logo-mark.png` and is not recolored or placed on a background
+  plate.
 
 The prototype palette is implemented in `src/features/map/project-colors.ts`. Formal documentation with colour vision deficiency rationale still to be written in a `palette.md` sub-spec.
 
@@ -215,7 +222,10 @@ The map, the tile strip, and any chart panels are views over a single shared app
 ### 7.5 Project browsing and filtering
 
 - The left rail includes a Projects tab that is the prototype's non-map browsing equivalent for project records.
-- Project list search currently matches project name, lead entity, system, project type, project stage, and target species.
+- Project list search currently matches project name, description, lead entity,
+  system, project type, project stage, target species, and funding sources.
+  It also recognizes a curated set of common organizational and funding-program
+  acronyms and aliases; aliases must remain explicit to avoid false matches.
 - Project list filters currently include system and early-implementation status, and they coordinate with project-type layer visibility.
 - The map, project list, and headline tiles are coordinated over the same filtered project set.
 - Users can zoom to an individual project from the list or detail panel, and can fit the map to all currently visible projects.
@@ -325,7 +335,7 @@ Recommended map use:
 - **Filters:** Start with `project_type`, `project_stage`, `system`, `target_species`, `early_implementation`, and construction year ranges.
 - **Headline metrics:** Sum the six reported HRL habitat-type acreage fields (`acreage_bypass_floodplain`, `acreage_fish_food`, `acreage_tributary_floodplain`, `acreage_tributary_rearing`, `acreage_tributary_spawning`, and `acreage_tidal_wetland`) as the prototype total HRL project acres metric. The total project `acreage` field remains available for project details and other contexts.
 - **Hover tooltip:** Keep to `project_name`, primary `project_type`, `system`, and `acreage` if available.
-- **Detail panel:** Include `project_name`, `project_description`, `lead_entity`, `project_stage` labeled as "Current project stage," `project_type`, `target_species`, `system`, anticipated construction years, acreage fields, and funding sources if appropriate. Preserve and display all submitted current-stage values where more than one is present.
+- **Detail panel:** Include `project_name`, `project_description`, `lead_entity`, `project_stage` labeled as "Current project stage," `project_type`, `target_species`, `system`, anticipated construction years, acreage fields, and funding sources if appropriate. Show reported project acres separately from the total of the six reported HRL habitat-type acreage fields, and explain that neither is final HRL habitat accounting. Preserve and display all submitted current-stage values where more than one is present. Include a public Contact HRL action that does not expose submission contact fields.
 - **Non-map interface:** Include the same searchable/filterable project records and detail fields needed to complete all essential map workflows.
 - **Accessible downloads:** Provide public project downloads as GeoJSON, GeoPackage, and a tabular CSV export of non-geometry fields.
 
@@ -431,7 +441,7 @@ The exact contract between the two repos lives in a `data-contract.md` sub-spec,
 - Because most projects still render as low-zoom overview markers at that initial extent (see Section 7.6), a zoom-reactive on-map hint reads "Projects shown as points — zoom in to see boundaries" while it is true, and disappears once footprints have resolved.
 - The prototype implements a first-visit overlay, dismissable and remembered via local storage, that frames the dashboard as a public overview of early implementation and proposed Healthy Rivers and Landscapes restoration project locations. The overlay states that the dashboard shows basic descriptions, project types, and total project acres where available, that it is not a verified habitat-accounting tool, and that projects shown as points expand into their mapped boundaries on zoom-in.
 - The top bar carries persistent compact purpose text: "Explore early implementation and proposed restoration project locations and basic descriptions." The About control is labeled "About this map" for discoverability.
-- The top bar includes a Methodology control. The methodology surface describes the whole-dataset provenance story: project information was submitted by HRL participating entities, checked against the HRL restoration project schema, last updated June 19, 2026, and published as dashboard data/downloads without exposing project-level source fields.
+- The top bar includes a Methodology control. The methodology surface describes the whole-dataset provenance story: project information was submitted by HRL participating entities, checked against the HRL restoration project schema, last updated July 20, 2026, and published as dashboard data/downloads without exposing project-level source fields.
 - No tour or guided walkthrough in v1 (defer to near-future).
 
 ---
@@ -565,3 +575,6 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 50 | 2026-07-13 | Acreage caveats appear as targeted inline help on the headline acreage tile, project detail acreage heading, and habitat-type acreage breakdown rather than in every compact map or project-list context. | Inline help addresses Round 1 acreage confusion where users are most likely to infer accounting meaning, while keeping the map, tooltip, and project list readable and non-defensive. |
 | 51 | 2026-07-15 | The headline acreage tile is labeled "total HRL project acres" and sums the six reported HRL habitat-type acreage fields across the filtered project set. | The dashboard is centered on HRL habitat types, so the headline should reflect the habitat-specific project area rather than each project's overall reported acreage. This supersedes Decision 9 for the prototype headline metric and Decision 49 for the headline tile label. |
 | 52 | 2026-07-15 | Production application hosting uses the existing Azure Static Web App, `stapp-hrl-restoration-map-prod`, deployed through GitHub Actions. | Azure Static Web Apps is the already-provisioned service for CI/CD deployment of the public application. This supersedes the Azure Blob static-website application-hosting part of the prior production-hosting decision; Azure Blob remains the anticipated storage and serving substrate for production data and tiles (Decision 8). |
+| 53 | 2026-07-20 | Public orientation copy states that a mapped project is reported to HRL for program orientation and that its inclusion alone does not commit funding, approval, permitting, or construction. The dashboard provides general and project-specific Contact HRL actions instead of exposing submission contact fields. | This clarifies the appropriate interpretation of early-implementation and proposed records, responds to Round 1 requests for a public contact path, and preserves the submission-data privacy boundary in Section 9.2. |
+| 54 | 2026-07-20 | The prototype's displayed dataset update date is July 20, 2026, corresponding to the current `2026-07-20-v11.gpkg` source package and regenerated public downloads. | The prior displayed June 19 date was superseded when the current source package was converted and published. This supersedes the date portion of Decision 35. |
+| 55 | 2026-07-20 | The prototype header uses the 300 × 300 transparent HRL favicon mark published on the public HRL site, paired with the full two-line "Healthy Rivers and Landscapes Restoration Dashboard" name and persistent purpose text. | Reusing the established program mark makes the dashboard immediately recognizable while preserving a map-first interface. The transparent source works on the dashboard's light header without a decorative background. This is a prototype implementation choice and does not settle broader multi-agency production branding requirements. |

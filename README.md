@@ -36,7 +36,8 @@ The dashboard currently includes:
 - Project-type color symbology, hover tooltip, and click-to-inspect selection
 - Top bar branded as the Healthy Rivers and Landscapes Restoration Dashboard,
   compact purpose text, headline metric tiles, and right-side project detail
-  panel
+  panel with reported project acres, total HRL habitat acres, and a project
+  contact action
 - First-run orientation overlay that frames the map as a public overview of
   early implementation and proposed restoration project locations, not verified
   habitat accounting
@@ -45,7 +46,9 @@ The dashboard currently includes:
   validation, update timing, public downloads, and contact information
 - Left-rail controls with separate Layers and Projects tabs
 - Searchable/filterable project list with project selection, zoom-to-project,
-  and fit-to-visible-projects actions
+  and fit-to-visible-projects actions; search covers names, descriptions, lead
+  entities, systems, project types and stages, target species, and funding
+  sources, with curated common organizational and funding acronyms
 - Filter-aware headline metric tiles
 - Layer controls for project types, HRL tributary watersheds, the Delta legal
   boundary, Yolo and Sutter bypass boundaries, the stream network, and the
@@ -63,6 +66,9 @@ The dashboard currently includes:
   basemap mode, boundary visibility, and stream-network visibility
 - Download data menu for public project data as GeoJSON, GeoPackage, and
   non-spatial CSV
+- Clear public-status guidance: listed projects are reported to HRL for public
+  program orientation, not by themselves commitments to fund, approve, permit,
+  or construct a project
 
 ## Quick Start
 

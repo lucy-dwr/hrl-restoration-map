@@ -11,6 +11,14 @@ applicable.
 
 ### Added
 
+- Added total reported HRL habitat acres to each project detail panel, alongside
+  the project's reported total acres and habitat-type breakdown.
+- Expanded project-list search to cover project descriptions and funding
+  sources, with curated aliases for common organizations and funding programs.
+- Added search-result context that identifies the fields matching a query.
+- Added general and project-specific Contact HRL actions, and clarified that a
+  project's listing is for public program orientation rather than a commitment
+  to fund, approve, permit, or construct it.
 - Added open-source project metadata to `package.json`, including MIT license
   metadata, repository URL, issue URL, and README homepage.
 - Added `CONTRIBUTING.md` with development setup, data workflow, coding
@@ -30,7 +38,7 @@ applicable.
 - Added a concise About popup with Healthy Rivers and Landscapes program
   context and links to CNRA and HRL source pages.
 - Added methodology and data-source context with dataset-level provenance,
-  June 19, 2026 update language, schema-validation notes, download context, and
+  July 20, 2026 update language, schema-validation notes, download context, and
   the public HRL contact email.
 - Added a Download data menu with public project downloads as GeoJSON,
   GeoPackage, and non-spatial CSV.
@@ -43,6 +51,12 @@ applicable.
 
 ### Changed
 
+- Strengthened the top-bar identity with a two-line dashboard title, clearer
+  purpose-text spacing, and the official transparent HRL favicon mark.
+- Refreshed the generated public project data from
+  `data/source/2026-07-20-v11.gpkg`.
+- Clarified the relationship between reported project acres, total HRL habitat
+  acres, and the habitat-type acreage breakdown in the project detail panel.
 - Expanded URL state to include basemap mode and context-layer visibility.
 - Updated layer controls to include basemap, watershed, Delta boundary, and
   bypass boundary, and hydrography controls.

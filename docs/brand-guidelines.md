@@ -4,6 +4,18 @@
 
 The visual character is calm, credible, and grounded in California rivers and landscapes: warm pale surfaces, deep teal emphasis, restrained olive and gold context accents, and blue-grey water features. Use ample white space and clear hierarchy. In maps, project data may be more saturated than the basemap; in presentations, reserve stronger color for the central message, key numbers, and calls to action.
 
+## Logo use
+
+The dashboard header uses `public/hrl-logo-mark.png`, the 300 × 300
+transparent favicon mark published on the Healthy Rivers and Landscapes public
+site. Use this asset as supplied: do not crop, recolor, add a background plate,
+or place effects over it. Its transparent background is intended for use on the
+dashboard's light surfaces.
+
+In the current dashboard header, the mark is displayed beside the full
+"Healthy Rivers and Landscapes Restoration Dashboard" name. Keep clear space
+around the mark and do not substitute it for the full program name in text.
+
 ## Core palette
 
 | Role | Color | Hex | Use |

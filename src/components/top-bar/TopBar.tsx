@@ -74,10 +74,21 @@ export function TopBar({ onAboutOpen, onMethodologyOpen }: TopBarProps) {
   return (
     <header className={styles.bar}>
       <div className={styles.brand}>
-        <span className={styles.brandName}>Healthy Rivers and Landscapes Restoration Dashboard</span>
-        <span className={styles.brandPurpose}>
-          Explore early implementation and proposed restoration project locations and basic descriptions.
+        <span className={styles.brandMark} aria-hidden="true">
+          <img src="/hrl-logo-mark.png" alt="" />
         </span>
+        <div className={styles.brandCopy}>
+          <h1
+            className={styles.brandName}
+            aria-label="Healthy Rivers and Landscapes Restoration Dashboard"
+          >
+            <span>Healthy Rivers and Landscapes</span>
+            <span className={styles.brandDescriptor}>Restoration Dashboard</span>
+          </h1>
+          <span className={styles.brandPurpose}>
+            Explore early implementation and proposed restoration project locations and basic descriptions.
+          </span>
+        </div>
       </div>
       <nav className={styles.nav}>
         <DownloadMenu />
