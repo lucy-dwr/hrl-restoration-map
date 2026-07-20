@@ -15,15 +15,9 @@ This is the source of truth for product, design, data, and engineering decisions
 
 The Decision Log at the end is the canonical record of what is settled. Do not reverse a logged decision without recording a superseding decision.
 
-This document is intentionally an umbrella spec. It links to adopted and planned
-sub-specs (see Section 16), which are elaborated as the project needs more
-detail. Repository workflow, coding-agent instructions, and contribution
-mechanics live in [`AGENTS.md`](AGENTS.md).
+This document is intentionally an umbrella spec. It links to adopted and planned sub-specs (see Section 16), which are elaborated as the project needs more detail. Repository workflow, coding agent instructions, and contribution mechanics live in [`AGENTS.md`](AGENTS.md).
 
-This repository is the deployed early-implementation dashboard. The application
-is hosted on Azure Static Web Apps; published snapshot manifests and the full
-`hrl-data-infrastructure` serving contract are not set up yet. Current
-development and deployment use generated data and assets stored in this repo.
+This repository is the deployed beta. The application is hosted on Azure Static Web Apps; published snapshot manifests and the full `hrl-data-infrastructure` serving contract are not set up yet. Current development and deployment use generated data and assets stored in this repo.
 
 ---
 
@@ -44,7 +38,7 @@ The dashboard is not a research tool and not an analyst exploration environment.
 Three audiences, in priority order of design weight:
 
 1. **HRL program agencies** — technically literate, want to see their projects represented accurately, will use the dashboard to communicate to their own leadership and partners.
-2. **State Water Resources Control Board (regulator)** — needs to see credible, defensible evidence of program commitments and progress. 
+2. **State Water Resources Control Board (regulator)** — needs to see credible, defensible evidence of program commitments and progress.
 3. **General public** — generally non-technical. Needs an immediate sense of "what is this program and what has it done?" Will likely not read documentation.
 
 Design implication: the dashboard must be visually polished enough for the public, technically credible enough for the regulator, and accurate enough for the partner agencies — in that order of what is hardest to get right.
@@ -76,13 +70,13 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 | Click-to-inspect detail panel | ✅ |
 | Layer toggle panel with project types, HRL tributary watersheds, Delta/bypass boundaries, and stream network | ✅ |
 | Map / imagery basemap toggle | ✅ |
-| Searchable/filterable project list and non-map browsing equivalent | ✅ prototype |
+| Searchable/filterable project list and non-map browsing equivalent | ✅ |
 | Fit-to-visible-projects and zoom-to-project map actions | ✅ |
 | URL-encoded state | ✅ |
 | Concise About popup | ✅ |
 | First-run orientation overlay with persistent top-bar purpose text | ✅ |
 | Methodology and data-source context | ✅ |
-| Download data affordance | ✅ prototype |
+| Download data affordance | ✅ |
 
 ### 3.2 v1 production target
 
@@ -104,7 +98,7 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 - URL-encoded state (center, zoom, active layers, selected project, time range if applicable).
 - "Download data" affordances linking back to canonical datasets in the HRL data infrastructure.
 - Concise "About this map" popup, plus fuller methodology and data-source context before production launch.
-- Accessibility: WCAG 2.2 Level AA conformance, with selected WCAG 2.2 Level AAA criteria where applicable.
+- Accessibility with WCAG 2.2 Level AA conformance, with selected WCAG 2.2 Level AAA criteria where applicable.
 - Static deploy to Azure Static Web Apps; Azure Blob remains the anticipated production data and tile substrate.
 
 ### 3.3 Potential future features
@@ -113,7 +107,7 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 - Watershed summary views.
 - Optional monitoring data overlays (water quality, fish, vegetation) where data are available and approved for public display.
 - Scrollytelling chapter(s) — one or two flagship project narratives.
-- Advanced search and saved filtering beyond the prototype project-list filters.
+- Advanced search and saved filtering beyond the prototype project list filters.
 - Full adaptive management views: synthesis of monitoring data tied to project actions.
 - Multi-chapter storytelling integrated with the main map.
 - Possible saved-view / subscription functionality (deferred — only if real demand emerges).
@@ -142,15 +136,10 @@ Every piece of content must be assigned to a tier. If a piece of content cannot 
 
 ## 5. Layout system
 
-The definitions and calculation rules for the headline tile strip are maintained
-in the adopted [`tiles-and-metrics.md`](docs/specs/tiles-and-metrics.md)
-sub-spec.
+The definitions and calculation rules for the headline tile strip are maintained in the adopted [`tiles-and-metrics.md`](docs/specs/tiles-and-metrics.md) sub-spec.
 
 - **Full-bleed map.** The map fills the viewport. Chrome sits on top of it as floating panels.
-- **Top bar.** Compact (≈74px). Dashboard identity left, using the full
-  two-line dashboard name, persistent purpose text, and the official HRL
-  favicon mark; "Download data" and "About" actions right. No primary
-  navigation lives here.
+- **Top bar.** Compact (≈74px). Dashboard identity left, using the full two-line dashboard name, persistent purpose text, and the official HRL favicon mark; "Download data", "Methodology", and "About" actions right. No primary navigation lives here.
 - **Left rail.** ≈360px, collapsible. Layer toggles, filters, legend. Default-open on desktop, default-collapsed on mobile.
 - **Bottom tile strip.** Headline progress tiles currently show visible project count and total HRL project acres where available. Confirmed position: bottom-centre of the map area (Decision 22). Avoids conflict with the left layer panel and bottom-right navigation controls.
 - **Right detail panel.** ≈400px, opens on selection, closes on dismiss. Renders project detail (tier 3). Pushes the map left rather than overlaying it on desktop; overlays on mobile.
@@ -178,21 +167,16 @@ Prototype tile source: OpenFreeMap Positron style (Decision 19) with local style
 
 ### 6.2 Data palette
 
-The implemented palette and its governance are maintained in the adopted
-[`palette.md`](docs/specs/palette.md) sub-spec.
+The implemented palette and its governance are maintained in the adopted [`palette.md`](docs/specs/palette.md) sub-spec.
 
 - Project-type colors for `ProjectTypeEnum` values, chosen for hue separation at typical zoom, and re-tested for color-vision deficiency (deuteranopia and protanopia).
 - One sequential ramp for any quantitative overlay (e.g., acres).
 - One diverging ramp reserved for any future change-over-time layer.
 - Reserved colors: a single accent for selection state and a single muted gray for "out of scope" features.
 - Prototype UI chrome uses a light-touch HRL-inspired palette drawn from the public HRL site: deep teal for primary accents, restrained olive/gold for context, and blue-grey hydrography so streams read as base-map context rather than project data.
-- The prototype header uses the transparent HRL favicon mark published on the
-  public HRL site, alongside the full dashboard name. The asset is stored as
-  `public/hrl-logo-mark.png` and is not recolored or placed on a background
-  plate.
+- The prototype header uses the transparent HRL favicon mark published on the public HRL site, alongside the full dashboard name. The asset is stored as `public/hrl-logo-mark.png` and is not recolored or placed on a background plate.
 
-The prototype palette is implemented in `src/features/map/project-colors.ts` and
-documented in [`palette.md`](docs/specs/palette.md).
+The prototype palette is implemented in `src/features/map/project-colors.ts` and documented in [`palette.md`](docs/specs/palette.md).
 
 ### 6.3 Typography
 
@@ -226,8 +210,7 @@ The map, the tile strip, and any chart panels are views over a single shared app
 
 ### 7.4 Layer logic
 
-The authoritative inventory of implemented layers, their sources, defaults, and
-symbology is [`layer-catalog.md`](docs/specs/layer-catalog.md).
+The authoritative inventory of implemented layers, their sources, defaults, and symbology is [`layer-catalog.md`](docs/specs/layer-catalog.md).
 
 - Layers are independently toggleable.
 - Project-type layers default ON. HRL tributary watershed outlines, the Delta legal boundary, and Yolo/Sutter bypass boundaries default OFF because they are reference context. The stream network defaults ON.
@@ -236,10 +219,7 @@ symbology is [`layer-catalog.md`](docs/specs/layer-catalog.md).
 ### 7.5 Project browsing and filtering
 
 - The left rail includes a Projects tab that is the prototype's non-map browsing equivalent for project records.
-- Project list search currently matches project name, description, lead entity,
-  system, project type, project stage, target species, and funding sources.
-  It also recognizes a curated set of common organizational and funding-program
-  acronyms and aliases; aliases must remain explicit to avoid false matches.
+- Project list search currently matches project name, description, lead entity, system, project type, project stage, target species, and funding sources. It also recognizes a curated set of common organizational and funding-program acronyms and aliases; aliases must remain explicit to avoid false matches.
 - Project list filters currently include system and early-implementation status, and they coordinate with project-type layer visibility.
 - The map, project list, and headline tiles are coordinated over the same filtered project set.
 - Users can zoom to an individual project from the list or detail panel, and can fit the map to all currently visible projects.
@@ -258,9 +238,7 @@ Implemented in `src/features/map/Map.tsx`. Fade timing constants are tunable (`C
 
 ## 8. URL state
 
-The complete current encoding and compatibility contract is maintained in the
-adopted [`url-state.md`](docs/specs/url-state.md) sub-spec. This section gives
-the product-level requirement and a readable summary.
+The complete current encoding and compatibility contract is maintained in the adopted [`url-state.md`](docs/specs/url-state.md) sub-spec. This section gives the product-level requirement and a readable summary.
 
 URL state is a v1 requirement. Without it the dashboard cannot be used as a communication tool with the Science Committee, the regulator, or the press.
 
@@ -371,8 +349,7 @@ The schema comments explicitly mark `funding_secured` and `funding_gap` as not p
 
 ### 9.3 Layer catalog (v1)
 
-The current catalog is maintained in the adopted
-[`layer-catalog.md`](docs/specs/layer-catalog.md) sub-spec. Minimum set:
+The current catalog is maintained in the adopted [`layer-catalog.md`](docs/specs/layer-catalog.md) sub-spec. Minimum set:
 
 - Project locations (one logical layer, styled by project type)
 - HRL tributary watersheds — prototype uses a combined USGS WBD GeoJSON layer for Sacramento HUC4 1802 plus dissolved HUC8 boundaries for American, Feather, Yuba, Putah, Mokelumne, and Tuolumne systems, with individual layer controls and no on-map watershed labels (Decisions 43 and 44)
@@ -392,9 +369,7 @@ The current machine-readable data contract is the vendored LinkML schema at `sch
 Recommended prototype path:
 
 1. Store the source GeoPackage under `data/source/`.
-2. Convert it into `public/data/hrl_restoration_projects.geojson`,
-   `public/data/hrl_restoration_projects.gpkg`, and
-   `public/data/hrl_restoration_projects.csv`.
+2. Convert it into `public/data/hrl_restoration_projects.geojson`, `public/data/hrl_restoration_projects.gpkg`, and `public/data/hrl_restoration_projects.csv`.
 3. Normalize and validate project properties against `RestorationProjectSubmission` during conversion.
 4. Generate small context boundaries as GeoJSON under `public/data/`.
 5. Generate large context layers, such as the stream network, as PMTiles under `public/data/`.
@@ -450,8 +425,7 @@ For the current prototype, that infrastructure is not available. Use the local G
 - The production dashboard's build step pulls a versioned snapshot manifest from Azure Blob and resolves the URIs of the latest published datasets.
 - Each released production version of the dashboard pins to a snapshot manifest version, so a deployed dashboard is reproducible.
 
-The future exact contract between the two repos will live in a jointly owned
-`data-contract.md` sub-spec once the serving architecture is proposed.
+The future exact contract between the two repos will live in a jointly owned `data-contract.md` sub-spec once the serving architecture is proposed.
 
 ---
 
@@ -468,9 +442,7 @@ The future exact contract between the two repos will live in a jointly owned
 
 ## 13. Accessibility, performance, internationalization
 
-The v1 accessibility conformance plan, known gaps, and audit roadmap are
-maintained in the adopted [`accessibility.md`](docs/specs/accessibility.md)
-sub-spec.
+The v1 accessibility conformance plan, known gaps, and audit roadmap are maintained in the adopted [`accessibility.md`](docs/specs/accessibility.md) sub-spec.
 
 - **Accessibility target:** This product will be designed to exceed minimum compliance and manifest disability access as a core public-service requirement. The application must conform to WCAG 2.2 Level AA and should meet selected WCAG 2.2 Level AAA criteria where applicable, especially for contrast, readability, instructions, help, and cognitive accessibility.
 - **Interface accessibility:** All custom interface components must use native HTML controls where possible or follow WAI-ARIA Authoring Practices. All interactive elements must be keyboard-reachable and screen-reader-labeled.
@@ -509,10 +481,7 @@ Annotated list. Use these as design and behavior references during implementatio
 
 ## 16. Sub-spec index
 
-`SPEC.md` remains the umbrella source of truth for product, design, data, and
-engineering decisions. Sub-specs define an adopted, narrower contract. They
-inherit this document; a conflict must be resolved by a superseding entry in
-the Decision Log below.
+`SPEC.md` remains the umbrella source of truth for product, design, data, and engineering decisions. Sub-specs define an adopted, narrower contract. They inherit this document; a conflict must be resolved by a superseding entry in the Decision Log below.
 
 ### Adopted
 
@@ -536,7 +505,7 @@ the Decision Log below.
 
 These do not block v1 scaffolding but must be resolved before v1 ship.
 
-- **Formal visual identity.** The prototype uses a light-touch HRL-inspired palette, but production still needs a decision on logo use and any formal multi-agency brand requirements.
+- **Formal visual identity.** The prototype uses a light-touch HRL-inspired palette and the favicon from the HRL site hosted by the public water agency signatories, but production still needs a decision on logo use and any formal multi-agency brand requirements.
 - **Project-stage display beyond details.** The detail panel displays all `ProjectStageEnum` values as current project stage. How should multivalued stage values be summarized for symbology, filters, and headline tiles?
 - **Data refresh cadence.** Proposed: nightly. Confirm with `hrl-data-infrastructure` plans.
 - **Hosting domain.** Subdomain of an existing DWR or HRL domain, or a new domain? Affects DNS, SSL, and link strategy from partner sites.
