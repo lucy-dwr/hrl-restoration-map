@@ -11,6 +11,7 @@ import {
 } from '../../data/acreage'
 import type { ProjectProperties } from '../../data/types'
 import { PROJECT_TYPE_COLORS, FALLBACK_COLOR } from '../../features/map/project-colors'
+import { getProjectContactMailto } from '../../lib/contact'
 import { InfoPopover } from '../info-popover/InfoPopover'
 import styles from './DetailPanel.module.css'
 
@@ -151,6 +152,10 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
               </>
             )}
           </dl>
+          <p className={styles.interpretationNote}>
+            Project stage is reported by the participating entity and does not, by
+            itself, confirm funding, approvals, or construction.
+          </p>
         </section>
 
         <section className={styles.section}>
@@ -218,6 +223,11 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
           </section>
         )}
       </div>
+      <footer className={styles.footer}>
+        <a className={styles.contactButton} href={getProjectContactMailto(project.project_name)}>
+          Contact HRL about this project
+        </a>
+      </footer>
     </aside>
   )
 }

@@ -49,6 +49,41 @@
   padding: 20px;
 }
 
+.footer {
+  flex-shrink: 0;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-0);
+}
+
+.contactButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--surface-0);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  padding: 8px 12px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.contactButton:hover {
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+  color: var(--surface-0);
+}
+
+.contactButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 .projectName {
   font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
@@ -229,5 +264,12 @@
   color: var(--text-tertiary);
   font-style: italic;
   margin: 16px 0 0;
+  line-height: 1.5;
+}
+
+.interpretationNote {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin: 12px 0 0;
   line-height: 1.5;
 }

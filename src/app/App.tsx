@@ -9,6 +9,7 @@ import { PROJECT_LAYER_TYPES, TRIBUTARY_WATERSHEDS } from '../data/layer-options
 import type { BoundaryFocusTarget } from '../data/layer-options'
 import type { ProjectProperties } from '../data/types'
 import type { BasemapMode } from '../lib/url-state'
+import { getGeneralContactMailto } from '../lib/contact'
 import { readUrlState, writeUrlState } from '../lib/url-state'
 import { listMatchesSearch, matchesSearch } from '../lib/project-search'
 import styles from './App.module.css'
@@ -16,7 +17,6 @@ import styles from './App.module.css'
 const initial = readUrlState()
 const ORIENTATION_DISMISSED_KEY = 'hrl-dashboard-first-run-orientation-dismissed'
 const DATA_LAST_UPDATED = 'June 19, 2026'
-const PUBLIC_CONTACT_EMAIL = 'HealthyRiversandLandscapes@resources.ca.gov'
 const OFFICIAL_CONTEXT_LINKS = [
   {
     label: 'California Natural Resources Agency (CNRA) HRL site',
@@ -553,6 +553,10 @@ export function App() {
               regulator, and partner agency orientation, not verified habitat accounting.
             </p>
             <p className={styles.orientationText}>
+              A project's inclusion on this map is not, by itself, a commitment to
+              fund, approve, permit, or construct it.
+            </p>
+            <p className={styles.orientationText}>
               Zoomed out, each project shows as a colored point. Zoom in to reveal its
               mapped boundary.
             </p>
@@ -635,6 +639,12 @@ export function App() {
                 basic project information. It is not a verified habitat accounting tool.
               </p>
               <p>
+                Inclusion on this map indicates that a project has been reported to HRL
+                for public program orientation. Inclusion alone does not constitute a
+                commitment to fund, approve, permit, or construct the project; its
+                scope, timing, and status may change.
+              </p>
+              <p>
                 Project information was submitted by HRL participating entities and
                 checked against the HRL restoration project schema. The last dataset
                 update shown here was {DATA_LAST_UPDATED}.
@@ -650,7 +660,7 @@ export function App() {
                 >
                   Read methodology
                 </button>
-                <a href={`mailto:${PUBLIC_CONTACT_EMAIL}`}>
+                <a className={styles.aboutContactButton} href={getGeneralContactMailto()}>
                   Contact HRL
                 </a>
               </div>
@@ -700,6 +710,12 @@ export function App() {
                   The dashboard is not a verified habitat accounting tool, a regulatory
                   determination, or a substitute for project-specific planning,
                   permitting, or monitoring documents.
+                </p>
+                <p>
+                  Inclusion on the dashboard indicates that a project has been reported
+                  to HRL for public program orientation. Inclusion alone does not
+                  constitute a commitment to fund, approve, permit, or construct the
+                  project; its scope, timing, and status may change.
                 </p>
               </section>
               <section>
@@ -817,8 +833,7 @@ export function App() {
                   Yuba, Putah, Mokelumne, and Tuolumne systems. Delta and bypass
                   context layers are generated from California Department of Water
                   Resources spatial services. The stream network is generated from
-                  USGS NHDPlus V2 and displayed as vector tiles. These layers provide
-                  geographic context.
+                  USGS NHDPlus V2. These layers provide geographic context.
                 </p>
               </section>
               <section>
@@ -830,8 +845,11 @@ export function App() {
                 </p>
                 <p>
                   Questions about the dashboard or the public project dataset can be
-                  sent to <a href={`mailto:${PUBLIC_CONTACT_EMAIL}`}>{PUBLIC_CONTACT_EMAIL}</a>.
+                  sent to HRL.
                 </p>
+                <a className={styles.methodologyContactButton} href={getGeneralContactMailto()}>
+                  Contact HRL
+                </a>
               </section>
             </div>
           </section>
