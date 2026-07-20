@@ -10,6 +10,7 @@ import type { BoundaryFocusTarget } from '../data/layer-options'
 import type { ProjectProperties } from '../data/types'
 import type { BasemapMode } from '../lib/url-state'
 import { readUrlState, writeUrlState } from '../lib/url-state'
+import { listMatchesSearch, matchesSearch } from '../lib/project-search'
 import styles from './App.module.css'
 
 const initial = readUrlState()
@@ -45,11 +46,6 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
       'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
     )
   ).filter(element => !element.hasAttribute('aria-hidden'))
-}
-
-function listIncludes(values: string[] | null | undefined, query: string): boolean {
-  if (!Array.isArray(values)) return false
-  return values.some(value => value.toLowerCase().includes(query))
 }
 
 function assignedTypes(project: ProjectProperties): string[] {
@@ -261,12 +257,14 @@ export function App() {
       if (!query) return true
 
       return (
-        project.project_name.toLowerCase().includes(query)
-        || project.lead_entity.toLowerCase().includes(query)
-        || project.system.toLowerCase().includes(query)
-        || listIncludes(project.project_type, query)
-        || listIncludes(project.project_stage, query)
-        || listIncludes(project.target_species, query)
+        matchesSearch(project.project_name, query)
+        || matchesSearch(project.project_description, query)
+        || matchesSearch(project.lead_entity, query)
+        || matchesSearch(project.system, query)
+        || listMatchesSearch(project.project_type, query)
+        || listMatchesSearch(project.project_stage, query)
+        || listMatchesSearch(project.target_species, query)
+        || listMatchesSearch(project.funding_sources, query)
       )
     })
   }, [earlyOnly, hiddenTypes, projectSearch, projects, systemFilter])

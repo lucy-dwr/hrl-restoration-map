@@ -6,6 +6,7 @@ import type { BoundaryFocusTarget } from '../../data/layer-options'
 import type { ProjectProperties } from '../../data/types'
 import { PROJECT_TYPE_COLORS, FALLBACK_COLOR } from '../../features/map/project-colors'
 import type { BasemapMode } from '../../lib/url-state'
+import { listMatchesSearch, matchesSearch } from '../../lib/project-search'
 import styles from './LayerPanel.module.css'
 
 const DISABLED_SWATCH = '#cbd3cc'
@@ -20,6 +21,35 @@ type LayerSectionId = 'basemap' | 'projectTypes' | 'boundaries' | 'hydrography'
 
 function capitalize(s: string): string {
   return s.length === 0 ? s : s[0].toUpperCase() + s.slice(1)
+}
+
+function matchingValues(values: string[] | null | undefined, query: string): string[] {
+  if (!Array.isArray(values)) return []
+  return values.filter(value => matchesSearch(value, query))
+}
+
+function getSearchMatchDetails(project: ProjectProperties, search: string): string[] {
+  const query = search.trim().toLowerCase()
+  if (!query) return []
+
+  const details: string[] = []
+  const addListDetail = (label: string, values: string[] | null | undefined) => {
+    const matches = matchingValues(values, query)
+    if (matches.length === 0) return
+    const shown = matches.slice(0, 2).join(', ')
+    details.push(`${label}: ${shown}${matches.length > 2 ? ` +${matches.length - 2}` : ''}`)
+  }
+
+  if (matchesSearch(project.project_name, query)) details.push('Project name')
+  if (matchesSearch(project.project_description, query)) details.push('Description')
+  if (matchesSearch(project.lead_entity, query)) details.push(`Lead: ${project.lead_entity}`)
+  if (matchesSearch(project.system, query)) details.push(`System: ${project.system}`)
+  if (listMatchesSearch(project.target_species, query)) addListDetail('Target species', project.target_species)
+  if (listMatchesSearch(project.funding_sources, query)) addListDetail('Funding', project.funding_sources)
+  if (listMatchesSearch(project.project_type, query)) addListDetail('Project type', project.project_type)
+  if (listMatchesSearch(project.project_stage, query)) addListDetail('Stage', project.project_stage)
+
+  return details
 }
 
 interface CollapsibleSectionProps {
@@ -526,7 +556,8 @@ export function LayerPanel({
                   className={styles.searchInput}
                   type="search"
                   value={projectSearch}
-                  placeholder="Search name, lead, type"
+                  aria-label="Search projects by name, species, funding source, and more"
+                  placeholder="Search name, species, funding…"
                   onChange={e => onProjectSearchChange(e.target.value)}
                 />
                 <select
@@ -573,6 +604,7 @@ export function LayerPanel({
                 ) : (
                   projects.map(project => {
                     const types = Array.isArray(project.project_type) ? project.project_type : []
+                    const searchMatchDetails = getSearchMatchDetails(project, projectSearch)
                     return (
                       <div
                         key={project.display_id}
@@ -599,6 +631,11 @@ export function LayerPanel({
                           {types.length > 0 && (
                             <span className={styles.projectTypes}>
                               {types.map(capitalize).join(', ')}
+                            </span>
+                          )}
+                          {searchMatchDetails.length > 0 && (
+                            <span className={styles.searchMatch}>
+                              Matches: {searchMatchDetails.join(' · ')}
                             </span>
                           )}
                         </button>
