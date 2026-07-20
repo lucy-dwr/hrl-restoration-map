@@ -17,7 +17,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: min(88%, 420px);
+  max-width: min(88%, 520px);
   padding: 8px 14px;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid var(--border-default);
@@ -26,6 +26,7 @@
   font-size: var(--text-sm);
   color: var(--text-secondary);
   text-align: center;
+  white-space: nowrap;
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
@@ -38,6 +39,10 @@
   visibility: visible;
   transform: translate(-50%, 0);
   transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.zoomHintWithLeftPanel {
+  left: calc(50% + var(--headline-tiles-left-panel-offset));
 }
 
 .zoomHintDot {

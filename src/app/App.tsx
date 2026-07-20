@@ -474,6 +474,7 @@ export function App() {
           yoloBypassVisible={yoloBypassVisible}
           sutterBypassVisible={sutterBypassVisible}
           streamsVisible={streamsVisible}
+          layerPanelOpen={layerPanelOpen}
           initialCenter={[initial.lng, initial.lat]}
           initialZoom={initial.zoom}
           onProjectSelect={handleProjectSelect}

@@ -805,6 +805,7 @@ interface MapProps {
   yoloBypassVisible: boolean
   sutterBypassVisible: boolean
   streamsVisible: boolean
+  layerPanelOpen: boolean
   initialCenter: [number, number]
   initialZoom: number
   onProjectSelect: (displayId: string) => void
@@ -826,6 +827,7 @@ export function Map({
   yoloBypassVisible,
   sutterBypassVisible,
   streamsVisible,
+  layerPanelOpen,
   initialCenter,
   initialZoom,
   onProjectSelect,
@@ -1548,7 +1550,7 @@ export function Map({
     <div className={styles.wrapper}>
       <div ref={containerRef} className={styles.container} />
       <div
-        className={`${styles.zoomHint} ${zoomHintVisible ? styles.zoomHintVisible : ''}`}
+        className={`${styles.zoomHint} ${layerPanelOpen ? styles.zoomHintWithLeftPanel : ''} ${zoomHintVisible ? styles.zoomHintVisible : ''}`}
         role="status"
         aria-hidden={!zoomHintVisible}
       >
