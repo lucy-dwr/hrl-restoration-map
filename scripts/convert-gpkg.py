@@ -6,7 +6,7 @@ a downloadable GeoPackage, and a non-spatial CSV.
 Usage:
     python3 scripts/convert-gpkg.py
 
-Reads:  data/source/2026-07-20-v11.gpkg  (restoration_projects layer)
+Reads:  data/source/2026-07-20-v13.gpkg  (restoration_projects layer)
 Writes: public/data/hrl_restoration_projects.geojson
           (WGS84 / EPSG:4326, arrays normalized)
         public/data/hrl_restoration_projects.gpkg
@@ -32,7 +32,7 @@ import tempfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent
-GPKG = REPO_ROOT / "data/source/2026-07-20-v11.gpkg"
+GPKG = REPO_ROOT / "data/source/2026-07-20-v13.gpkg"
 LAYER = "restoration_projects"
 OUT = REPO_ROOT / "public/data/hrl_restoration_projects.geojson"
 GPKG_OUT = REPO_ROOT / "public/data/hrl_restoration_projects.gpkg"
