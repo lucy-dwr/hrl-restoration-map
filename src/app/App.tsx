@@ -6,6 +6,7 @@ import { HeadlineTiles } from '../components/tiles/HeadlineTiles'
 import { DetailPanel } from '../components/detail-panel/DetailPanel'
 import { LayerPanel } from '../components/layer-panel/LayerPanel'
 import { PROJECT_LAYER_TYPES, TRIBUTARY_WATERSHEDS } from '../data/layer-options'
+import { HRL_ACRES_HELP, PROJECT_ACRES_HELP } from '../data/acreage'
 import type { BoundaryFocusTarget } from '../data/layer-options'
 import type { ProjectProperties } from '../data/types'
 import type { BasemapMode } from '../lib/url-state'
@@ -767,15 +768,10 @@ export function App() {
                 <h3>How to interpret values</h3>
                 <dl className={styles.methodologyTerms}>
                   <div>
-                    <dt>Project acres</dt>
+                    <dt>Project acres and HRL acres</dt>
                     <dd>
-                      Acres reported for this project by HRL participating
-                      entities. These values are for public orientation and are
-                      not final HRL habitat accounting acres. Acres may encompass
-                      a mix of aquatic, transitional, and terrestrial areas. The
-                      aquatic habitat type acres listed in a project detail panel
-                      are reported category values, so they may not add up to the
-                      total project acres shown here.
+                      <p>{PROJECT_ACRES_HELP}</p>
+                      <p>{HRL_ACRES_HELP}</p>
                     </dd>
                   </div>
                   <div>

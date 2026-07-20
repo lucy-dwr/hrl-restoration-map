@@ -376,6 +376,17 @@
   line-height: 1.5;
 }
 
+.methodologyTerms dd p {
+  margin: 0;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.methodologyTerms dd p + p {
+  margin-top: 10px;
+}
+
 .termListLabel {
   display: block;
   margin-top: 8px;
