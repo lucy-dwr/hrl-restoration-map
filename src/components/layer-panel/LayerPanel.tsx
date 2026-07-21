@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ACREAGE_COMPACT_LABEL, formatAcreage } from '../../data/acreage'
 import { PROJECT_LAYER_TYPES, TRIBUTARY_WATERSHEDS } from '../../data/layer-options'
@@ -180,6 +180,8 @@ export function LayerPanel({
   onToggleOpen,
 }: Props) {
   const [activeTab, setActiveTab] = useState<'layers' | 'projects'>('layers')
+  const layersTabRef = useRef<HTMLButtonElement>(null)
+  const projectsTabRef = useRef<HTMLButtonElement>(null)
   const [collapsedSections, setCollapsedSections] = useState<Set<LayerSectionId>>(() => new Set())
   const hasActiveFilters = activeFilterChips.length > 0
   const filtersHideAllProjects = hasActiveFilters && totalProjectCount > 0 && projects.length === 0
@@ -203,6 +205,24 @@ export function LayerPanel({
     return !collapsedSections.has(section)
   }
 
+  function selectTab(tab: 'layers' | 'projects') {
+    setActiveTab(tab)
+  }
+
+  function handleTabKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+    let nextTab: 'layers' | 'projects' | null = null
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') nextTab = 'layers'
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') nextTab = 'projects'
+    if (event.key === 'Home') nextTab = 'layers'
+    if (event.key === 'End') nextTab = 'projects'
+    if (!nextTab) return
+
+    event.preventDefault()
+    selectTab(nextTab)
+    if (nextTab === 'layers') layersTabRef.current?.focus()
+    else projectsTabRef.current?.focus()
+  }
+
   return (
     <div className={styles.root}>
       {open ? (
@@ -220,20 +240,30 @@ export function LayerPanel({
 
           <div className={styles.tabs} role="tablist" aria-label="Layer panel views">
             <button
+              ref={layersTabRef}
+              id="layers-tab"
               className={activeTab === 'layers' ? styles.tabActive : styles.tab}
               type="button"
               role="tab"
               aria-selected={activeTab === 'layers'}
-              onClick={() => setActiveTab('layers')}
+              aria-controls="layers-tab-panel"
+              tabIndex={activeTab === 'layers' ? 0 : -1}
+              onClick={() => selectTab('layers')}
+              onKeyDown={handleTabKeyDown}
             >
               Layers
             </button>
             <button
+              ref={projectsTabRef}
+              id="projects-tab"
               className={activeTab === 'projects' ? styles.tabActive : styles.tab}
               type="button"
               role="tab"
               aria-selected={activeTab === 'projects'}
-              onClick={() => setActiveTab('projects')}
+              aria-controls="projects-tab-panel"
+              tabIndex={activeTab === 'projects' ? 0 : -1}
+              onClick={() => selectTab('projects')}
+              onKeyDown={handleTabKeyDown}
             >
               Projects
             </button>
@@ -259,7 +289,12 @@ export function LayerPanel({
           )}
 
           {activeTab === 'layers' ? (
-            <div className={styles.scrollBody}>
+            <div
+              id="layers-tab-panel"
+              className={styles.scrollBody}
+              role="tabpanel"
+              aria-labelledby="layers-tab"
+            >
               <CollapsibleSection
                 id="basemap"
                 label="Basemap"
@@ -549,7 +584,12 @@ export function LayerPanel({
               </CollapsibleSection>
             </div>
           ) : (
-            <div className={styles.scrollBody}>
+            <div
+              id="projects-tab-panel"
+              className={styles.scrollBody}
+              role="tabpanel"
+              aria-labelledby="projects-tab"
+            >
               <div className={styles.section}>
                 <h3 className={styles.sectionLabel}>Find projects</h3>
                 <input
@@ -587,7 +627,7 @@ export function LayerPanel({
                 >
                   Fit visible projects
                 </button>
-                <div className={styles.resultCount}>
+                <div className={styles.resultCount} role="status" aria-live="polite">
                   {projects.length} of {totalProjectCount} projects
                 </div>
               </div>
@@ -653,6 +693,11 @@ export function LayerPanel({
                   })
                 )}
               </div>
+              <p className={styles.srOnly} role="status" aria-live="polite">
+                {selectedDisplayId
+                  ? `Selected project: ${projects.find(project => project.display_id === selectedDisplayId)?.project_name ?? selectedDisplayId}`
+                  : ''}
+              </p>
             </div>
           )}
         </div>

@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import {
   ACREAGE_DEFINITION,
   ACREAGE_LABEL,
@@ -64,6 +64,10 @@ function formatList(values: string[]): string {
 }
 
 export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
+  const projectNameRef = useRef<HTMLHeadingElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(
+    document.activeElement instanceof HTMLElement ? document.activeElement : null
+  )
   const types = Array.isArray(project.project_type) ? project.project_type : []
   const stages = Array.isArray(project.project_stage) ? project.project_stage : []
   const species = Array.isArray(project.target_species) ? project.target_species : []
@@ -85,12 +89,21 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
   const hasHrlAcres = hasHrlHabitatAcreage(project)
   const hrlAcres = totalHrlHabitatAcreage(project)
 
+  useEffect(() => {
+    projectNameRef.current?.focus()
+  }, [project.display_id])
+
+  function handleClose() {
+    onClose()
+    requestAnimationFrame(() => previousFocusRef.current?.focus())
+  }
+
   return (
     <aside className={styles.panel} aria-label="Project details">
       <div className={styles.header}>
         <button
           className={styles.closeBtn}
-          onClick={onClose}
+          onClick={handleClose}
           aria-label="Close project details"
         >
           ✕
@@ -98,7 +111,9 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
       </div>
 
       <div className={styles.body}>
-        <h2 className={styles.projectName}>{project.project_name}</h2>
+        <h2 ref={projectNameRef} className={styles.projectName} tabIndex={-1}>
+          {project.project_name}
+        </h2>
         <button className={styles.zoomBtn} onClick={onZoomToProject}>
           Zoom to project
         </button>

@@ -1,9 +1,11 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useId } from 'react'
 import styles from './TopBar.module.css'
 
 function DownloadMenu() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const menuId = useId()
 
   useEffect(() => {
     if (!open) return
@@ -16,24 +18,37 @@ function DownloadMenu() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [open])
 
+  useEffect(() => {
+    if (!open) return
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return
+      setOpen(false)
+      triggerRef.current?.focus()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
+
   return (
     <div ref={ref} className={styles.downloadWrapper}>
       <button
+        ref={triggerRef}
         type="button"
         className={styles.navLink}
         onClick={() => setOpen(o => !o)}
-        aria-haspopup="menu"
         aria-expanded={open}
+        aria-controls={menuId}
       >
         Download data
       </button>
       {open && (
-        <div className={styles.downloadMenu} role="menu">
+        <div id={menuId} className={styles.downloadMenu} aria-label="Download data formats">
           <a
             href="data/hrl_restoration_projects.geojson"
             download="hrl_restoration_projects.geojson"
             className={styles.downloadItem}
-            role="menuitem"
             onClick={() => setOpen(false)}
           >
             <span className={styles.downloadFormat}>GeoJSON</span>
@@ -43,7 +58,6 @@ function DownloadMenu() {
             href="data/hrl_restoration_projects.gpkg"
             download="hrl_restoration_projects.gpkg"
             className={styles.downloadItem}
-            role="menuitem"
             onClick={() => setOpen(false)}
           >
             <span className={styles.downloadFormat}>GeoPackage</span>
@@ -53,7 +67,6 @@ function DownloadMenu() {
             href="data/hrl_restoration_projects.csv"
             download="hrl_restoration_projects.csv"
             className={styles.downloadItem}
-            role="menuitem"
             onClick={() => setOpen(false)}
           >
             <span className={styles.downloadFormat}>CSV</span>
