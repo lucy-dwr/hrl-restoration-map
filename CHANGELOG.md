@@ -11,6 +11,9 @@ applicable.
 
 ### Added
 
+- Added an accessible phone-sized unsupported-surface notice with the
+  dashboard's purpose, methodology, contact option, and public data downloads.
+  Interactive map exploration remains supported on tablet and desktop screens.
 - Added total reported HRL habitat acres to each project detail panel, alongside
   the project's reported total acres and habitat-type breakdown.
 - Expanded project-list search to cover project descriptions and funding

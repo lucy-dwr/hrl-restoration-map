@@ -21,6 +21,11 @@ public, and the contributors who help keep the dashboard useful and accurate.
 
 ## What you can do
 
+Interactive map exploration is supported on tablet and desktop screens. On
+phone-sized screens, the dashboard provides an accessible notice with its
+purpose, methodology, contact option, and data downloads; open the same link on
+a larger screen to explore the map, layers, and projects.
+
 - Browse restoration projects on a full-screen map. At broad map scales,
   projects appear as points; zoom in to see their mapped boundaries.
 - Search and filter projects by name, description, organization, system,
@@ -43,7 +48,8 @@ development.
 
 - [Node.js 22](https://nodejs.org/) or a compatible current LTS release
 - [pnpm](https://pnpm.io/installation)
-- A current desktop browser, such as Chrome, Edge, Firefox, or Safari
+- A current browser on a tablet or desktop, such as Chrome, Edge, Firefox, or
+  Safari
 
 ### Start the development server
 
