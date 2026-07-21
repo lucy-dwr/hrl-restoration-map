@@ -597,10 +597,11 @@ P1 for data governance; P3 for frontend-only implementation
 
 **Problem:**
 
-The current feedback round primarily validates desktop use by expert reviewers,
-and the dashboard has not yet defined what level of small-screen support is
-required. Full mobile map-analysis parity may not be realistic or desirable
-because the map, layer rail, and project polygons are information-dense.
+The current feedback round primarily validates desktop use by expert reviewers.
+The dashboard now defines phone-sized screens as unsupported for interactive map
+exploration because the map, layer rail, project browsing, and project polygons
+are information-dense. Tablet and desktop remain the supported interactive
+surfaces.
 
 **Evidence:**
 
@@ -611,25 +612,26 @@ coverage is still needed.
 
 **Impact:**
 
-If mobile support is undefined, the product may either over-invest in a
-compromised phone-sized GIS experience or ship a broken small-screen experience.
-Accessibility remains a v1 requirement regardless of how much mobile map
-functionality is supported.
+Without an explicit boundary, the product could over-invest in a compromised
+phone-sized GIS experience or leave phone visitors at a dead end. Accessibility
+remains a v1 requirement on supported surfaces, and the phone notice and its
+informational actions must be accessible.
 
 **Affected area:**
 
-Responsive layout, small-screen copy, keyboard navigation, screen-reader labels,
-Projects tab, detail panel, layer controls, About/methodology access.
+Phone unsupported-surface notice and informational actions; keyboard navigation,
+screen-reader labels, Projects tab, detail panel, layer controls,
+About/methodology access on tablet and desktop.
 
 **Possible fix:**
 
-Define a graceful-degradation target for small screens rather than requiring
-full mobile map parity. Ensure phones can access orientation, About/methodology,
-project list, project detail, and downloads. Treat advanced layer/filter/map
-inspection as best on tablet/desktop, with a clear notice if needed. Separately
-run keyboard and screen-reader checks on critical paths including load,
-orientation, project list browsing, filter reset, project selection, detail
-panel, download data, and inline help popovers.
+Implement an accessible phone-sized unsupported-surface notice that preserves
+purpose, methodology, contact, and data-download actions; retain shared-link
+URLs and explain that a tablet or desktop is required. Do not build a mobile map
+experience. Separately run keyboard and screen-reader checks on supported
+tablet/desktop critical paths including load, orientation, project-list browsing,
+filter reset, project selection, detail panel, download data, and inline-help
+popovers.
 
 **Priority:**
 

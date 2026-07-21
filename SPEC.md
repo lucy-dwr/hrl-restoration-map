@@ -140,16 +140,16 @@ The definitions and calculation rules for the headline tile strip are maintained
 
 - **Full-bleed map.** The map fills the viewport. Chrome sits on top of it as floating panels.
 - **Top bar.** Compact (≈74px). Dashboard identity left, using the full two-line dashboard name, persistent purpose text, and the official HRL favicon mark; "Download data", "Methodology", and "About" actions right. No primary navigation lives here.
-- **Left rail.** ≈360px, collapsible. Layer toggles, filters, legend. Default-open on desktop, default-collapsed on mobile.
+- **Left rail.** ≈360px, collapsible. Layer toggles, filters, legend. Default-open on desktop and tablet.
 - **Bottom tile strip.** Headline progress tiles currently show visible project count and total HRL project acres where available. Confirmed position: bottom-centre of the map area (Decision 22). Avoids conflict with the left layer panel and bottom-right navigation controls.
-- **Right detail panel.** ≈400px, opens on selection, closes on dismiss. Renders project detail (tier 3). Pushes the map left rather than overlaying it on desktop; overlays on mobile.
+- **Right detail panel.** ≈400px, opens on selection, closes on dismiss. Renders project detail (tier 3). Pushes the map left rather than overlaying it on desktop; overlays on tablet where space requires it.
 - **No persistent footer.** Footer information lives in About/methodology surfaces.
 
-Responsive breakpoints (initial proposal):
+Responsive support target:
 
 - ≥1280px: full layout as described.
 - 768–1279px: left rail collapses to icon strip; tiles move to top of left rail when expanded.
-- <768px: bottom-sheet pattern for layer controls; tiles in a horizontally scrolling strip below the top bar; detail panel becomes a bottom sheet.
+- <768px: phone-sized screens are not a supported surface for interactive map exploration. Show a clear, accessible notice that a tablet or desktop is required for the dashboard, while preserving access to essential informational actions such as purpose, methodology, contact, and data downloads. Shared links must remain intact and explain the unsupported display rather than fail silently.
 
 ---
 
@@ -445,6 +445,7 @@ The future exact contract between the two repos will live in a jointly owned `da
 The v1 accessibility conformance plan, known gaps, and audit roadmap are maintained in the adopted [`accessibility.md`](docs/specs/accessibility.md) sub-spec.
 
 - **Accessibility target:** This product will be designed to exceed minimum compliance and manifest disability access as a core public-service requirement. The application must conform to WCAG 2.2 Level AA and should meet selected WCAG 2.2 Level AAA criteria where applicable, especially for contrast, readability, instructions, help, and cognitive accessibility.
+- **Supported surfaces:** Interactive dashboard use is supported on tablet and desktop only. Phone-sized screens must receive an accessible unsupported-surface notice and access to essential informational actions, but are not required to provide map exploration, layer controls, or project browsing.
 - **Interface accessibility:** All custom interface components must use native HTML controls where possible or follow WAI-ARIA Authoring Practices. All interactive elements must be keyboard-reachable and screen-reader-labeled.
 - **Non-map equivalent:** Because the product is an interactive mapping application, all essential map content and workflows must also be available through an equivalent keyboard-accessible, screen-reader-readable, non-map interface, including searchable/filterable project lists, project detail views, summary statistics, and accessible data downloads.
 - **Prototype non-map equivalent status:** The current prototype includes a searchable/filterable Projects tab, list-driven selection, fit-to-visible-projects, zoom-to-project actions, and public data downloads. A fuller assistive-technology audit remains pending.
@@ -581,3 +582,4 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 55 | 2026-07-20 | The prototype header uses the 300 × 300 transparent HRL favicon mark published on the public HRL site, paired with the full two-line "Healthy Rivers and Landscapes Restoration Dashboard" name and persistent purpose text. | Reusing the established program mark makes the dashboard immediately recognizable while preserving a map-first interface. The transparent source works on the dashboard's light header without a decorative background. This is a prototype implementation choice and does not settle broader multi-agency production branding requirements. |
 | 56 | 2026-07-20 | The current prototype source package is `data/source/2026-07-20-v13.gpkg`; public GeoJSON, GeoPackage, and CSV downloads are regenerated from it. | This supersedes the source-package reference in Decision 54 while retaining its July 20, 2026 displayed update date. |
 | 57 | 2026-07-20 | The dashboard's current milestone is version `0.2.0`. | Version 0.2.0 captures the substantial expansion beyond the initial 0.1.0 prototype, including the fuller map experience, project browsing and filtering, context layers, data downloads, public orientation, and deployment to Azure Static Web Apps. It remains a beta milestone ahead of the planned 1.0.0 public release. |
+| 58 | 2026-07-20 | Interactive dashboard use is supported on tablet and desktop, not phone-sized screens. Phones receive an accessible notice and essential informational actions (purpose, methodology, contact, and data downloads), while map exploration, layer controls, and project browsing require a larger screen. | The map, layer rail, project browsing, and polygon inspection are information-dense and cannot provide a useful phone experience. This sets an honest product boundary without weakening the WCAG 2.2 AA obligation for supported surfaces or leaving phone visitors at a dead end. |

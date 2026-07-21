@@ -272,8 +272,8 @@ main Round 1 trust issues.
 6. Add or explicitly scope tributary/watershed boundary context.
 7. Fix/clarify multivalued project-type filtering.
 8. Add active-filter summaries and reset controls.
-9. Perform mobile and accessibility audit before declaring v1 accessibility
-   complete.
+9. Implement and test the phone unsupported-surface notice, then perform the
+   tablet/desktop accessibility audit before declaring v1 accessibility complete.
 10. Defer deeper accounting, monitoring, document repository, and internal
     project-management features until data governance and product scope support
     them.
