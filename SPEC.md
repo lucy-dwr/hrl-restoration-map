@@ -1,6 +1,6 @@
 # Healthy Rivers and Landscapes Restoration Dashboard — Specification
 
-**Status:** v0.2.0 beta
+**Status:** v0.2.0 beta  
 **Working repo name:** `hrl-restoration-map`  
 **Related repos:**
 
