@@ -33,6 +33,93 @@ const OFFICIAL_CONTEXT_LINKS = [
   },
 ] as const
 
+function usePhoneSizedScreen(): boolean {
+  const [isPhoneSized, setIsPhoneSized] = useState(() => (
+    window.matchMedia('(max-width: 767px)').matches
+  ))
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)')
+    const handleChange = () => setIsPhoneSized(mediaQuery.matches)
+
+    handleChange()
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
+  return isPhoneSized
+}
+
+function PhoneUnsupportedSurface() {
+  const dataPath = `${import.meta.env.BASE_URL}data/`
+
+  return (
+    <main className={styles.phoneSurface} aria-labelledby="phone-surface-title">
+      <div className={styles.phoneContent}>
+        <img className={styles.phoneLogo} src="/hrl-logo-mark.png" alt="" />
+        <p className={styles.phoneEyebrow}>Healthy Rivers and Landscapes</p>
+        <h1 id="phone-surface-title" className={styles.phoneTitle}>
+          Restoration Dashboard
+        </h1>
+        <p className={styles.phoneLead}>
+          This interactive map requires a tablet or desktop screen.
+        </p>
+        <p className={styles.phoneText}>
+          Please open this link on a larger screen to explore project locations,
+          layers, and project details. Your shared link will work there.
+        </p>
+
+        <section className={styles.phoneSection} aria-labelledby="phone-about-title">
+          <h2 id="phone-about-title">About this dashboard</h2>
+          <p>
+            This dashboard is a public overview of early implementation and proposed
+            Healthy Rivers and Landscapes restoration projects. It is not a verified
+            habitat accounting tool.
+          </p>
+        </section>
+
+        <details className={styles.phoneDetails}>
+          <summary>Methodology and data sources</summary>
+          <div>
+            <p>
+              Project information was submitted by HRL participating entities and
+              checked against the HRL restoration project schema. The dataset was last
+              updated {DATA_LAST_UPDATED}.
+            </p>
+            <p>
+              Inclusion indicates that a project was reported to HRL for public program
+              orientation; it does not itself commit funding, approval, permitting, or
+              construction.
+            </p>
+            <ul>
+              {OFFICIAL_CONTEXT_LINKS.map(link => (
+                <li key={link.url}>
+                  <a href={link.url} target="_blank" rel="noreferrer">
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </details>
+
+        <section className={styles.phoneSection} aria-labelledby="phone-download-title">
+          <h2 id="phone-download-title">Download project data</h2>
+          <ul className={styles.phoneDownloads}>
+            <li><a href={`${dataPath}hrl_restoration_projects.geojson`} download="hrl_restoration_projects.geojson">GeoJSON</a></li>
+            <li><a href={`${dataPath}hrl_restoration_projects.gpkg`} download="hrl_restoration_projects.gpkg">GeoPackage</a></li>
+            <li><a href={`${dataPath}hrl_restoration_projects.csv`} download="hrl_restoration_projects.csv">CSV</a></li>
+          </ul>
+        </section>
+
+        <a className={styles.phoneContact} href={getGeneralContactMailto()}>
+          Contact HRL
+        </a>
+      </div>
+    </main>
+  )
+}
+
 function shouldShowFirstRunOrientation(): boolean {
   try {
     return window.localStorage.getItem(ORIENTATION_DISMISSED_KEY) !== '1'
@@ -69,6 +156,7 @@ interface ActiveFilterChip {
 }
 
 export function App() {
+  const isPhoneSized = usePhoneSizedScreen()
   const [data, setData] = useState<FeatureCollection | null>(null)
   const [selectedDisplayId, setSelectedDisplayId] = useState<string | null>(initial.selected)
   const [selectedProject, setSelectedProject] = useState<ProjectProperties | null>(null)
@@ -95,11 +183,13 @@ export function App() {
   const methodologyCloseRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
+    if (isPhoneSized) return
+
     fetch(`${import.meta.env.BASE_URL}data/hrl_restoration_projects.geojson`)
       .then(r => r.json() as Promise<FeatureCollection>)
       .then(d => setData(d))
       .catch(err => console.error('Failed to load hrl_restoration_projects.geojson', err))
-  }, [])
+  }, [isPhoneSized])
 
   // Restore selected project from URL after data loads
   useEffect(() => {
@@ -452,6 +542,8 @@ export function App() {
   }, [aboutOpen, methodologyOpen, orientationOpen])
 
   const panelOpen = selectedProject !== null
+
+  if (isPhoneSized) return <PhoneUnsupportedSurface />
 
   return (
     <div className={styles.shell}>

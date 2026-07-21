@@ -16,6 +16,14 @@ body,
   overflow: hidden;
 }
 
+@media (max-width: 767px) {
+  html,
+  body,
+  #root {
+    overflow: auto;
+  }
+}
+
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-size: var(--text-base);
