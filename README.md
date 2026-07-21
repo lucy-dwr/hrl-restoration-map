@@ -46,7 +46,7 @@ development.
 
 ### What you need
 
-- [Node.js 22](https://nodejs.org/) or a compatible current LTS release
+- [Node.js 24](https://nodejs.org/) or a compatible current LTS release
 - [pnpm](https://pnpm.io/installation)
 - A current browser on a tablet or desktop, such as Chrome, Edge, Firefox, or
   Safari
@@ -108,7 +108,8 @@ data committed in this repository.
 | --- | --- |
 | Understand product, design, data, and architecture decisions | [Specification](SPEC.md) |
 | Make a code, data, or documentation contribution | [Contributing guide](CONTRIBUTING.md) |
-| Regenerate project or context-layer data | [Data script guide](scripts/README.md) |
+| Run or understand accessibility checks | [Accessibility testing](docs/accessibility-testing.md) |
+| Regenerate project or context layer data | [Data script guide](scripts/README.md) |
 | Learn about the local source package | [Source data notes](data/source/README.md) |
 | Understand the generated public data | [Generated data notes](public/data/README.md) |
 | Review the structured beta-testing process | [Beta testing](beta-testing/round-1/README.md) |
