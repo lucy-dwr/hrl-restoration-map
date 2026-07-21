@@ -8,7 +8,7 @@ Headline tiles communicate orientation, not verified HRL habitat accounting. The
 | Tile | Definition | Public interpretation |
 |---|---|---|
 | Projects | Count of currently visible filtered projects | A count of mapped early-implementation and proposed project records. |
-| Total HRL project acres | Sum of the six reported HRL habitat type acreage fields across currently visible filtered projects | Reported project area for public orientation; not final HRL habitat accounting acres. |
+| HRL project acres | Sum of the six reported HRL habitat type acreage fields across currently visible filtered projects | Reported project area for public orientation; not final HRL habitat accounting acres. |
 
 The acreage fields are:
 

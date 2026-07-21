@@ -43,7 +43,7 @@ export function HeadlineTiles({ data, layerPanelOpen = false }: Props) {
           </span>
           <span className={styles.labelWithHelp}>
             <span>{ACREAGE_TILE_LABEL}</span>
-            <InfoPopover label="About total HRL project acres" placement="top">
+            <InfoPopover label="About HRL project acres" placement="top">
               {TOTAL_PROJECT_ACRES_HELP}
             </InfoPopover>
           </span>

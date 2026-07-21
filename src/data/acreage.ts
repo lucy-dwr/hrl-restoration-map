@@ -1,7 +1,7 @@
 import type { ProjectProperties } from './types'
 
 export const ACREAGE_LABEL = 'Project acres'
-export const ACREAGE_TILE_LABEL = 'total HRL project acres'
+export const ACREAGE_TILE_LABEL = 'HRL project acres'
 export const ACREAGE_COMPACT_LABEL = 'acres'
 
 export const HRL_HABITAT_ACREAGE_FIELDS = [
