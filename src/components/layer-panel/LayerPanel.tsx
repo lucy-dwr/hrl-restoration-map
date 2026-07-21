@@ -591,7 +591,7 @@ export function LayerPanel({
               aria-labelledby="projects-tab"
             >
               <div className={styles.section}>
-                <h3 className={styles.sectionLabel}>Find projects</h3>
+                <h3 className={`${styles.sectionLabel} ${styles.projectSearchLabel}`}>Find projects</h3>
                 <input
                   className={styles.searchInput}
                   type="search"
@@ -603,6 +603,7 @@ export function LayerPanel({
                 <select
                   className={styles.select}
                   value={systemFilter}
+                  aria-label="Filter projects by system"
                   onChange={e => onSystemFilterChange(e.target.value)}
                 >
                   <option value="">All systems</option>

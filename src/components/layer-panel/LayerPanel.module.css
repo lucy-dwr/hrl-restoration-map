@@ -190,6 +190,10 @@
   margin: 0;
 }
 
+.projectSearchLabel {
+  margin-bottom: 8px;
+}
+
 .sectionContent {
   margin-top: 6px;
 }
@@ -274,7 +278,9 @@
 .row {
   display: flex;
   align-items: center;
+  box-sizing: border-box;
   gap: 8px;
+  min-height: 24px;
   padding: 3px 0;
   cursor: pointer;
   user-select: none;

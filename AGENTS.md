@@ -25,7 +25,12 @@ exists:
 - URL state encoding map centre/zoom, selected project, hidden types, basemap mode, boundary visibility, and stream-network visibility as query parameters.
 - Design tokens in `src/styles/tokens.css`; WCAG-AA-passing colour contrast for all text.
 
-**Still needs v1 hardening:** The methodology/data-source context, concise About popup, project-list non-map equivalent, and download data affordance exist, but still need broader keyboard/screen-reader audit coverage before calling accessibility complete.
+**Accessibility hardening status:** Automated WCAG A/AA regression checks cover
+representative dashboard states, and a thorough but non-exhaustive VoiceOver
+audit has been completed. The methodology/data source context, concise About
+popup, project list non-map equivalent, and download data affordance are in
+place. Broader manual keyboard, assistive technology, zoom, motion, and
+forced-colors review is still needed before calling accessibility complete.
 
 ## Repository Layout
 

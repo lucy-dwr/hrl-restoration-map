@@ -16,7 +16,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:a11y": "playwright test tests/accessibility",
+    "test:a11y:report": "playwright test tests/accessibility --reporter=html"
   },
   "dependencies": {
     "maplibre-gl": "^4.7.1",
@@ -25,6 +27,8 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.61.1",
     "@types/geojson": "^7946.0.16",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",

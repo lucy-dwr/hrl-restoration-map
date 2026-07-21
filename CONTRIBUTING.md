@@ -34,7 +34,14 @@ Useful checks:
 
 ```sh
 pnpm run build
+pnpm exec playwright install chromium # once, after dependencies are installed
+pnpm run test:a11y
 ```
+
+See [Accessibility testing](docs/accessibility-testing.md) for the automated
+test scope, how to investigate failures, temporary exception requirements, and
+the manual review checklist. New interactive components need coverage for their
+important states, not only their initial rendering.
 
 ## Data Workflow
 
