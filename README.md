@@ -17,7 +17,8 @@ public, and the contributors who help keep the dashboard useful and accurate.
 
 ![Desktop view of the HRL Restoration Dashboard with the Lower Elkhorn Basin Levee Setback selected on the map. Layer controls appear on the left, project summary tiles sit at the bottom, and the selected project's description and details appear in a panel on the right.](docs/images/dashboard-overview.png)
 
-*An example of a dashboard view. Visit the [deployed dashboard](https://kind-sky-052e1711e.7.azurestaticapps.net) to explore it.*
+*An example of a dashboard view. The public dashboard URL will be published
+after Azure Front Door endpoint validation and DTS custom-domain activation.*
 
 ## What you can do
 
@@ -73,6 +74,41 @@ pnpm run preview
 The preview command prints the local address for the built application. It is a
 useful final check before opening a pull request.
 
+### Test the public deployment path
+
+The production dashboard's public path is
+`https://hrl.water.ca.gov/restoration-map/`. Azure Front Door removes that
+prefix before requesting the root-hosted files from Azure Static Web Apps, so
+the production build generates browser-facing URLs beneath the prefix:
+
+```sh
+PUBLIC_BASE_PATH=/restoration-map/ pnpm run build
+PUBLIC_BASE_PATH=/restoration-map/ pnpm run preview
+```
+
+Use the prefixed Playwright suite to verify the production build, including
+application-owned assets, data downloads, and shareable map state:
+
+```sh
+pnpm run test:deployment-path
+```
+
+Local development and Azure Static Web Apps preview environments use the
+default `/` base path. The production deployment workflow explicitly sets
+`PUBLIC_BASE_PATH=/restoration-map/`; do not hard-code that path in application
+code. `PUBLIC_BASE_PATH` must be an absolute path and is normalized to include
+one leading and trailing slash.
+
+The Azure Static Web App hostname is the Front Door origin and is not a
+supported public dashboard URL for the prefixed production build. Direct origin
+access and any future origin-bypass restrictions will be coordinated with DTS.
+Application-owned public URLs must use Vite's `import.meta.env.BASE_URL` (or a
+fully qualified future data URL), not an unqualified root-relative `/...` URL.
+
+Before DTS activates `hrl.water.ca.gov`, validate the deployed application at
+the Azure-generated Front Door endpoint, using its `/restoration-map/` path.
+Do not publish the direct Azure Static Web App hostname as a dashboard link.
+
 ## Data and updates
 
 Today, the app serves checked-in, browser-ready files from `public/data/`.
@@ -93,9 +129,14 @@ are the source used by the deployed app.
 
 ## Status
 
-The application is deployed on [Azure Static Web Apps](https://kind-sky-052e1711e.7.azurestaticapps.net).
+The application deploys to Azure Static Web Apps, with Azure Front Door as its
+public routing layer. The intended public URL is
+`https://hrl.water.ca.gov/restoration-map/`; DTS custom-domain activation is
+still pending. Until then, test the Azure-generated Front Door endpoint at
+`/restoration-map/`; the direct Azure Static Web Apps hostname remains an
+origin/debug endpoint, not the public dashboard URL.
 Every push to `main` runs the GitHub Actions workflow, builds the Vite app with
-Node 22 and pnpm, and deploys the resulting static site.
+Node 24 and pnpm, and deploys the resulting static site.
 
 Application hosting is in place, but the production HRL data-serving
 infrastructure, published snapshot manifests, and Azure-hosted data/tile

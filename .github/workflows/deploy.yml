@@ -27,6 +27,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm build
+        env:
+          PUBLIC_BASE_PATH: /restoration-map/
 
       - uses: Azure/static-web-apps-deploy@v1
         with:

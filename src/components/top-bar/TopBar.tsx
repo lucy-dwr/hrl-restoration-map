@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useId } from 'react'
 import styles from './TopBar.module.css'
 
+const dataPath = `${import.meta.env.BASE_URL}data/`
+
 function DownloadMenu() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -46,7 +48,7 @@ function DownloadMenu() {
       {open && (
         <div id={menuId} className={styles.downloadMenu} aria-label="Download data formats">
           <a
-            href="data/hrl_restoration_projects.geojson"
+            href={`${dataPath}hrl_restoration_projects.geojson`}
             download="hrl_restoration_projects.geojson"
             className={styles.downloadItem}
             onClick={() => setOpen(false)}
@@ -55,7 +57,7 @@ function DownloadMenu() {
             <span className={styles.downloadDesc}>For web mapping and scripting</span>
           </a>
           <a
-            href="data/hrl_restoration_projects.gpkg"
+            href={`${dataPath}hrl_restoration_projects.gpkg`}
             download="hrl_restoration_projects.gpkg"
             className={styles.downloadItem}
             onClick={() => setOpen(false)}
@@ -64,7 +66,7 @@ function DownloadMenu() {
             <span className={styles.downloadDesc}>For QGIS, ArcGIS, and other GIS tools</span>
           </a>
           <a
-            href="data/hrl_restoration_projects.csv"
+            href={`${dataPath}hrl_restoration_projects.csv`}
             download="hrl_restoration_projects.csv"
             className={styles.downloadItem}
             onClick={() => setOpen(false)}
@@ -88,7 +90,7 @@ export function TopBar({ onAboutOpen, onMethodologyOpen }: TopBarProps) {
     <header className={styles.bar}>
       <div className={styles.brand}>
         <span className={styles.brandMark} aria-hidden="true">
-          <img src="/hrl-logo-mark.png" alt="" />
+          <img src={`${import.meta.env.BASE_URL}hrl-logo-mark.png`} alt="" />
         </span>
         <div className={styles.brandCopy}>
           <h1

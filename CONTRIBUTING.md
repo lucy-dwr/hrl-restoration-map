@@ -2,7 +2,8 @@
 
 Thank you for your interest in contributing to `hrl-restoration-map`. This
 repository contains the early-implementation Healthy Rivers and Landscapes
-restoration map, deployed through Azure Static Web Apps. It is not an
+restoration map, deployed through Azure Static Web Apps behind Azure Front
+Door. It is not an
 authoritative State of California product, official public record, regulatory
 filing, or source of legal or policy guidance.
 
@@ -36,7 +37,14 @@ Useful checks:
 pnpm run build
 pnpm exec playwright install chromium # once, after dependencies are installed
 pnpm run test:a11y
+pnpm run test:deployment-path
 ```
+
+Production builds use the browser-visible `/restoration-map/` base path, while
+local development and Azure Static Web Apps preview environments use `/`.
+Application-owned assets and data URLs must use `import.meta.env.BASE_URL`.
+See the [README deployment-path guidance](README.md#test-the-public-deployment-path)
+before changing deployment, asset, or public-data loading behavior.
 
 See [Accessibility testing](docs/accessibility-testing.md) for the automated
 test scope, how to investigate failures, temporary exception requirements, and

@@ -56,7 +56,7 @@ function PhoneUnsupportedSurface() {
   return (
     <main className={styles.phoneSurface} aria-labelledby="phone-surface-title">
       <div className={styles.phoneContent}>
-        <img className={styles.phoneLogo} src="/hrl-logo-mark.png" alt="" />
+        <img className={styles.phoneLogo} src={`${import.meta.env.BASE_URL}hrl-logo-mark.png`} alt="" />
         <p className={styles.phoneEyebrow}>Healthy Rivers and Landscapes</p>
         <h1 id="phone-surface-title" className={styles.phoneTitle}>
           Restoration Dashboard

@@ -51,6 +51,8 @@ applicable.
   layer groups.
 - Added zoom-to-boundary actions for HRL tributary watershed, Delta, Yolo
   Bypass, and Sutter Bypass context layers.
+- Added configurable Vite public-base-path support and automated browser
+  coverage for the `/restoration-map/` Azure Front Door deployment path.
 
 ### Changed
 
@@ -74,6 +76,9 @@ applicable.
   `public/data/hrl_restoration_projects.*` and trimmed public download fields
   to exclude private, source-submission, comment, and non-public funding-gap
   fields.
+- Updated production deployment to build browser-facing assets and data URLs
+  beneath `/restoration-map/`, while keeping local development and preview
+  builds rooted at `/`.
 
 ## [0.1.0] - 2026-06-03
 

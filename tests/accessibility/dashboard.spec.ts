@@ -14,7 +14,7 @@ async function dismissOrientation(page: Page) {
   await page.addInitScript(() => {
     window.localStorage.setItem('hrl-dashboard-first-run-orientation-dismissed', '1')
   })
-  await page.goto('/')
+  await page.goto('./')
   await expect(page.getByRole('heading', { name: /healthy rivers and landscapes/i })).toBeVisible()
 }
 

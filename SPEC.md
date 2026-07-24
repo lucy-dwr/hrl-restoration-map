@@ -402,7 +402,7 @@ Data refresh cadence: TBD (see Open Questions). Likely nightly for v1.
 - **Linting / formatting:** ESLint + Prettier with a shared config.
 - **Package manager:** pnpm.
 - **Prototype hosting:** Local Vite dev server.
-- **Production application hosting:** Azure Static Web Apps. Azure Blob remains the production data and tile substrate; optional Azure Front Door or Cloudflare can sit in front for caching and HTTPS if needed.
+- **Production application hosting:** Azure Static Web Apps remains the root-hosted application origin. Azure Front Door is the public routing layer, exposing the dashboard beneath `/restoration-map/` while removing that prefix before requests reach the origin. Azure Blob remains the production data and tile substrate.
 
 ### 10.2 Why not other options
 
@@ -583,3 +583,4 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 56 | 2026-07-20 | The current prototype source package is `data/source/2026-07-20-v13.gpkg`; public GeoJSON, GeoPackage, and CSV downloads are regenerated from it. | This supersedes the source-package reference in Decision 54 while retaining its July 20, 2026 displayed update date. |
 | 57 | 2026-07-20 | The dashboard's current milestone is version `0.2.0`. | Version 0.2.0 captures the substantial expansion beyond the initial 0.1.0 prototype, including the fuller map experience, project browsing and filtering, context layers, data downloads, public orientation, and deployment to Azure Static Web Apps. It remains a beta milestone ahead of the planned 1.0.0 public release. |
 | 58 | 2026-07-20 | Interactive dashboard use is supported on tablet and desktop, not phone-sized screens. Phones receive an accessible notice and essential informational actions (purpose, methodology, contact, and data downloads), while map exploration, layer controls, and project browsing require a larger screen. | The map, layer rail, project browsing, and polygon inspection are information-dense and cannot provide a useful phone experience. This sets an honest product boundary without weakening the WCAG 2.2 AA obligation for supported surfaces or leaving phone visitors at a dead end. |
+| 59 | 2026-07-24 | The public dashboard is routed through Azure Front Door beneath `/restoration-map/`; the application is built with that browser-visible base path while Front Door removes the prefix before forwarding requests to the root-hosted Azure Static Web App. Local development and Azure Static Web Apps preview environments remain rooted at `/`. | A shared public hostname needs path-based routing for the restoration map and future HRL applications. The separate browser-visible and origin paths keep each application independently deployed while preserving a stable public URL. |

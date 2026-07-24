@@ -18,7 +18,8 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test:a11y": "playwright test tests/accessibility",
-    "test:a11y:report": "playwright test tests/accessibility --reporter=html"
+    "test:a11y:report": "playwright test tests/accessibility --reporter=html",
+    "test:deployment-path": "PUBLIC_BASE_PATH=/restoration-map/ playwright test tests/deployment-path"
   },
   "dependencies": {
     "maplibre-gl": "^4.7.1",
