@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useId } from 'react'
 import styles from './TopBar.module.css'
 
 const dataPath = `${import.meta.env.BASE_URL}data/`
+const HRL_PROGRAM_URL = 'https://resources.ca.gov/Initiatives/Voluntary-Agreements-Page'
 
 function DownloadMenu() {
   const [open, setOpen] = useState(false)
@@ -110,6 +111,14 @@ export function TopBar({ onAboutOpen, onMethodologyOpen }: TopBarProps) {
         <button type="button" className={styles.navLink} onClick={onMethodologyOpen}>
           Methodology
         </button>
+        <a
+          className={styles.navLink}
+          href={HRL_PROGRAM_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
+          About HRL
+        </a>
         <button type="button" className={styles.aboutLink} onClick={onAboutOpen}>
           About this map
         </button>

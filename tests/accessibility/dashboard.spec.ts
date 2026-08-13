@@ -26,6 +26,12 @@ async function expectNoA11yViolations(page: Page) {
 test.describe('automated WCAG A/AA checks', () => {
   test('the initial dashboard has no detectable violations', async ({ page }) => {
     await dismissOrientation(page)
+    const aboutHrl = page.getByRole('link', { name: 'About HRL' })
+    await expect(aboutHrl).toHaveAttribute(
+      'href',
+      'https://resources.ca.gov/Initiatives/Voluntary-Agreements-Page'
+    )
+    await expect(aboutHrl).toHaveAttribute('target', '_blank')
     await expectNoA11yViolations(page)
   })
 

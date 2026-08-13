@@ -104,10 +104,12 @@
 - **Type:** Navigation/content
 - **Requested outcome:** Add a top-bar path to the main CNRA Healthy Rivers and
   Landscapes site, such as “About HRL.”
-- **Response / disposition:** Accept. Add an “About HRL” external link in the
-  top bar to the official CNRA Healthy Rivers and Landscapes site, keeping
-  program and policy background on its maintained source.
-- **Owner / follow-up:** Add and test the external link.
+- **Response / disposition:** Resolved. An “About HRL” external link now
+  appears in the top bar beside “About this map” and opens the official CNRA
+  Healthy Rivers and Landscapes page in a new tab, keeping program and policy
+  background on its maintained source.
+- **Owner / follow-up:** Completed. Retain and verify the official external
+  link as part of top-bar regression checks.
 
 ### F-09 — Improve Central Valley orientation
 
@@ -306,8 +308,8 @@
 - **Response / disposition:** Resolved. Watershed boundary controls provide
   geographic context and do not filter project records; the System dropdown
   provides the desired project filtering. A compact visible “Filter by system”
-  label now appears above that dropdown, without helper text or a change to
-  filtering behavior.
+  label now appears above that dropdown for clarify, without helper text or a
+  change to filtering behavior.
 - **Owner / follow-up:** Completed. Retain the current filtering behavior.
 
 ### F-21 — Clarify watershed layer persistence
