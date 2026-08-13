@@ -303,13 +303,12 @@
   project type filtering clearer. A reviewer expected Yuba + rearing habitat to
   return only Yuba rearing projects, but saw rearing projects across all
   watersheds.
-- **Response / disposition:** Accept a minor clarity change. Watershed boundary
-  controls provide geographic context and do not filter project records; the
-  System dropdown provides the desired project filtering. Add the compact
-  visible label “Filter by system” above that dropdown, without helper text or
-  a change to filtering behavior.
-- **Owner / follow-up:** Add and test the visible “Filter by system” label;
-  retain the current filtering behavior.
+- **Response / disposition:** Resolved. Watershed boundary controls provide
+  geographic context and do not filter project records; the System dropdown
+  provides the desired project filtering. A compact visible “Filter by system”
+  label now appears above that dropdown, without helper text or a change to
+  filtering behavior.
+- **Owner / follow-up:** Completed. Retain the current filtering behavior.
 
 ### F-21 — Clarify watershed layer persistence
 

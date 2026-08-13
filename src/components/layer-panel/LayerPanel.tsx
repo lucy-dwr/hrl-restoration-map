@@ -601,10 +601,13 @@ export function LayerPanel({
                   placeholder="Search name, species, funding…"
                   onChange={e => onProjectSearchChange(e.target.value)}
                 />
+                <label htmlFor="system-filter" className={`${styles.sectionLabel} ${styles.projectSearchLabel}`}>
+                  Filter by system
+                </label>
                 <select
+                  id="system-filter"
                   className={styles.select}
                   value={systemFilter}
-                  aria-label="Filter projects by system"
                   onChange={e => onSystemFilterChange(e.target.value)}
                 >
                   <option value="">All systems</option>
