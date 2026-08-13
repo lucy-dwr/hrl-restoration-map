@@ -332,7 +332,8 @@ export function LayerPanel({
                 onToggle={toggleLayerSection}
               >
                 <p className={styles.sectionNote}>
-                  Colors show each project's main habitat type. A project may include other habitat types too.
+                  Colors show each project's main habitat type. Projects with multiple types remain
+                  visible when any of their types is selected.
                 </p>
                 <div className={styles.groupActions} aria-label="Project type layer actions">
                   <button

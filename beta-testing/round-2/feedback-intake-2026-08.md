@@ -284,13 +284,17 @@
   respondent reported that it changed when layers were cleared and reselected,
   but did not change immediately when layers were unchecked from the initial
   view (examples: fish food production and fish passage improvements).
-- **Response / disposition:** Accept for verification and fix if reproducible.
-  Because this is a headline metric, test initial load, individual project type
-  toggles, Clear all, Select all, search, system, and early implementation
-  filters. Correct any state path that leaves the acreage total out of sync
-  with the visible filtered project set.
-- **Owner / follow-up:** Reproduce the reported sequence, add regression
-  coverage, and fix any confirmed state synchronization defect.
+- **Response / disposition:** Resolved. Investigation confirmed that the
+  headline total is calculated from the same filtered project set used by the
+  map and project list; no state synchronization defect was reproduced. A
+  project with multiple types remains visible when any of its types is
+  selected. The cited fish food projects have additional selected types, and
+  the fish passage-only projects have zero reported HRL habitat acres, so
+  unchecking those types can leave the acreage total unchanged. The project
+  types note now explains the multi-type selection behavior.
+- **Owner / follow-up:** Completed. Retain the shared filtered-project state
+  for the map, project list, and headline tiles; add regression coverage if
+  this filtering logic changes.
 
 ### F-20 — Clarify combined filters
 
