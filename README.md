@@ -153,7 +153,7 @@ data committed in this repository.
 | Regenerate project or context layer data | [Data script guide](scripts/README.md) |
 | Learn about the local source package | [Source data notes](data/source/README.md) |
 | Understand the generated public data | [Generated data notes](public/data/README.md) |
-| Review the structured beta-testing process | [Beta testing](beta-testing/round-1/README.md) |
+| Review structured beta-testing materials | [Beta testing](beta-testing/README.md) |
 | See notable project changes | [Changelog](CHANGELOG.md) |
 | Review community expectations | [Code of Conduct](CODE_OF_CONDUCT.md) |
 

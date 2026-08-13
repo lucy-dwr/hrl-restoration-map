@@ -4,6 +4,12 @@ This folder contains the survey protocol, raw feedback export, and triage
 artifacts for the first structured beta test of the HRL restoration map
 prototype.
 
+**Status: Complete.** All Round 1 feedback has been addressed through the work
+and dispositions recorded in the
+[candidate issue backlog](round-1-candidate-issues.md), including implemented
+improvements and explicitly documented deferred or out-of-scope items. The
+materials remain here as the traceable record of that review round.
+
 ## Files
 
 - `round-1-beta-testing.md` — beta test tasks, form content, email prompt, and
@@ -11,5 +17,5 @@ prototype.
 - `hrl-restoration-map-prototype-feedback-round-1.csv` — raw feedback export.
 - `round-1-feedback-synthesis.md` — narrative summary of what worked, what
   should change, what should be deferred, and possible `SPEC.md` implications.
-- `round-1-candidate-issues.md` — issue-shaped backlog candidates for 
-  GitHub issue creation.
+- `round-1-candidate-issues.md` — issue-shaped backlog candidates and the
+  resolution record for Round 1 feedback.
