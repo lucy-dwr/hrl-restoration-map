@@ -127,6 +127,9 @@ The project will move to reading a published Azure-hosted data object when the
 HRL data-serving workflow is ready; until then, the checked-in generated files
 are the source used by the deployed app.
 
+For the required approval gate, consumer contract, activation steps, and
+rollback procedure, see [Migrating the map to an approved public snapshot](docs/public-snapshot-migration.md).
+
 ## Status
 
 The application deploys to Azure Static Web Apps, with Azure Front Door as its
@@ -153,6 +156,7 @@ data committed in this repository.
 | Regenerate project or context layer data | [Data script guide](scripts/README.md) |
 | Learn about the local source package | [Source data notes](data/source/README.md) |
 | Understand the generated public data | [Generated data notes](public/data/README.md) |
+| Prepare the approved public snapshot migration | [Public snapshot migration](docs/public-snapshot-migration.md) |
 | Review structured beta-testing materials | [Beta testing](beta-testing/README.md) |
 | See notable project changes | [Changelog](CHANGELOG.md) |
 | Review community expectations | [Code of Conduct](CODE_OF_CONDUCT.md) |

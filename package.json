@@ -19,7 +19,8 @@
     "preview": "vite preview",
     "test:a11y": "playwright test tests/accessibility",
     "test:a11y:report": "playwright test tests/accessibility --reporter=html",
-    "test:deployment-path": "PUBLIC_BASE_PATH=/restoration-map/ playwright test tests/deployment-path"
+    "test:deployment-path": "PUBLIC_BASE_PATH=/restoration-map/ playwright test tests/deployment-path",
+    "test:unit": "vitest run tests/data"
   },
   "dependencies": {
     "maplibre-gl": "^4.7.1",
@@ -35,6 +36,7 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
     "typescript": "^5.6.2",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "vitest": "^2.1.9"
   }
 }

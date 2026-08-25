@@ -21,3 +21,15 @@ American, Feather, Yuba, Putah, Mokelumne, and Tuolumne systems,
 DWR flood bypasses service, and `streams.pmtiles` from NHDPlus V2 source data.
 
 Files here should be reproducible from source data and conversion scripts.
+
+## Future public publication seam
+
+The deployed beta continues to read these checked-in files. The app also has a
+unit-tested, inactive consumer seam in `src/data/project-data-source.ts` for a
+future approved public snapshot. It expects `current.json` to identify a
+version and a same-origin `manifest.json`; the manifest then identifies the
+three immutable project artifacts by their public filenames. This is not an
+active browser data source or approval to publish data. Coordinate the exact
+pointer and manifest contract with the data-pipeline repository before the map
+is switched away from this directory. The full readiness gate and activation
+walkthrough are in [the public snapshot migration guide](../../docs/public-snapshot-migration.md).

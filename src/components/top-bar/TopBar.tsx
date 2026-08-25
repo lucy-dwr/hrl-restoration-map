@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, useId } from 'react'
+import type { ProjectDataSource } from '../../data/project-data-source'
 import styles from './TopBar.module.css'
 
-const dataPath = `${import.meta.env.BASE_URL}data/`
 const HRL_PROGRAM_URL = 'https://resources.ca.gov/Initiatives/Voluntary-Agreements-Page'
 
-function DownloadMenu() {
+function DownloadMenu({ dataSource }: { dataSource: ProjectDataSource }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -49,7 +49,7 @@ function DownloadMenu() {
       {open && (
         <div id={menuId} className={styles.downloadMenu} aria-label="Download data formats">
           <a
-            href={`${dataPath}hrl_restoration_projects.geojson`}
+            href={dataSource.downloads.geojson}
             download="hrl_restoration_projects.geojson"
             className={styles.downloadItem}
             onClick={() => setOpen(false)}
@@ -58,7 +58,7 @@ function DownloadMenu() {
             <span className={styles.downloadDesc}>For web mapping and scripting</span>
           </a>
           <a
-            href={`${dataPath}hrl_restoration_projects.gpkg`}
+            href={dataSource.downloads.gpkg}
             download="hrl_restoration_projects.gpkg"
             className={styles.downloadItem}
             onClick={() => setOpen(false)}
@@ -67,7 +67,7 @@ function DownloadMenu() {
             <span className={styles.downloadDesc}>For QGIS, ArcGIS, and other GIS tools</span>
           </a>
           <a
-            href={`${dataPath}hrl_restoration_projects.csv`}
+            href={dataSource.downloads.csv}
             download="hrl_restoration_projects.csv"
             className={styles.downloadItem}
             onClick={() => setOpen(false)}
@@ -82,11 +82,12 @@ function DownloadMenu() {
 }
 
 interface TopBarProps {
+  dataSource: ProjectDataSource
   onAboutOpen: () => void
   onMethodologyOpen: () => void
 }
 
-export function TopBar({ onAboutOpen, onMethodologyOpen }: TopBarProps) {
+export function TopBar({ dataSource, onAboutOpen, onMethodologyOpen }: TopBarProps) {
   return (
     <header className={styles.bar}>
       <div className={styles.brand}>
@@ -107,7 +108,7 @@ export function TopBar({ onAboutOpen, onMethodologyOpen }: TopBarProps) {
         </div>
       </div>
       <nav className={styles.nav}>
-        <DownloadMenu />
+        <DownloadMenu dataSource={dataSource} />
         <button type="button" className={styles.navLink} onClick={onMethodologyOpen}>
           Methodology
         </button>

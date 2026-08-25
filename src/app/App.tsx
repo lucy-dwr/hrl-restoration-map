@@ -9,6 +9,10 @@ import { PROJECT_LAYER_TYPES, TRIBUTARY_WATERSHEDS } from '../data/layer-options
 import { HRL_ACRES_HELP, PROJECT_ACRES_HELP } from '../data/acreage'
 import type { BoundaryFocusTarget } from '../data/layer-options'
 import type { ProjectProperties } from '../data/types'
+import {
+  createStaticProjectDataSource,
+  type ProjectDataSource,
+} from '../data/project-data-source'
 import type { BasemapMode } from '../lib/url-state'
 import { getGeneralContactMailto } from '../lib/contact'
 import { readUrlState, writeUrlState } from '../lib/url-state'
@@ -18,6 +22,7 @@ import styles from './App.module.css'
 const initial = readUrlState()
 const ORIENTATION_DISMISSED_KEY = 'hrl-dashboard-first-run-orientation-dismissed'
 const DATA_LAST_UPDATED = 'July 20, 2026'
+const projectDataSource = createStaticProjectDataSource(import.meta.env.BASE_URL)
 const OFFICIAL_CONTEXT_LINKS = [
   {
     label: 'California Natural Resources Agency (CNRA) HRL site',
@@ -50,8 +55,7 @@ function usePhoneSizedScreen(): boolean {
   return isPhoneSized
 }
 
-function PhoneUnsupportedSurface() {
-  const dataPath = `${import.meta.env.BASE_URL}data/`
+function PhoneUnsupportedSurface({ dataSource }: { dataSource: ProjectDataSource }) {
 
   return (
     <main className={styles.phoneSurface} aria-labelledby="phone-surface-title">
@@ -106,9 +110,9 @@ function PhoneUnsupportedSurface() {
         <section className={styles.phoneSection} aria-labelledby="phone-download-title">
           <h2 id="phone-download-title">Download project data</h2>
           <ul className={styles.phoneDownloads}>
-            <li><a href={`${dataPath}hrl_restoration_projects.geojson`} download="hrl_restoration_projects.geojson">GeoJSON</a></li>
-            <li><a href={`${dataPath}hrl_restoration_projects.gpkg`} download="hrl_restoration_projects.gpkg">GeoPackage</a></li>
-            <li><a href={`${dataPath}hrl_restoration_projects.csv`} download="hrl_restoration_projects.csv">CSV</a></li>
+            <li><a href={dataSource.downloads.geojson} download="hrl_restoration_projects.geojson">GeoJSON</a></li>
+            <li><a href={dataSource.downloads.gpkg} download="hrl_restoration_projects.gpkg">GeoPackage</a></li>
+            <li><a href={dataSource.downloads.csv} download="hrl_restoration_projects.csv">CSV</a></li>
           </ul>
         </section>
 
@@ -185,10 +189,9 @@ export function App() {
   useEffect(() => {
     if (isPhoneSized) return
 
-    fetch(`${import.meta.env.BASE_URL}data/hrl_restoration_projects.geojson`)
-      .then(r => r.json() as Promise<FeatureCollection>)
+    projectDataSource.loadProjects()
       .then(d => setData(d))
-      .catch(err => console.error('Failed to load hrl_restoration_projects.geojson', err))
+      .catch(err => console.error('Failed to load static project data', err))
   }, [isPhoneSized])
 
   // Restore selected project from URL after data loads
@@ -543,11 +546,15 @@ export function App() {
 
   const panelOpen = selectedProject !== null
 
-  if (isPhoneSized) return <PhoneUnsupportedSurface />
+  if (isPhoneSized) return <PhoneUnsupportedSurface dataSource={projectDataSource} />
 
   return (
     <div className={styles.shell}>
-      <TopBar onAboutOpen={handleAboutOpen} onMethodologyOpen={handleMethodologyOpen} />
+      <TopBar
+        dataSource={projectDataSource}
+        onAboutOpen={handleAboutOpen}
+        onMethodologyOpen={handleMethodologyOpen}
+      />
       <div
         className={styles.mapWrapper}
         style={{ right: panelOpen ? 'var(--detail-panel-width)' : '0px' }}
