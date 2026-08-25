@@ -1,0 +1,43 @@
+name: Pull request checks
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pull-request-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-production-path:
+    name: Build and production-path checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:deployment-path
+
+      - name: Upload Playwright report and test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-production-path-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
