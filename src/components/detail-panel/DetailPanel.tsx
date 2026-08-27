@@ -91,7 +91,7 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
 
   useEffect(() => {
     projectNameRef.current?.focus()
-  }, [project.display_id])
+  }, [project.project_id])
 
   function handleClose() {
     onClose()
@@ -149,7 +149,7 @@ export function DetailPanel({ project, onClose, onZoomToProject }: Props) {
           <h3 className={styles.sectionLabel}>Overview</h3>
           <dl className={styles.dl}>
             <dt>Lead entity</dt>
-            <dd>{project.lead_entity}</dd>
+            <dd>{project.lead_entity.join(', ')}</dd>
             {stages.length > 0 && (
               <>
                 <dt>Current project stage</dt>

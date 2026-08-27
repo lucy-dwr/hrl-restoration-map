@@ -1,9 +1,9 @@
 export interface ProjectProperties {
+  project_id: string
   project_name: string
   project_description: string
   project_stage: string[]
-  lead_entity: string
-  contractors: string[] | null
+  lead_entity: string[]
   early_implementation: boolean
   construction_start_year: number | string | null
   construction_completion_year: number | string | null
@@ -19,5 +19,4 @@ export interface ProjectProperties {
   acreage_tributary_spawning: number | null
   acreage_tidal_wetland: number | null
   target_species: string[]
-  display_id: string
 }

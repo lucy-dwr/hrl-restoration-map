@@ -394,16 +394,16 @@ function boundaryFeaturesForTarget(
 
 function layerVisibilityFilter(
   layerId: string,
-  visibleDisplayIds: Set<string>,
+  visibleProjectIds: Set<string>,
   allVisible: boolean
 ): maplibregl.FilterSpecification | null {
   const sourceFilter = PROJECT_AREA_LAYERS.includes(layerId) ? AREA_GEOMETRY_FILTER : null
   if (allVisible) return sourceFilter ?? null
 
   const visibilityFilter = (
-    visibleDisplayIds.size > 0
-      ? ['in', ['get', 'display_id'], ['literal', [...visibleDisplayIds]]]
-      : ['==', ['get', 'display_id'], '']
+    visibleProjectIds.size > 0
+      ? ['in', ['get', 'project_id'], ['literal', [...visibleProjectIds]]]
+      : ['==', ['get', 'project_id'], '']
   )
 
   if (!sourceFilter) return visibilityFilter as unknown as maplibregl.FilterSpecification
@@ -426,12 +426,12 @@ function tributaryVisibilityFilter(visibleTributaries: Set<string>): maplibregl.
 
 function layerSelectionFilter(
   layerId: string,
-  selectedDisplayId: string | null
+  selectedProjectId: string | null
 ): maplibregl.FilterSpecification {
   const selectionFilter = (
-    selectedDisplayId
-      ? ['==', ['get', 'display_id'], selectedDisplayId]
-      : ['==', ['get', 'display_id'], '']
+    selectedProjectId
+      ? ['==', ['get', 'project_id'], selectedProjectId]
+      : ['==', ['get', 'project_id'], '']
   )
 
   // Point and centroid layers draw from single-point sources, so they must not
@@ -794,12 +794,12 @@ function buildPointPathData(raw: FeatureCollection): FeatureCollection {
 interface MapProps {
   data: FeatureCollection | null
   basemap: BasemapMode
-  visibleDisplayIds: Set<string>
+  visibleProjectIds: Set<string>
   fitProjectsOnInitialLoad: boolean
-  projectFocusRequest: { displayId: string; seq: number } | null
+  projectFocusRequest: { projectId: string; seq: number } | null
   boundaryFocusRequest: { target: BoundaryFocusTarget; seq: number } | null
   fitVisibleRequest: number
-  selectedDisplayId: string | null
+  selectedProjectId: string | null
   visibleTributaries: Set<string>
   deltaBoundaryVisible: boolean
   yoloBypassVisible: boolean
@@ -808,7 +808,7 @@ interface MapProps {
   layerPanelOpen: boolean
   initialCenter: [number, number]
   initialZoom: number
-  onProjectSelect: (displayId: string) => void
+  onProjectSelect: (projectId: string) => void
   onProjectDeselect: () => void
   onMoveEnd: (lat: number, lng: number, zoom: number) => void
 }
@@ -816,12 +816,12 @@ interface MapProps {
 export function Map({
   data,
   basemap,
-  visibleDisplayIds,
+  visibleProjectIds,
   fitProjectsOnInitialLoad,
   projectFocusRequest,
   boundaryFocusRequest,
   fitVisibleRequest,
-  selectedDisplayId,
+  selectedProjectId,
   visibleTributaries,
   deltaBoundaryVisible,
   yoloBypassVisible,
@@ -934,8 +934,8 @@ export function Map({
     const handleProjectClick = (e: maplibregl.MapLayerMouseEvent) => {
       featureClickedRef.current = true
       if (!e.features?.length) return
-      const displayId = String(e.features[0].properties?.['display_id'] ?? '')
-      if (displayId) onProjectSelectRef.current(displayId)
+      const projectId = String(e.features[0].properties?.['project_id'] ?? '')
+      if (projectId) onProjectSelectRef.current(projectId)
     }
 
     for (const layerId of PROJECT_INTERACTIVE_LAYERS) {
@@ -1427,12 +1427,12 @@ export function Map({
       && !userInteractedBeforeInitialFitRef.current
     ) {
       const initiallyVisibleFeatures = data.features.filter(f => (
-        visibleDisplayIds.has((f.properties as ProjectProperties).display_id)
+        visibleProjectIds.has((f.properties as ProjectProperties).project_id)
       ))
       initialProjectFitDoneRef.current = true
       fitFeatureBounds(map, initiallyVisibleFeatures, 9)
     }
-  }, [data, fitProjectsOnInitialLoad, mapLoaded, visibleDisplayIds])
+  }, [data, fitProjectsOnInitialLoad, mapLoaded, visibleProjectIds])
 
   // Sync project filters
   useEffect(() => {
@@ -1440,17 +1440,17 @@ export function Map({
     const map = mapRef.current
     if (!map.getLayer('projects-fill')) return
 
-    const allVisible = !data || visibleDisplayIds.size === data.features.length
+    const allVisible = !data || visibleProjectIds.size === data.features.length
     for (const layerId of PROJECT_FILTERED_LAYERS) {
-      map.setFilter(layerId, layerVisibilityFilter(layerId, visibleDisplayIds, allVisible))
+      map.setFilter(layerId, layerVisibilityFilter(layerId, visibleProjectIds, allVisible))
     }
-  }, [data, mapLoaded, visibleDisplayIds])
+  }, [data, mapLoaded, visibleProjectIds])
 
   // Zoom to a requested project
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || !data || !projectFocusRequest) return
     const features = data.features.filter(f => (
-      (f.properties as ProjectProperties).display_id === projectFocusRequest.displayId
+      (f.properties as ProjectProperties).project_id === projectFocusRequest.projectId
     ))
     fitFeatureBounds(mapRef.current, features, 13)
   }, [data, mapLoaded, projectFocusRequest])
@@ -1478,10 +1478,10 @@ export function Map({
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || !data || fitVisibleRequest === 0) return
     const features = data.features.filter(f => (
-      visibleDisplayIds.has((f.properties as ProjectProperties).display_id)
+      visibleProjectIds.has((f.properties as ProjectProperties).project_id)
     ))
     fitFeatureBounds(mapRef.current, features, 11)
-  }, [data, fitVisibleRequest, mapLoaded, visibleDisplayIds])
+  }, [data, fitVisibleRequest, mapLoaded, visibleProjectIds])
 
   // Sync HRL tributary watershed visibility
   useEffect(() => {
@@ -1542,9 +1542,9 @@ export function Map({
     if (!map.getLayer('projects-selected-halo')) return
 
     for (const layerId of PROJECT_SELECTED_LAYERS) {
-      map.setFilter(layerId, layerSelectionFilter(layerId, selectedDisplayId))
+      map.setFilter(layerId, layerSelectionFilter(layerId, selectedProjectId))
     }
-  }, [selectedDisplayId, mapLoaded])
+  }, [selectedProjectId, mapLoaded])
 
   return (
     <div className={styles.wrapper}>

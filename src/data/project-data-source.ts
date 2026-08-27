@@ -65,6 +65,29 @@ async function fetchJson(url: string, fetchImplementation: FetchImplementation):
   return response.json() as Promise<unknown>
 }
 
+function normalizeProjectProperties(data: FeatureCollection): FeatureCollection {
+  return {
+    ...data,
+    features: data.features.map(feature => {
+      const properties = (feature.properties ?? {}) as Record<string, unknown>
+      const legacyId = properties.display_id
+      const projectId = typeof properties.project_id === 'string' && properties.project_id.trim() !== ''
+        ? properties.project_id
+        : typeof legacyId === 'string' ? legacyId : ''
+      const leadEntity = Array.isArray(properties.lead_entity)
+        ? properties.lead_entity
+        : typeof properties.lead_entity === 'string'
+          ? properties.lead_entity.split(';').map(value => value.trim()).filter(Boolean)
+          : []
+
+      return {
+        ...feature,
+        properties: { ...properties, project_id: projectId, lead_entity: leadEntity },
+      }
+    }),
+  }
+}
+
 function createDataSource(
   kind: ProjectDataSource['kind'],
   downloads: ProjectDownloadUrls,
@@ -74,7 +97,9 @@ function createDataSource(
     kind,
     downloads,
     async loadProjects() {
-      return fetchJson(downloads.geojson, fetchImplementation) as Promise<FeatureCollection>
+      return normalizeProjectProperties(
+        await fetchJson(downloads.geojson, fetchImplementation) as FeatureCollection
+      )
     },
   }
 }

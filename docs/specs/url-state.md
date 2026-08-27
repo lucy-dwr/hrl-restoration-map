@@ -11,7 +11,7 @@ The URL is the shareable map-view contract. The implementation is [`src/lib/url-
 |---|---|---|
 | `lat`, `lng`, `zoom` | Map view, serialized to 4, 4, and 2 decimal places | `38.4`, `-121.8`, `7` |
 | `basemap=imagery` | Select imagery basemap | Map basemap |
-| `selected=<display_id>` | Selected project | No selection |
+| `selected=<project_id>` | Selected project | No selection |
 | `hidden=a,b` | Comma-separated hidden project type keys | All project types visible |
 | `visibleTributaries=a,b` | Comma-separated visible tributary keys | No tributary boundaries visible |
 | `delta=1` | Show Delta legal boundary | Hidden |

@@ -42,7 +42,7 @@ function getSearchMatchDetails(project: ProjectProperties, search: string): stri
 
   if (matchesSearch(project.project_name, query)) details.push('Project name')
   if (matchesSearch(project.project_description, query)) details.push('Description')
-  if (matchesSearch(project.lead_entity, query)) details.push(`Lead: ${project.lead_entity}`)
+  if (listMatchesSearch(project.lead_entity, query)) details.push(`Lead: ${project.lead_entity.join(', ')}`)
   if (matchesSearch(project.system, query)) details.push(`System: ${project.system}`)
   if (listMatchesSearch(project.target_species, query)) addListDetail('Target species', project.target_species)
   if (listMatchesSearch(project.funding_sources, query)) addListDetail('Funding', project.funding_sources)
@@ -103,7 +103,7 @@ interface Props {
   onBasemapChange: (mode: BasemapMode) => void
   projects: ProjectProperties[]
   totalProjectCount: number
-  selectedDisplayId: string | null
+  selectedProjectId: string | null
   projectSearch: string
   onProjectSearchChange: (value: string) => void
   systemFilter: string
@@ -111,8 +111,8 @@ interface Props {
   onSystemFilterChange: (value: string) => void
   earlyOnly: boolean
   onEarlyOnlyChange: (value: boolean) => void
-  onProjectSelect: (displayId: string) => void
-  onZoomToProject: (displayId: string) => void
+  onProjectSelect: (projectId: string) => void
+  onZoomToProject: (projectId: string) => void
   onFitVisibleProjects: () => void
   activeFilterChips: ActiveFilterChip[]
   onResetFilters: () => void
@@ -144,7 +144,7 @@ export function LayerPanel({
   onBasemapChange,
   projects,
   totalProjectCount,
-  selectedDisplayId,
+  selectedProjectId,
   projectSearch,
   onProjectSearchChange,
   systemFilter,
@@ -652,14 +652,14 @@ export function LayerPanel({
                     const searchMatchDetails = getSearchMatchDetails(project, projectSearch)
                     return (
                       <div
-                        key={project.display_id}
-                        className={project.display_id === selectedDisplayId ? styles.projectItemSelected : styles.projectItem}
+                        key={project.project_id}
+                        className={project.project_id === selectedProjectId ? styles.projectItemSelected : styles.projectItem}
                         role="listitem"
                       >
                         <button
                           type="button"
                           className={styles.projectSelect}
-                          onClick={() => onProjectSelect(project.display_id)}
+                          onClick={() => onProjectSelect(project.project_id)}
                         >
                           <span className={styles.projectName}>{project.project_name}</span>
                           <span className={styles.projectMeta}>
@@ -687,7 +687,7 @@ export function LayerPanel({
                         <button
                           type="button"
                           className={styles.projectZoom}
-                          onClick={() => onZoomToProject(project.display_id)}
+                          onClick={() => onZoomToProject(project.project_id)}
                           aria-label={`Zoom to ${project.project_name}`}
                           title={`Zoom to ${project.project_name}`}
                         >
@@ -699,8 +699,8 @@ export function LayerPanel({
                 )}
               </div>
               <p className={styles.srOnly} role="status" aria-live="polite">
-                {selectedDisplayId
-                  ? `Selected project: ${projects.find(project => project.display_id === selectedDisplayId)?.project_name ?? selectedDisplayId}`
+                {selectedProjectId
+                  ? `Selected project: ${projects.find(project => project.project_id === selectedProjectId)?.project_name ?? selectedProjectId}`
                   : ''}
               </p>
             </div>

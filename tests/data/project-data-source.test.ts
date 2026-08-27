@@ -28,6 +28,25 @@ describe('project data sources', () => {
     )
   })
 
+  it('uses project_id and normalizes lead entities while supporting the legacy beta snapshot', async () => {
+    const legacyProjects = {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: { display_id: 'project-1', lead_entity: 'DWR; River Partners' },
+        geometry: null,
+      }],
+    }
+    const fetchImplementation = vi.fn().mockResolvedValue(jsonResponse(legacyProjects))
+    const source = createStaticProjectDataSource('/', fetchImplementation)
+
+    await expect(source.loadProjects()).resolves.toMatchObject({
+      features: [{
+        properties: { project_id: 'project-1', lead_entity: ['DWR', 'River Partners'] },
+      }],
+    })
+  })
+
   it('resolves immutable project artifacts through current.json and its manifest', async () => {
     const fetchImplementation = vi.fn()
       .mockResolvedValueOnce(jsonResponse({

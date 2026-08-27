@@ -162,7 +162,7 @@ interface ActiveFilterChip {
 export function App() {
   const isPhoneSized = usePhoneSizedScreen()
   const [data, setData] = useState<FeatureCollection | null>(null)
-  const [selectedDisplayId, setSelectedDisplayId] = useState<string | null>(initial.selected)
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(initial.selected)
   const [selectedProject, setSelectedProject] = useState<ProjectProperties | null>(null)
   const [basemap, setBasemap] = useState<BasemapMode>(initial.basemap)
   const [hiddenTypes, setHiddenTypes] = useState<Set<string>>(initial.hiddenTypes)
@@ -174,7 +174,7 @@ export function App() {
   const [projectSearch, setProjectSearch] = useState('')
   const [systemFilter, setSystemFilter] = useState('')
   const [earlyOnly, setEarlyOnly] = useState(false)
-  const [projectFocusRequest, setProjectFocusRequest] = useState<{ displayId: string; seq: number } | null>(null)
+  const [projectFocusRequest, setProjectFocusRequest] = useState<{ projectId: string; seq: number } | null>(null)
   const [boundaryFocusRequest, setBoundaryFocusRequest] = useState<{ target: BoundaryFocusTarget; seq: number } | null>(null)
   const [fitVisibleRequest, setFitVisibleRequest] = useState(0)
   const [layerPanelOpen, setLayerPanelOpen] = useState(true)
@@ -196,31 +196,31 @@ export function App() {
 
   // Restore selected project from URL after data loads
   useEffect(() => {
-    if (!data || !selectedDisplayId || selectedProject) return
+    if (!data || !selectedProjectId || selectedProject) return
     const feature = data.features.find(
-      f => (f.properties as ProjectProperties).display_id === selectedDisplayId
+      f => (f.properties as ProjectProperties).project_id === selectedProjectId
     )
     if (feature) setSelectedProject(feature.properties as ProjectProperties)
-  }, [data, selectedDisplayId, selectedProject])
+  }, [data, selectedProjectId, selectedProject])
 
-  const handleProjectSelect = useCallback((displayId: string) => {
+  const handleProjectSelect = useCallback((projectId: string) => {
     if (!data) return
     const feature = data.features.find(
-      f => (f.properties as ProjectProperties).display_id === displayId
+      f => (f.properties as ProjectProperties).project_id === projectId
     )
     if (!feature) return
-    setSelectedDisplayId(displayId)
+    setSelectedProjectId(projectId)
     setSelectedProject(feature.properties as ProjectProperties)
-    writeUrlState({ selected: displayId })
+    writeUrlState({ selected: projectId })
   }, [data])
 
-  const handleProjectSelectFromList = useCallback((displayId: string) => {
-    handleProjectSelect(displayId)
-    setProjectFocusRequest({ displayId, seq: Date.now() })
+  const handleProjectSelectFromList = useCallback((projectId: string) => {
+    handleProjectSelect(projectId)
+    setProjectFocusRequest({ projectId, seq: Date.now() })
   }, [handleProjectSelect])
 
   const handleProjectDeselect = useCallback(() => {
-    setSelectedDisplayId(null)
+    setSelectedProjectId(null)
     setSelectedProject(null)
     writeUrlState({ selected: null })
   }, [])
@@ -353,7 +353,7 @@ export function App() {
       return (
         matchesSearch(project.project_name, query)
         || matchesSearch(project.project_description, query)
-        || matchesSearch(project.lead_entity, query)
+        || listMatchesSearch(project.lead_entity, query)
         || matchesSearch(project.system, query)
         || listMatchesSearch(project.project_type, query)
         || listMatchesSearch(project.project_stage, query)
@@ -363,8 +363,8 @@ export function App() {
     })
   }, [earlyOnly, hiddenTypes, projectSearch, projects, systemFilter])
 
-  const filteredDisplayIds = useMemo(() => (
-    new Set(filteredProjects.map(project => project.display_id))
+  const filteredProjectIds = useMemo(() => (
+    new Set(filteredProjects.map(project => project.project_id))
   ), [filteredProjects])
 
   const filteredData = useMemo<FeatureCollection | null>(() => {
@@ -372,10 +372,10 @@ export function App() {
     return {
       ...data,
       features: data.features.filter(f => (
-        filteredDisplayIds.has((f.properties as ProjectProperties).display_id)
+        filteredProjectIds.has((f.properties as ProjectProperties).project_id)
       )),
     }
-  }, [data, filteredDisplayIds])
+  }, [data, filteredProjectIds])
 
   const activeFilterChips = useMemo<ActiveFilterChip[]>(() => {
     const chips: ActiveFilterChip[] = []
@@ -456,9 +456,9 @@ export function App() {
   }, [])
 
   const handleZoomToSelectedProject = useCallback(() => {
-    if (!selectedDisplayId) return
-    setProjectFocusRequest({ displayId: selectedDisplayId, seq: Date.now() })
-  }, [selectedDisplayId])
+    if (!selectedProjectId) return
+    setProjectFocusRequest({ projectId: selectedProjectId, seq: Date.now() })
+  }, [selectedProjectId])
 
   const handleAboutOpen = useCallback(() => {
     previousFocusRef.current = document.activeElement instanceof HTMLElement
@@ -562,12 +562,12 @@ export function App() {
         <Map
           data={data}
           basemap={basemap}
-          visibleDisplayIds={filteredDisplayIds}
+          visibleProjectIds={filteredProjectIds}
           fitProjectsOnInitialLoad={!initial.hasUrlState}
           projectFocusRequest={projectFocusRequest}
           boundaryFocusRequest={boundaryFocusRequest}
           fitVisibleRequest={fitVisibleRequest}
-          selectedDisplayId={selectedDisplayId}
+          selectedProjectId={selectedProjectId}
           visibleTributaries={visibleTributaries}
           deltaBoundaryVisible={deltaBoundaryVisible}
           yoloBypassVisible={yoloBypassVisible}
@@ -590,7 +590,7 @@ export function App() {
           onBasemapChange={handleBasemapChange}
           projects={filteredProjects}
           totalProjectCount={projects.length}
-          selectedDisplayId={selectedDisplayId}
+          selectedProjectId={selectedProjectId}
           projectSearch={projectSearch}
           onProjectSearchChange={setProjectSearch}
           systemFilter={systemFilter}
