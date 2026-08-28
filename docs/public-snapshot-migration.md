@@ -3,8 +3,14 @@
 ## Purpose and current state
 
 The deployed beta reads project data from checked-in files under `public/data/`.
-That remains the active source until the HRL publication workflow in Azure has 
-produced and approved a public snapshot.
+That remains the active source until the HRL publication workflow has produced
+and approved a public snapshot.
+
+That workflow is operator-run (see
+[`hrl-azure-infrastructure/PIPELINE_INFRA.md`](https://github.com/lucy-dwr/hrl-azure-infrastructure/blob/main/PIPELINE_INFRA.md)):
+an HRL data operator validates a submission with `hrl-pipeline`, and after
+review runs `hrl-pipeline promote`, which writes the immutable versioned public
+files and updates `current.json`. There is no promotion service or queue.
 
 The consumer seam is [`src/data/project-data-source.ts`](../src/data/project-data-source.ts).
 It provides two implementations of the same `ProjectDataSource` interface:
@@ -74,13 +80,21 @@ snapshot versions, a failed HTTP request, or a manifest/artifact URL that
 moves to another origin. It intentionally does not construct file URLs from a
 version string; it follows only the approved pointer and manifest.
 
+**Open contract gap.** `hrl-pipeline promote` currently emits `projects.geojson`
+/ `projects.gpkg` / `projects.csv` and `metadata.json`, while this resolver
+expects `hrl_restoration_projects.*` and `manifest.json`. Before activation,
+reconcile the two: either the pipeline's `publish_local` writes the map's names
+and a `manifest.json`, or the resolver and this contract adopt the pipeline's
+names. Do this as a versioned producer/consumer contract change with tests on
+both sides.
+
 ## Readiness gate
 
 Do not activate this path until all of these are true:
 
-1. The restoration promotion workflow has passed its synthetic end-to-end
-   acceptance run, including human approval and a conditional `current.json`
-   update.
+1. `hrl-pipeline promote`, run by the HRL data operator, has passed a synthetic
+   end-to-end acceptance run, including human `_APPROVE` and a conditional
+   `current.json` update.
 2. The snapshot is in the public export surface and contains only
    privacy-filtered `RestorationProjectPublicRecord` fields.
 3. The producer emits the agreed pointer and manifest shape above, the three
@@ -104,10 +118,10 @@ that these gates have been met.
    `manifest.json`, filenames, cache headers, and CORS behavior. Keep the map
    resolver tests aligned with any approved contract change.
 
-2. **Publish an approved snapshot.** Use the promotion workflow; do not copy
-   files manually or point the map at a publication candidate. Record the
-   immutable snapshot version and the public pointer URL in the operational
-   change record.
+2. **Publish an approved snapshot.** Use `hrl-pipeline promote` against an
+   `_APPROVE`d candidate; do not copy files manually or point the map at a
+   publication candidate. Record the immutable snapshot version and the public
+   pointer URL in the operational change record.
 
 3. **Test the public endpoint before changing the app.** From a browser on the
    dashboard origin, fetch `current.json`, then its manifest and each artifact.
