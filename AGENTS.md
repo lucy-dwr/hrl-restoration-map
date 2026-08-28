@@ -4,6 +4,16 @@ This file explains how to work in the repo. The product, design, data, and archi
 
 Read `SPEC.md` before writing code. Treat its Decision Log as canonical, and do not reverse a logged decision without proposing a superseding entry.
 
+The cross-repository data workflow (how an approved public snapshot is produced
+and what this map is allowed to read) is described in
+[`hrl-azure-infrastructure/PIPELINE_INFRA.md`](https://github.com/lucy-dwr/hrl-azure-infrastructure/blob/main/PIPELINE_INFRA.md).
+That workflow is operator-run: an HRL data operator validates and promotes
+submissions with `hrl-pipeline` and uploads the versioned public snapshot plus
+`current.json`. There is no ingestion service, queue, or Container App to
+target. This repository is unchanged by that: keep using the checked-in
+`public/data/` files and the inactive `ProjectDataSource` seam until an approved
+snapshot exists.
+
 ## Current Implementation Status
 
 The early-implementation dashboard is deployed to Azure Static Web Apps. What
