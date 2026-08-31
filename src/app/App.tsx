@@ -11,6 +11,7 @@ import type { BoundaryFocusTarget } from '../data/layer-options'
 import type { ProjectProperties } from '../data/types'
 import {
   createStaticProjectDataSource,
+  resolvePublicSnapshotProjectDataSource,
   type ProjectDataSource,
 } from '../data/project-data-source'
 import type { BasemapMode } from '../lib/url-state'
@@ -22,7 +23,11 @@ import styles from './App.module.css'
 const initial = readUrlState()
 const ORIENTATION_DISMISSED_KEY = 'hrl-dashboard-first-run-orientation-dismissed'
 const DATA_LAST_UPDATED = 'July 20, 2026'
-const projectDataSource = createStaticProjectDataSource(import.meta.env.BASE_URL)
+
+// Set only in the production build (a reviewed Vite build variable, not a
+// source constant). When unset — local dev, tests, previews — the app stays
+// on the checked-in static fixtures. See docs/public-snapshot-migration.md.
+const PUBLIC_SNAPSHOT_URL = import.meta.env.VITE_PUBLIC_SNAPSHOT_URL as string | undefined
 const OFFICIAL_CONTEXT_LINKS = [
   {
     label: 'California Natural Resources Agency (CNRA) HRL site',
@@ -124,6 +129,34 @@ function PhoneUnsupportedSurface({ dataSource }: { dataSource: ProjectDataSource
   )
 }
 
+function DataLoadingSurface() {
+  return (
+    <main className={styles.dataStatusSurface} aria-busy="true">
+      <div className={styles.dataStatusContent}>
+        <p className={styles.dataStatusText}>Loading restoration project data…</p>
+      </div>
+    </main>
+  )
+}
+
+function DataUnavailableSurface({ message }: { message: string }) {
+  return (
+    <main className={styles.dataStatusSurface} role="alert">
+      <div className={styles.dataStatusContent}>
+        <h1 className={styles.dataStatusTitle}>Restoration project data is temporarily unavailable</h1>
+        <p className={styles.dataStatusText}>
+          The dashboard could not load the current published dataset. This is
+          usually temporary — please try reloading in a few minutes.
+        </p>
+        <p className={styles.dataStatusDetail}>{message}</p>
+        <a className={styles.dataStatusContact} href={getGeneralContactMailto()}>
+          Contact HRL
+        </a>
+      </div>
+    </main>
+  )
+}
+
 function shouldShowFirstRunOrientation(): boolean {
   try {
     return window.localStorage.getItem(ORIENTATION_DISMISSED_KEY) !== '1'
@@ -161,6 +194,13 @@ interface ActiveFilterChip {
 
 export function App() {
   const isPhoneSized = usePhoneSizedScreen()
+  // The static source is available synchronously; the public snapshot isn't.
+  // Starting non-null when there's no production pointer to resolve avoids
+  // showing a loading state in local dev and tests for no reason.
+  const [dataSource, setDataSource] = useState<ProjectDataSource | null>(() => (
+    PUBLIC_SNAPSHOT_URL ? null : createStaticProjectDataSource(import.meta.env.BASE_URL)
+  ))
+  const [dataSourceError, setDataSourceError] = useState<string | null>(null)
   const [data, setData] = useState<FeatureCollection | null>(null)
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(initial.selected)
   const [selectedProject, setSelectedProject] = useState<ProjectProperties | null>(null)
@@ -186,13 +226,37 @@ export function App() {
   const aboutCloseRef = useRef<HTMLButtonElement>(null)
   const methodologyCloseRef = useRef<HTMLButtonElement>(null)
 
+  // Resolve the production public snapshot, if configured. A failure here is
+  // shown to the user (see the render guards below) — it must never silently
+  // fall back to the static fixtures as if they were the approved snapshot.
   useEffect(() => {
-    if (isPhoneSized) return
+    if (!PUBLIC_SNAPSHOT_URL) return
+    let cancelled = false
 
-    projectDataSource.loadProjects()
+    resolvePublicSnapshotProjectDataSource(PUBLIC_SNAPSHOT_URL)
+      .then(source => {
+        if (!cancelled) setDataSource(source)
+      })
+      .catch(err => {
+        console.error('Failed to resolve the public project data snapshot', err)
+        if (!cancelled) setDataSourceError(err instanceof Error ? err.message : String(err))
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isPhoneSized || !dataSource) return
+
+    dataSource.loadProjects()
       .then(d => setData(d))
-      .catch(err => console.error('Failed to load static project data', err))
-  }, [isPhoneSized])
+      .catch(err => {
+        console.error('Failed to load project data', err)
+        setDataSourceError(err instanceof Error ? err.message : String(err))
+      })
+  }, [isPhoneSized, dataSource])
 
   // Restore selected project from URL after data loads
   useEffect(() => {
@@ -546,12 +610,20 @@ export function App() {
 
   const panelOpen = selectedProject !== null
 
-  if (isPhoneSized) return <PhoneUnsupportedSurface dataSource={projectDataSource} />
+  if (dataSourceError) {
+    return <DataUnavailableSurface message={dataSourceError} />
+  }
+
+  if (!dataSource) {
+    return <DataLoadingSurface />
+  }
+
+  if (isPhoneSized) return <PhoneUnsupportedSurface dataSource={dataSource} />
 
   return (
     <div className={styles.shell}>
       <TopBar
-        dataSource={projectDataSource}
+        dataSource={dataSource}
         onAboutOpen={handleAboutOpen}
         onMethodologyOpen={handleMethodologyOpen}
       />
