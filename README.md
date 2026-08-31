@@ -17,8 +17,8 @@ public, and the contributors who help keep the dashboard useful and accurate.
 
 ![Desktop view of the HRL Restoration Dashboard with the Lower Elkhorn Basin Levee Setback selected on the map. Layer controls appear on the left, project summary tiles sit at the bottom, and the selected project's description and details appear in a panel on the right.](docs/images/dashboard-overview.png)
 
-*An example of a dashboard view. The public dashboard URL will be published
-after Azure Front Door endpoint validation and DTS custom-domain activation.*
+*An example of a dashboard view. The live public dashboard is available at
+[`https://hrl.water.ca.gov/restoration-map/`](https://hrl.water.ca.gov/restoration-map/).* 
 
 ## What you can do
 
@@ -105,9 +105,10 @@ access and any future origin-bypass restrictions will be coordinated with DTS.
 Application-owned public URLs must use Vite's `import.meta.env.BASE_URL` (or a
 fully qualified future data URL), not an unqualified root-relative `/...` URL.
 
-Before DTS activates `hrl.water.ca.gov`, validate the deployed application at
-the Azure-generated Front Door endpoint, using its `/restoration-map/` path.
-Do not publish the direct Azure Static Web App hostname as a dashboard link.
+The deployed application is live at `https://hrl.water.ca.gov/restoration-map/`.
+Use the Azure-generated Front Door endpoint with its `/restoration-map/` path
+only for diagnostics; do not publish the direct Azure Static Web App hostname
+as a dashboard link.
 
 ## Data and updates
 
@@ -133,11 +134,9 @@ rollback procedure, see [Migrating the map to an approved public snapshot](docs/
 ## Status
 
 The application deploys to Azure Static Web Apps, with Azure Front Door as its
-public routing layer. The intended public URL is
-`https://hrl.water.ca.gov/restoration-map/`; DTS custom-domain activation is
-still pending. Until then, test the Azure-generated Front Door endpoint at
-`/restoration-map/`; the direct Azure Static Web Apps hostname remains an
-origin/debug endpoint, not the public dashboard URL.
+public routing layer. The public dashboard is live at
+`https://hrl.water.ca.gov/restoration-map/`. The direct Azure Static Web Apps
+hostname remains an origin/debug endpoint, not the public dashboard URL.
 Every push to `main` runs the GitHub Actions workflow, builds the Vite app with
 Node 24 and pnpm, and deploys the resulting static site.
 
