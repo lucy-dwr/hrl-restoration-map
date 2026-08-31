@@ -16,24 +16,32 @@ export interface ProjectDataSource {
 
 type FetchImplementation = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 
+/**
+ * Matches `hrl-pipeline promote`'s `current.json` exactly (see
+ * `hrl_restoration_pipeline.publication.activate_local_snapshot`): a single
+ * pointer file with the version's artifact paths embedded directly. There is
+ * no separate manifest.json — current.json is the whole contract.
+ */
 interface SnapshotPointer {
   snapshot_version: string
-  manifest: string
+  artifacts: Record<string, unknown>
 }
 
-interface SnapshotArtifact {
-  path: string
-}
-
-interface SnapshotManifest {
-  snapshot_version?: string
-  artifacts: Record<string, SnapshotArtifact>
-}
-
-const PROJECT_ARTIFACTS = {
+const STATIC_PROJECT_ARTIFACTS = {
   geojson: 'hrl_restoration_projects.geojson',
   gpkg: 'hrl_restoration_projects.gpkg',
   csv: 'hrl_restoration_projects.csv',
+} as const
+
+/**
+ * Filenames `hrl-pipeline promote`'s `publish_local` actually writes under
+ * each immutable version directory. These are pipeline output, not the
+ * static beta fixture names above — do not merge the two.
+ */
+const SNAPSHOT_PROJECT_ARTIFACTS = {
+  geojson: 'projects.geojson',
+  gpkg: 'projects.gpkg',
+  csv: 'projects.csv',
 } as const
 
 function withTrailingSlash(value: string): string {
@@ -126,22 +134,25 @@ export function createStaticProjectDataSource(
   const dataPath = `${withTrailingSlash(basePath)}data/`
 
   return createDataSource('static', {
-    geojson: `${dataPath}${PROJECT_ARTIFACTS.geojson}`,
-    gpkg: `${dataPath}${PROJECT_ARTIFACTS.gpkg}`,
-    csv: `${dataPath}${PROJECT_ARTIFACTS.csv}`,
+    geojson: `${dataPath}${STATIC_PROJECT_ARTIFACTS.geojson}`,
+    gpkg: `${dataPath}${STATIC_PROJECT_ARTIFACTS.gpkg}`,
+    csv: `${dataPath}${STATIC_PROJECT_ARTIFACTS.csv}`,
   }, fetchImplementation)
 }
 
 /**
- * Resolves the future public publication contract without selecting it for the
- * app. The pointer is intentionally fetched first; artifacts are only read
- * from its immutable manifest, never guessed from a version string.
+ * Resolves the public publication contract without selecting it for the app.
+ * Artifacts are read only from the pointer's own `artifacts` map, never
+ * guessed from the version string.
  *
- * Expected public shape (not active for the beta):
- * current.json: { "snapshot_version": "…", "manifest": "<version>/manifest.json" }
- * manifest.json: { "snapshot_version": "…", "artifacts": {
- *   "hrl_restoration_projects.geojson": { "path": "hrl_restoration_projects.geojson" }, …
- * }}
+ * Public shape (not yet active for the beta), matching `current.json` as
+ * `hrl-pipeline promote` writes it:
+ * { "snapshot_version": "…", "artifacts": {
+ *     "projects.geojson": "<version>/projects.geojson",
+ *     "projects.gpkg": "<version>/projects.gpkg",
+ *     "projects.csv": "<version>/projects.csv",
+ *     "metadata.json": "<version>/metadata.json" }, … }
+ * Artifact paths are relative to current.json itself.
  */
 export async function resolvePublicSnapshotProjectDataSource(
   currentUrl: string,
@@ -150,24 +161,12 @@ export async function resolvePublicSnapshotProjectDataSource(
   const pointerRecord = getObject(await fetchJson(currentUrl, fetchImplementation), 'current.json')
   const pointer: SnapshotPointer = {
     snapshot_version: getRequiredString(pointerRecord.snapshot_version, 'current.json snapshot_version'),
-    manifest: getRequiredString(pointerRecord.manifest, 'current.json manifest'),
-  }
-  const manifestUrl = resolveSnapshotUrl(pointer.manifest, currentUrl)
-  const manifestRecord = getObject(await fetchJson(manifestUrl, fetchImplementation), 'manifest.json')
-  const manifest: SnapshotManifest = {
-    snapshot_version: typeof manifestRecord.snapshot_version === 'string'
-      ? manifestRecord.snapshot_version
-      : undefined,
-    artifacts: getObject(manifestRecord.artifacts, 'manifest.json artifacts') as Record<string, SnapshotArtifact>,
-  }
-
-  if (manifest.snapshot_version !== undefined && manifest.snapshot_version !== pointer.snapshot_version) {
-    throw new Error('current.json and manifest.json refer to different snapshot versions.')
+    artifacts: getObject(pointerRecord.artifacts, 'current.json artifacts'),
   }
 
   const getArtifactUrl = (format: ProjectDownloadFormat): string => {
-    const artifact = getObject(manifest.artifacts[PROJECT_ARTIFACTS[format]], `manifest artifact ${PROJECT_ARTIFACTS[format]}`)
-    return resolveSnapshotUrl(getRequiredString(artifact.path, `manifest artifact ${PROJECT_ARTIFACTS[format]} path`), manifestUrl)
+    const name = SNAPSHOT_PROJECT_ARTIFACTS[format]
+    return resolveSnapshotUrl(getRequiredString(pointer.artifacts[name], `current.json artifact ${name}`), currentUrl)
   }
 
   return createDataSource('public-snapshot', {

@@ -32,61 +32,46 @@ map is changed. Do not point the app at a candidate, validation report,
 canonical record, or a private Azure container.
 
 The public location must contain an uncacheable pointer and immutable,
-versioned files:
+versioned files. This is `hrl-pipeline promote`'s actual output shape
+(`hrl_restoration_pipeline.publication.activate_local_snapshot` /
+`publish_local`) — the resolver adopts the pipeline's names rather than the
+other way around, since there is only one producer:
 
 ```text
 restoration-projects/
   current.json
   2026-08-24/
-    manifest.json
-    hrl_restoration_projects.geojson
-    hrl_restoration_projects.gpkg
-    hrl_restoration_projects.csv
+    metadata.json
+    projects.geojson
+    projects.gpkg
+    projects.csv
 ```
 
-`current.json` identifies the approved snapshot and its manifest relative to
-the pointer:
+`current.json` is the whole pointer — there is no separate manifest file. It
+identifies the approved snapshot and every artifact's path, relative to
+`current.json` itself:
 
 ```json
 {
   "snapshot_version": "2026-08-24",
-  "manifest": "2026-08-24/manifest.json"
-}
-```
-
-`manifest.json` identifies each artifact relative to the manifest. It may have
-additional producer metadata and checksums, but the fields below are required
-by the current resolver:
-
-```json
-{
-  "snapshot_version": "2026-08-24",
+  "schema_version": "v1.3.1",
+  "pipeline_version": "0.4.0",
   "artifacts": {
-    "hrl_restoration_projects.geojson": {
-      "path": "hrl_restoration_projects.geojson"
-    },
-    "hrl_restoration_projects.gpkg": {
-      "path": "hrl_restoration_projects.gpkg"
-    },
-    "hrl_restoration_projects.csv": {
-      "path": "hrl_restoration_projects.csv"
-    }
-  }
+    "projects.geojson": "2026-08-24/projects.geojson",
+    "projects.gpkg": "2026-08-24/projects.gpkg",
+    "projects.csv": "2026-08-24/projects.csv",
+    "metadata.json": "2026-08-24/metadata.json"
+  },
+  "output_checksums": { "...": "..." }
 }
 ```
 
-The resolver rejects a missing required field, a disagreement between the two
-snapshot versions, a failed HTTP request, or a manifest/artifact URL that
-moves to another origin. It intentionally does not construct file URLs from a
-version string; it follows only the approved pointer and manifest.
-
-**Open contract gap.** `hrl-pipeline promote` currently emits `projects.geojson`
-/ `projects.gpkg` / `projects.csv` and `metadata.json`, while this resolver
-expects `hrl_restoration_projects.*` and `manifest.json`. Before activation,
-reconcile the two: either the pipeline's `publish_local` writes the map's names
-and a `manifest.json`, or the resolver and this contract adopt the pipeline's
-names. Do this as a versioned producer/consumer contract change with tests on
-both sides.
+The resolver only reads `snapshot_version` and the `projects.geojson` /
+`projects.gpkg` / `projects.csv` entries of `artifacts` (`metadata.json` and
+`output_checksums` are producer bookkeeping, not required by the map). It
+rejects a missing required field, a failed HTTP request, or an artifact URL
+that moves to another origin. It intentionally does not construct file URLs
+from a version string; it follows only the approved pointer.
 
 ## Readiness gate
 
@@ -97,11 +82,12 @@ Do not activate this path until all of these are true:
    `current.json` update.
 2. The snapshot is in the public export surface and contains only
    privacy-filtered `RestorationProjectPublicRecord` fields.
-3. The producer emits the agreed pointer and manifest shape above, the three
-   named artifacts, and a matching immutable version directory.
-4. `current.json` is served with `no-cache`; versioned manifest and artifact
-   responses are publicly readable, have immutable cache headers, and allow
-   the dashboard's public origin through CORS.
+3. The producer emits the pointer shape above, the three named artifacts, and
+   a matching immutable version directory (this is `hrl-pipeline promote`'s
+   existing, unmodified output — no producer change is required).
+4. `current.json` is served with `no-cache`; versioned artifact responses are
+   publicly readable, have immutable cache headers, and allow the dashboard's
+   public origin through CORS.
 5. The exact public URL is HTTPS, is available through the approved Front Door
    route or other approved public endpoint, and does not require a storage key,
    SAS token, account credential, or browser authentication.
@@ -113,10 +99,11 @@ that these gates have been met.
 
 ## Activation walkthrough
 
-1. **Agree and test the contract first.** Add matching producer tests in
-   `hrl-restoration-data-pipeline` for the exact `current.json`,
-   `manifest.json`, filenames, cache headers, and CORS behavior. Keep the map
-   resolver tests aligned with any approved contract change.
+1. **Confirm the contract, in place.** The map resolver
+   (`src/data/project-data-source.ts`) already reads `hrl-pipeline promote`'s
+   real `current.json` shape; no further reconciliation is required. If either
+   side ever changes its shape, update both with tests before activation, per
+   `PIPELINE_INFRA.md`'s cross-repository change discipline.
 
 2. **Publish an approved snapshot.** Use `hrl-pipeline promote` against an
    `_APPROVE`d candidate; do not copy files manually or point the map at a
@@ -124,7 +111,7 @@ that these gates have been met.
    pointer URL in the operational change record.
 
 3. **Test the public endpoint before changing the app.** From a browser on the
-   dashboard origin, fetch `current.json`, then its manifest and each artifact.
+   dashboard origin, fetch `current.json`, then each of its artifact URLs.
    Confirm the GeoJSON renders, downloads open the expected versioned files,
    and response headers meet the readiness gate.
 
