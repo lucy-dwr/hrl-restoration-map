@@ -47,18 +47,22 @@ describe('project data sources', () => {
     })
   })
 
-  it('resolves immutable project artifacts through current.json and its manifest', async () => {
+  it('resolves immutable project artifacts directly from current.json, matching hrl-pipeline promote', async () => {
     const fetchImplementation = vi.fn()
       .mockResolvedValueOnce(jsonResponse({
         snapshot_version: '2026-08-24',
-        manifest: '2026-08-24/manifest.json',
-      }))
-      .mockResolvedValueOnce(jsonResponse({
-        snapshot_version: '2026-08-24',
+        schema_version: 'v1.3.1',
+        pipeline_version: '0.4.0',
         artifacts: {
-          'hrl_restoration_projects.geojson': { path: 'hrl_restoration_projects.geojson' },
-          'hrl_restoration_projects.gpkg': { path: 'hrl_restoration_projects.gpkg' },
-          'hrl_restoration_projects.csv': { path: 'hrl_restoration_projects.csv' },
+          'projects.geojson': '2026-08-24/projects.geojson',
+          'projects.gpkg': '2026-08-24/projects.gpkg',
+          'projects.csv': '2026-08-24/projects.csv',
+          'metadata.json': '2026-08-24/metadata.json',
+        },
+        output_checksums: {
+          'projects.geojson': 'abc123',
+          'projects.gpkg': 'def456',
+          'projects.csv': 'ghi789',
         },
       }))
       .mockResolvedValueOnce(jsonResponse(projects))
@@ -69,21 +73,41 @@ describe('project data sources', () => {
     )
 
     expect(source.kind).toBe('public-snapshot')
-    expect(source.downloads.geojson).toBe(
-      'https://data.example.gov/restoration-projects/2026-08-24/hrl_restoration_projects.geojson',
-    )
+    expect(source.downloads).toEqual({
+      geojson: 'https://data.example.gov/restoration-projects/2026-08-24/projects.geojson',
+      gpkg: 'https://data.example.gov/restoration-projects/2026-08-24/projects.gpkg',
+      csv: 'https://data.example.gov/restoration-projects/2026-08-24/projects.csv',
+    })
     await expect(source.loadProjects()).resolves.toEqual(projects)
     expect(fetchImplementation).toHaveBeenNthCalledWith(
       2,
-      'https://data.example.gov/restoration-projects/2026-08-24/manifest.json',
+      'https://data.example.gov/restoration-projects/2026-08-24/projects.geojson',
       expect.anything(),
     )
   })
 
-  it('rejects a pointer that tries to move manifest loading to another origin', async () => {
+  it('rejects a pointer missing a required artifact', async () => {
     const fetchImplementation = vi.fn().mockResolvedValue(jsonResponse({
       snapshot_version: '2026-08-24',
-      manifest: 'https://untrusted.example/manifest.json',
+      artifacts: {
+        'projects.geojson': '2026-08-24/projects.geojson',
+      },
+    }))
+
+    await expect(resolvePublicSnapshotProjectDataSource(
+      'https://data.example.gov/restoration-projects/current.json',
+      fetchImplementation,
+    )).rejects.toThrow('projects.gpkg')
+  })
+
+  it('rejects a pointer that tries to move an artifact to another origin', async () => {
+    const fetchImplementation = vi.fn().mockResolvedValue(jsonResponse({
+      snapshot_version: '2026-08-24',
+      artifacts: {
+        'projects.geojson': 'https://untrusted.example/projects.geojson',
+        'projects.gpkg': '2026-08-24/projects.gpkg',
+        'projects.csv': '2026-08-24/projects.csv',
+      },
     }))
 
     await expect(resolvePublicSnapshotProjectDataSource(
