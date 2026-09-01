@@ -1,9 +1,9 @@
 # Contributing
 
 Thank you for your interest in contributing to `hrl-restoration-map`. This
-repository contains the early-implementation Healthy Rivers and Landscapes
-restoration map, deployed through Azure Static Web Apps behind Azure Front
-Door. It is not an
+repository contains the Healthy Rivers and Landscapes restoration map, in
+production at `https://hrl.water.ca.gov/restoration-map/` on Azure Static Web
+Apps behind Azure Front Door. It is a public program-orientation tool, not an
 authoritative State of California product, official public record, regulatory
 filing, or source of legal or policy guidance.
 
@@ -19,7 +19,7 @@ in that file as canonical. Do not reverse a logged decision without proposing a
 superseding entry.
 
 **Data sources.** In production the deployed app reads the approved public
-snapshot from Azure &mdash; `current.json` behind the `restoration-data` Front
+snapshot from Azure - `current.json` behind the `restoration-data` Front
 Door route, resolved in `src/data/project-data-source.ts`. The checked-in files
 under `public/data/` are the **local development and test fixtures**; a build
 with no `VITE_PUBLIC_SNAPSHOT_URL` set (local dev, previews, tests) uses them.
@@ -94,7 +94,7 @@ local fixture workflow only; the authoritative schema is
 and the production pipeline pins it directly.
 
 The app consumes the **public** profile
-(`RestorationProjectPublicRecord`) &mdash; the pipeline's public snapshot is
+(`RestorationProjectPublicRecord`) - the pipeline's public snapshot is
 already filtered to it. Do not render or require canonical-only or private
 fields (see "Privacy and Public Data" below).
 

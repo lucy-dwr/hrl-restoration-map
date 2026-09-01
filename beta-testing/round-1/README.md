@@ -12,10 +12,10 @@ materials remain here as the traceable record of that review round.
 
 ## Files
 
-- `round-1-beta-testing.md` — beta test tasks, form content, email prompt, and
+- `round-1-beta-testing.md` - beta test tasks, form content, email prompt, and
   original issue triage format.
-- `hrl-restoration-map-prototype-feedback-round-1.csv` — raw feedback export.
-- `round-1-feedback-synthesis.md` — narrative summary of what worked, what
+- `hrl-restoration-map-prototype-feedback-round-1.csv` - raw feedback export.
+- `round-1-feedback-synthesis.md` - narrative summary of what worked, what
   should change, what should be deferred, and possible `SPEC.md` implications.
-- `round-1-candidate-issues.md` — issue-shaped backlog candidates and the
+- `round-1-candidate-issues.md` - issue-shaped backlog candidates and the
   resolution record for Round 1 feedback.

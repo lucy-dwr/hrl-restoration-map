@@ -5,7 +5,7 @@ feedback on the HRL restoration map prototype.
 
 ## Files
 
-- `feedback-intake-2026-08.md` — stable feedback IDs, requested outcomes,
+- `feedback-intake-2026-08.md` - stable feedback IDs, requested outcomes,
   dispositions, and follow-up work derived from the August 2026 feedback
   workbook.
 

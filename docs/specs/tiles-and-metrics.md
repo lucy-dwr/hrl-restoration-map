@@ -1,6 +1,6 @@
 # Tiles and metrics sub-specification
 
-**Status:** Adopted for the current prototype  
+**Status:** Adopted; in production  
 **Parent:** [`SPEC.md`](../../SPEC.md), Sections 1, 5, 9, and 16
 
 Headline tiles communicate orientation, not verified HRL habitat accounting. They are calculated over the same filtered project set used by the map and project list.

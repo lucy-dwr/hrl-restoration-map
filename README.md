@@ -5,15 +5,14 @@ implementation and proposed Healthy Rivers and Landscapes (HRL) restoration
 project locations in California. It is for program partners, regulators, the
 public, and the contributors who help keep the dashboard useful and accurate.
 
-> [!WARNING]
-> **Beta dashboard**
+> [!IMPORTANT]
+> **Not an official record**
 >
-> This is not an authoritative State of California product, official public
-> record, regulatory filing, or source of legal or policy guidance. The data,
-> design, terminology, and behavior will continue to change as the HRL
-> dashboard and its supporting data workflows mature. A project appearing on
-> the map does not, by itself, commit funding, approval, permitting, or
-> construction.
+> This is a public program-orientation tool, not an authoritative State of
+> California product, official public record, regulatory filing, or source of
+> legal or policy guidance. The data and terminology may still change as the
+> program and its data workflows evolve. A project appearing on the map does
+> not, by itself, commit funding, approval, permitting, or construction.
 
 ![Desktop view of the HRL Restoration Dashboard with the Lower Elkhorn Basin Levee Setback selected on the map. Layer controls appear on the left, project summary tiles sit at the bottom, and the selected project's description and details appear in a panel on the right.](docs/images/dashboard-overview.png)
 
@@ -118,7 +117,7 @@ deployment sets `VITE_PUBLIC_SNAPSHOT_URL` to the production `current.json`
 `src/data/project-data-source.ts` resolves the project data, map source, and all
 three downloads from it. That snapshot is produced by
 [`hrl-restoration-data-pipeline`](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-data-pipeline)
-and is already filtered to the public record profile &mdash; no contact details,
+and is already filtered to the public record profile - no contact details,
 internal comments, source metadata, or non-public funding.
 
 **Locally, the app uses the checked-in fixtures in `public/data/`.** A build
@@ -160,7 +159,7 @@ files committed here.
 | Learn about the local source package | [Source data notes](data/source/README.md) |
 | Understand the generated public data | [Generated data notes](public/data/README.md) |
 | Understand how the map reads the Azure snapshot, and roll one back | [Public snapshot consumer contract](docs/public-snapshot-migration.md) |
-| Review structured beta-testing materials | [Beta testing](beta-testing/README.md) |
+| Review the pre-production beta-testing round records | [Beta testing](beta-testing/README.md) |
 | See notable project changes | [Changelog](CHANGELOG.md) |
 | Review community expectations | [Code of Conduct](CODE_OF_CONDUCT.md) |
 

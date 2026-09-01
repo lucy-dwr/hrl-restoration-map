@@ -1,12 +1,12 @@
-# Healthy Rivers and Landscapes Restoration Dashboard — Specification
+# Healthy Rivers and Landscapes Restoration Dashboard - Specification
 
-**Status:** v0.2.0 beta  
-**Working repo name:** `hrl-restoration-map`  
+**Status:** In production at `https://hrl.water.ca.gov/restoration-map/`  
+**Repository:** `hrl-restoration-map`  
 **Related repos:**
 
-- `hrl-restoration-data-pipeline` — the operator-run validation and publication tool (`hrl-pipeline` / `hrl-pipeline promote`)
-- `hrl-azure-infrastructure` — the Terraform for the Azure storage and Front Door routing that serves the published snapshot, plus the cross-repo `PIPELINE_INFRA.md`
-- `hrl-docs` — companion documentation site at `healthy-rivers-and-landscapes-science.github.io/hrl-docs`
+- `hrl-restoration-data-pipeline` - the operator-run validation and publication tool (`hrl-pipeline` / `hrl-pipeline promote`)
+- `hrl-azure-infrastructure` - the Terraform for the Azure storage and Front Door routing that serves the published snapshot, plus the cross-repo `PIPELINE_INFRA.md`
+- `hrl-docs` - companion documentation site at `healthy-rivers-and-landscapes-science.github.io/hrl-docs`
 
 ---
 
@@ -18,7 +18,9 @@ The Decision Log at the end is the canonical record of what is settled. Do not r
 
 This document is intentionally an umbrella spec. It links to adopted and planned sub-specs (see Section 16), which are elaborated as the project needs more detail. Repository workflow, coding agent instructions, and contribution mechanics live in [`AGENTS.md`](AGENTS.md).
 
-This repository is the deployed beta. The application is hosted on Azure Static Web Apps behind Azure Front Door. **In production it reads the approved public project snapshot from Azure Blob Storage** (a single `current.json` pointer behind the `restoration-data` Front Door route), produced by the operator-run `hrl-restoration-data-pipeline` and served through infrastructure defined in `hrl-azure-infrastructure` (Decision 60). Context layers and the local development/test project fixtures are still generated assets stored in this repo. The infrastructure repository is `hrl-azure-infrastructure`, not `hrl-data-infrastructure`.
+This application is in production at `https://hrl.water.ca.gov/restoration-map/`, hosted on Azure Static Web Apps behind Azure Front Door. **It reads the approved public project snapshot from Azure Blob Storage** (a single `current.json` pointer behind the `restoration-data` Front Door route), produced by the operator-run `hrl-restoration-data-pipeline` and served through infrastructure defined in `hrl-azure-infrastructure` (Decision 60). Context layers are generated assets stored in this repo. The infrastructure repository is `hrl-azure-infrastructure`, not `hrl-data-infrastructure`.
+
+Older prose and Decision Log entries in this document say "prototype" or "beta"; those describe the pre-production phase. Several items still marked "production target" remain open - the tile source, an imagery basemap decision, formal visual identity, and canonical (verified) progress metrics.
 
 ---
 
@@ -38,11 +40,11 @@ The dashboard is not a research tool and not an analyst exploration environment.
 
 Three audiences, in priority order of design weight:
 
-1. **HRL program agencies** — technically literate, want to see their projects represented accurately, will use the dashboard to communicate to their own leadership and partners.
-2. **State Water Resources Control Board (regulator)** — needs to see credible, defensible evidence of program commitments and progress.
-3. **General public** — generally non-technical. Needs an immediate sense of "what is this program and what has it done?" Will likely not read documentation.
+1. **HRL program agencies** - technically literate, want to see their projects represented accurately, will use the dashboard to communicate to their own leadership and partners.
+2. **State Water Resources Control Board (regulator)** - needs to see credible, defensible evidence of program commitments and progress.
+3. **General public** - generally non-technical. Needs an immediate sense of "what is this program and what has it done?" Will likely not read documentation.
 
-Design implication: the dashboard must be visually polished enough for the public, technically credible enough for the regulator, and accurate enough for the partner agencies — in that order of what is hardest to get right.
+Design implication: the dashboard must be visually polished enough for the public, technically credible enough for the regulator, and accurate enough for the partner agencies - in that order of what is hardest to get right.
 
 Public-facing interface copy should use plain language written for an 8th-grade reading audience. Technical terms are acceptable when they are necessary for accuracy, but surrounding text should be short, concrete, and easy to scan.
 
@@ -65,7 +67,7 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 
 | Feature | Status |
 |---|---|
-| Map with project polygons, hover tooltip, and project-type colour symbology | ✅ |
+| Map with project polygons, hover tooltip, and project-type color symbology | ✅ |
 | Top bar | ✅ |
 | Headline progress tiles | ✅ |
 | Click-to-inspect detail panel | ✅ |
@@ -107,11 +109,11 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 - Time-aware layers (project start, completion, monitoring milestones).
 - Watershed summary views.
 - Optional monitoring data overlays (water quality, fish, vegetation) where data are available and approved for public display.
-- Scrollytelling chapter(s) — one or two flagship project narratives.
+- Scrollytelling chapter(s) - one or two flagship project narratives.
 - Advanced search and saved filtering beyond the prototype project list filters.
 - Full adaptive management views: synthesis of monitoring data tied to project actions.
 - Multi-chapter storytelling integrated with the main map.
-- Possible saved-view / subscription functionality (deferred — only if real demand emerges).
+- Possible saved-view / subscription functionality (deferred - only if real demand emerges).
 
 ### 3.5 Explicitly out of scope
 
@@ -142,14 +144,14 @@ The definitions and calculation rules for the headline tile strip are maintained
 - **Full-bleed map.** The map fills the viewport. Chrome sits on top of it as floating panels.
 - **Top bar.** Compact (≈74px). Dashboard identity left, using the full two-line dashboard name, persistent purpose text, and the official HRL favicon mark; "Download data", "Methodology", and "About" actions right. No primary navigation lives here.
 - **Left rail.** ≈360px, collapsible. Layer toggles, filters, legend. Default-open on desktop and tablet.
-- **Bottom tile strip.** Headline progress tiles currently show visible project count and total HRL project acres where available. Confirmed position: bottom-centre of the map area (Decision 22). Avoids conflict with the left layer panel and bottom-right navigation controls.
+- **Bottom tile strip.** Headline progress tiles currently show visible project count and total HRL project acres where available. Confirmed position: bottom-center of the map area (Decision 22). Avoids conflict with the left layer panel and bottom-right navigation controls.
 - **Right detail panel.** ≈400px, opens on selection, closes on dismiss. Renders project detail (tier 3). Pushes the map left rather than overlaying it on desktop; overlays on tablet where space requires it.
 - **No persistent footer.** Footer information lives in About/methodology surfaces.
 
 Responsive support target:
 
 - ≥1280px: full layout as described.
-- 768–1279px: left rail collapses to icon strip; tiles move to top of left rail when expanded.
+- 768-1279px: left rail collapses to icon strip; tiles move to top of left rail when expanded.
 - <768px: phone-sized screens are not a supported surface for interactive map exploration. Show a clear, accessible notice that a tablet or desktop is required for the dashboard, while preserving access to essential informational actions such as purpose, methodology, contact, and data downloads. Shared links must remain intact and explain the unsupported display rather than fail silently.
 
 ---
@@ -160,9 +162,9 @@ Responsive support target:
 
 Custom MapLibre style. Desaturated, low-contrast, designed to recede behind data layers. Two variants:
 
-- **Light** (default) — warm pale base, muted hydrography, restrained labels, and MapLibre-rendered DEM hillshade terrain context.
-- **Dark** — optional, deferred to near-future if there is demand.
-- **Satellite/aerial imagery** — prototype optional toggle using Esri World Imagery, visually subdued so project and context layers remain primary (Decision 27).
+- **Light** (default) - warm pale base, muted hydrography, restrained labels, and MapLibre-rendered DEM hillshade terrain context.
+- **Dark** - optional, deferred to near-future if there is demand.
+- **Satellite/aerial imagery** - prototype optional toggle using Esri World Imagery, visually subdued so project and context layers remain primary (Decision 27).
 
 Prototype tile source: OpenFreeMap Positron style (Decision 19) with local style overrides for a quiet paper-map feel, plus AWS Terrarium DEM tiles for hillshade terrain and Esri World Imagery for optional imagery inspection. Production target: Protomaps tiles served from Azure Blob, which fits the Azure-Blob-as-substrate decision and avoids per-request tile fees.
 
@@ -174,7 +176,7 @@ The implemented palette, branding guidance, and its governance are maintained in
 - One sequential ramp for any quantitative overlay (e.g., acres).
 - One diverging ramp reserved for any future change-over-time layer.
 - Reserved colors: a single accent for selection state and a single muted gray for "out of scope" features.
-- Prototype UI chrome uses a light-touch HRL-inspired palette drawn from the public HRL site: deep teal for primary accents, restrained olive/gold for context, and blue-grey hydrography so streams read as base-map context rather than project data.
+- Prototype UI chrome uses a light-touch HRL-inspired palette drawn from the public HRL site: deep teal for primary accents, restrained olive/gold for context, and blue-gray hydrography so streams read as base-map context rather than project data.
 - The prototype header uses the transparent HRL favicon mark published on the public HRL site, alongside the full dashboard name. The asset is stored as `public/hrl-logo-mark.png` and is not recolored or placed on a background plate.
 
 The prototype palette is implemented in `src/features/map/project-colors.ts` and documented in [`palette-branding.md`](docs/specs/palette-branding.md).
@@ -182,7 +184,7 @@ The prototype palette is implemented in `src/features/map/project-colors.ts` and
 ### 6.3 Typography
 
 - One open-source sans-serif typeface for the entire UI. Recommended candidates (decide in design review): Inter, IBM Plex Sans, or Source Sans 3. Prototype currently uses the system-ui stack pending final typeface selection.
-- Type scale: 6 sizes (11–22px) defined in `src/styles/tokens.css` as CSS custom properties. No ad-hoc font sizes in components.
+- Type scale: 6 sizes (11-22px) defined in `src/styles/tokens.css` as CSS custom properties. No ad-hoc font sizes in components.
 - Map labels follow the MapLibre style; UI typography is the typeface above.
 
 ### 6.4 Iconography
@@ -207,7 +209,7 @@ The prototype palette is implemented in `src/features/map/project-colors.ts` and
 
 ### 7.3 Coordinated views
 
-The map, the tile strip, and any chart panels are views over a single shared application state. Filtering the time window updates all three. Hovering a tile highlights matching features on the map. This is an architectural commitment, not a stretch goal — it is the single biggest reason the reference dashboards feel polished.
+The map, the tile strip, and any chart panels are views over a single shared application state. Filtering the time window updates all three. Hovering a tile highlights matching features on the map. This is an architectural commitment, not a stretch goal - it is the single biggest reason the reference dashboards feel polished.
 
 ### 7.4 Layer logic
 
@@ -229,7 +231,7 @@ The authoritative inventory of implemented layers, their sources, defaults, and 
 
 Current project geometries are entirely polygons, so small footprints are sub-pixel at the default statewide extent (Round 1 feedback R1-08: small projects were invisible and familiar areas could look empty until zooming in). Each polygon project gets a low-zoom overview marker in addition to its true footprint:
 
-- The marker sits at a guaranteed-interior "point on surface" of the polygon's largest part — the area centroid when it falls inside the shape, otherwise the midpoint of the widest interior scanline span — rather than a bounding-box or area centroid alone, either of which can land outside a concave or crescent footprint.
+- The marker sits at a guaranteed-interior "point on surface" of the polygon's largest part - the area centroid when it falls inside the shape, otherwise the midpoint of the widest interior scanline span - rather than a bounding-box or area centroid alone, either of which can land outside a concave or crescent footprint.
 - The marker and the true polygon fill/outline cross-fade on a per-project schedule derived from the footprint's real-world size, so a large restoration polygon sheds its marker as soon as it is legible on screen while a small fish-passage or fish-screen project keeps its marker until much closer zoom. A fixed zoom threshold could not serve both well.
 - A zoom-reactive on-map hint and a first-run overlay sentence (Section 12) tell users that points expand into mapped boundaries on zoom-in.
 
@@ -251,10 +253,10 @@ What gets encoded:
 - Selected feature ID.
 - Active filters (project type, project stage, system, target species, lead entity).
 
-**Prototype encoding (Decision 20):** all prototype state uses plain human-readable query parameters — no base64 blob. The implemented schema:
+**Prototype encoding (Decision 20):** all prototype state uses plain human-readable query parameters - no base64 blob. The implemented schema:
 
 ```
-?lat=38.4000&lng=-121.8000&zoom=7.00   # map centre and zoom
+?lat=38.4000&lng=-121.8000&zoom=7.00   # map center and zoom
 &selected=project-3                     # display_id of selected feature (absent = none)
 &hidden=spawning+habitat,tidal+habitat  # comma-separated hidden project types (absent = all visible)
 &visibleTributaries=american,putah      # comma-separated visible HRL tributary watershed keys
@@ -353,10 +355,10 @@ The schema comments explicitly mark `funding_secured` and `funding_gap` as not p
 The current catalog is maintained in the adopted [`layer-catalog.md`](docs/specs/layer-catalog.md) sub-spec. Minimum set:
 
 - Project locations (one logical layer, styled by project type)
-- HRL tributary watersheds — prototype uses a combined USGS WBD GeoJSON layer for Sacramento HUC4 1802 plus dissolved HUC8 boundaries for American, Feather, Yuba, Putah, Mokelumne, and Tuolumne systems, with individual layer controls and no on-map watershed labels (Decisions 43 and 44)
-- Sacramento-San Joaquin Delta legal boundary — prototype uses the DWR `i03_LegalDeltaBoundary` ArcGIS service, default hidden (Decision 25)
-- Yolo and Sutter bypass boundaries — prototype uses the DWR `i12_Flood_Bypasses_2014` ArcGIS service for representational flood-bypass extents, default hidden (Decision 31)
-- Stream network — prototype uses NHDPlus V2 VPU 18 flowlines and water polygons tiled to PMTiles, default visible, with line-following labels for named mainstems and major tributaries (Decision 26)
+- HRL tributary watersheds - prototype uses a combined USGS WBD GeoJSON layer for Sacramento HUC4 1802 plus dissolved HUC8 boundaries for American, Feather, Yuba, Putah, Mokelumne, and Tuolumne systems, with individual layer controls and no on-map watershed labels (Decisions 43 and 44)
+- Sacramento-San Joaquin Delta legal boundary - prototype uses the DWR `i03_LegalDeltaBoundary` ArcGIS service, default hidden (Decision 25)
+- Yolo and Sutter bypass boundaries - prototype uses the DWR `i12_Flood_Bypasses_2014` ArcGIS service for representational flood-bypass extents, default hidden (Decision 31)
+- Stream network - prototype uses NHDPlus V2 VPU 18 flowlines and water polygons tiled to PMTiles, default visible, with line-following labels for named mainstems and major tributaries (Decision 26)
 - Basemap (hydrography, terrain, administrative reference, optional imagery)
 
 Additional layers under consideration (see Open Questions): administrative boundaries (county, water district, fish management zone).
@@ -430,7 +432,7 @@ generated in this repository.
 
 ## 11. Integration with the publication workflow
 
-The production dashboard is downstream of the restoration data workflow and reads only the approved public snapshot &mdash; never a primary source, a validation candidate, or a private container.
+The production dashboard is downstream of the restoration data workflow and reads only the approved public snapshot - never a primary source, a validation candidate, or a private container.
 
 - The dashboard does not run the pipeline and does not write project data.
 - In production, `VITE_PUBLIC_SNAPSHOT_URL` points the build at the production `current.json` (behind the `restoration-data` Front Door route). At runtime `src/data/project-data-source.ts` fetches that pointer and resolves the project data, map source, and downloads from it. Local dev, previews, and tests use the checked-in fixtures instead.
@@ -442,8 +444,8 @@ The consumer contract and rollback procedure are in [`docs/public-snapshot-migra
 
 ## 12. First-run experience
 
-- The dashboard loads with the project-locations layer visible, headline tiles populated, and, when no shared URL state is present, the map auto-fit to the bounds of all currently visible projects (capped at zoom 9). A shared URL's exact centre and zoom are honoured instead of being overridden by this auto-fit.
-- Because most projects still render as low-zoom overview markers at that initial extent (see Section 7.6), a zoom-reactive on-map hint reads "Projects shown as points — zoom in to see boundaries" while it is true, and disappears once footprints have resolved.
+- The dashboard loads with the project-locations layer visible, headline tiles populated, and, when no shared URL state is present, the map auto-fit to the bounds of all currently visible projects (capped at zoom 9). A shared URL's exact center and zoom are honored instead of being overridden by this auto-fit.
+- Because most projects still render as low-zoom overview markers at that initial extent (see Section 7.6), a zoom-reactive on-map hint reads "Projects shown as points - zoom in to see boundaries" while it is true, and disappears once footprints have resolved.
 - The prototype implements a first-visit overlay, dismissable and remembered via local storage, that frames the dashboard as a public overview of early implementation and proposed Healthy Rivers and Landscapes restoration project locations. The overlay states that the dashboard shows basic descriptions, project types, and total project acres where available, that it is not a verified habitat-accounting tool, and that projects shown as points expand into their mapped boundaries on zoom-in.
 - The top bar carries persistent compact purpose text: "Explore early implementation and proposed restoration project locations and basic descriptions." The About control is labeled "About this map" for discoverability.
 - The top bar includes a Methodology control. The methodology surface describes the whole-dataset provenance story: project information was submitted by HRL participating entities, checked against the HRL restoration project schema, last updated July 20, 2026, and published as dashboard data/downloads without exposing project-level source fields.
@@ -481,13 +483,13 @@ This spec records the decisions those conventions must support; `AGENTS.md` expl
 
 Annotated list. Use these as design and behavior references during implementation.
 
-- **[Cal-Adapt climate metrics map](https://cal-adapt.org/dashboard/climate-metrics-map?metric=extreme-precipitation)** — parameter-picker onboarding pattern; restrained palette; clear methodology link.
-- **[Global Forest Watch map](https://www.globalforestwatch.org/map/)** — gold standard for the GFW-style full-bleed map with floating panels, layer rail, and country-level dashboards. Built by Vizzuality on Mapbox GL + React. Note the URL-state-as-base64 pattern, which we will partially borrow.
-- **[Mongabay maps](https://maps.mongabay.com/)** — clean topical mapping; useful for "topic dashboard" composition.
-- **[Half-Earth Project (data globe)](https://map.half-earthproject.org/dataGlobe)** — chapter-based storytelling integrated with a map. Reference for the near-future storytelling work.
-- **[Resource Watch (explore)](https://resourcewatch.org/data/explore)** — Vizzuality / WRI again. Reference for multi-topic dashboard organization.
-- **Kepler.gl demos ([MVT population](https://kepler.gl/demo/mvt_population), [earthquakes](https://kepler.gl/demo/earthquakes))** — reference for time-playback, brushing, and layer-config UI. Prototyping tool only, not runtime.
-- **[NYT 2020 election map (Upshot)](https://www.nytimes.com/interactive/2021/upshot/2020-election-map.html)** — reference for hover-cheap, click-rich interaction and coordinated map + chart views.
+- **[Cal-Adapt climate metrics map](https://cal-adapt.org/dashboard/climate-metrics-map?metric=extreme-precipitation)** - parameter-picker onboarding pattern; restrained palette; clear methodology link.
+- **[Global Forest Watch map](https://www.globalforestwatch.org/map/)** - gold standard for the GFW-style full-bleed map with floating panels, layer rail, and country-level dashboards. Built by Vizzuality on Mapbox GL + React. Note the URL-state-as-base64 pattern, which we will partially borrow.
+- **[Mongabay maps](https://maps.mongabay.com/)** - clean topical mapping; useful for "topic dashboard" composition.
+- **[Half-Earth Project (data globe)](https://map.half-earthproject.org/dataGlobe)** - chapter-based storytelling integrated with a map. Reference for the near-future storytelling work.
+- **[Resource Watch (explore)](https://resourcewatch.org/data/explore)** - Vizzuality / WRI again. Reference for multi-topic dashboard organization.
+- **Kepler.gl demos ([MVT population](https://kepler.gl/demo/mvt_population), [earthquakes](https://kepler.gl/demo/earthquakes))** - reference for time-playback, brushing, and layer-config UI. Prototyping tool only, not runtime.
+- **[NYT 2020 election map (Upshot)](https://www.nytimes.com/interactive/2021/upshot/2020-election-map.html)** - reference for hover-cheap, click-rich interaction and coordinated map + chart views.
 
 ---
 
@@ -497,19 +499,19 @@ Annotated list. Use these as design and behavior references during implementatio
 
 ### Adopted
 
-1. [`palette-branding.md`](docs/specs/palette-branding.md) — implemented brand assets, basemap, UI, and project-type palette; color-vision and contrast governance.
-2. [`layer-catalog.md`](docs/specs/layer-catalog.md) — every implemented map layer, its source, default state, and symbology.
-3. [`url-state.md`](docs/specs/url-state.md) — current query-parameter contract, defaults, serialization rules, and compatibility behavior.
-4. [`tiles-and-metrics.md`](docs/specs/tiles-and-metrics.md) — headline-tile definitions, calculation rules, and public interpretation guidance.
-5. [`accessibility.md`](docs/specs/accessibility.md) — WCAG conformance plan, known gaps, and remediation roadmap.
+1. [`palette-branding.md`](docs/specs/palette-branding.md) - implemented brand assets, basemap, UI, and project-type palette; color-vision and contrast governance.
+2. [`layer-catalog.md`](docs/specs/layer-catalog.md) - every implemented map layer, its source, default state, and symbology.
+3. [`url-state.md`](docs/specs/url-state.md) - current query-parameter contract, defaults, serialization rules, and compatibility behavior.
+4. [`tiles-and-metrics.md`](docs/specs/tiles-and-metrics.md) - headline-tile definitions, calculation rules, and public interpretation guidance.
+5. [`accessibility.md`](docs/specs/accessibility.md) - WCAG conformance plan, known gaps, and remediation roadmap.
 
 ### Planned
 
-1. `project-stage.md` — confirmed `ProjectStageEnum` visual treatment beyond the current detail display.
-2. `data-contract.md` — superseded before adoption. The snapshot publication/consumption contract now lives in [`docs/public-snapshot-migration.md`](docs/public-snapshot-migration.md) and Decision 60; no separate sub-spec is needed.
-3. `data-model.md` — full canonical project record schema and companion tables; defer while the prototype uses the vendored submission schema.
-4. `first-run.md` — copy and layout for the orientation overlay, if that surface begins to change independently.
-5. `testing.md` — test levels and critical end-to-end paths, to accompany a formal test suite.
+1. `project-stage.md` - confirmed `ProjectStageEnum` visual treatment beyond the current detail display.
+2. `data-contract.md` - superseded before adoption. The snapshot publication/consumption contract now lives in [`docs/public-snapshot-migration.md`](docs/public-snapshot-migration.md) and Decision 60; no separate sub-spec is needed.
+3. `data-model.md` - full canonical project record schema and companion tables; defer while the prototype uses the vendored submission schema.
+4. `first-run.md` - copy and layout for the orientation overlay, if that surface begins to change independently.
+5. `testing.md` - test levels and critical end-to-end paths, to accompany a formal test suite.
 
 ---
 
@@ -538,7 +540,7 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 1 | v0.1 | Map-first, full-bleed layout with chrome as overlay. | Matches every reference dashboard in the set. The opposite ("map as one tile among many") is the failure mode of agency portals. |
 | 2 | v0.1 | Restrained basemap, saturated data layers. | Single largest visual-quality lever; the failure mode of Esri viewers. |
 | 3 | v0.1 | Four-tier progressive disclosure (ambient, browsing, inspection, deep dive). | Forces scope discipline; every piece of content must be assigned a tier. |
-| 4 | v0.1 | Coordinated views (map + tiles + charts share state). | Architectural commitment, not a stretch goal — drives framework and state-management choices. |
+| 4 | v0.1 | Coordinated views (map + tiles + charts share state). | Architectural commitment, not a stretch goal - drives framework and state-management choices. |
 | 5 | v0.1 | URL-encoded state is v1, not deferred. | Without it the dashboard is not shareable with the Science Committee, regulator, or press. |
 | 6 | v0.1 | Stack: React + Vite + TypeScript + MapLibre GL JS + deck.gl. | Open source; matches reference dashboards; largest hiring pool; long-term maintainable over the eight-year horizon. |
 | 7 | v0.1 | Kepler.gl is reference and prototyping tool only, not runtime. | Kepler's UX is analyst-facing; embedding it would conflict with the public/regulator audience design. |
@@ -546,18 +548,18 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 9 | v0.1 | Prototype hero metric uses total project acreage where available. | The submission schema provides `acreage` and habitat-specific acreage fields, but not verified acres restored; production metrics can evolve once canonical data exist. |
 | 10 | v0.1 | Project types in v1 scope follow `ProjectTypeEnum` in the vendored LinkML schema. | Keeps dashboard filters and symbology aligned with the submission data contract. |
 | 11 | v0.1 | Static deploy; no server runtime. | Matches eight-year, no-lock-in, low-ops posture. |
-| 12 | v0.1 | English-only in v1; Spanish considered for near-future. | Scope discipline for 3–6 month timeline; do not preclude i18n in component design. |
+| 12 | v0.1 | English-only in v1; Spanish considered for near-future. | Scope discipline for 3-6 month timeline; do not preclude i18n in component design. |
 | 13 | v0.1 | No user accounts or authentication in v1. | Out of scope. |
-| 14 | v0.1 | Production dashboard reads only from `hrl-data-infrastructure` Storage and Serving layer; never from primary sources. | Preserves the four-layer architecture and the immutability of raw data. *(Repo name corrected by Decision 60 &mdash; the serving layer is `hrl-azure-infrastructure` fed by `hrl-restoration-data-pipeline`; the principle stands.)* |
+| 14 | v0.1 | Production dashboard reads only from `hrl-data-infrastructure` Storage and Serving layer; never from primary sources. | Preserves the four-layer architecture and the immutability of raw data. *(Repo name corrected by Decision 60 - the serving layer is `hrl-azure-infrastructure` fed by `hrl-restoration-data-pipeline`; the principle stands.)* |
 | 15 | v0.1 | Current repo phase is a local prototype using a local GeoPackage converted to browser-readable static data. | Azure hosting and the production data-serving contract are not available yet; the prototype needs a practical local path. *(Superseded in part by Decision 60: production now reads the Azure snapshot; the checked-in data is the dev/test fixture path.)* |
 | 16 | v0.1 | Convert the GeoPackage to GeoJSON first, then move to vector tiles only if performance requires it. | GeoJSON is easiest to inspect and wire into MapLibre; vector tiles add complexity that should be justified by dataset size or rendering performance. |
 | 17 | v0.1 | Prototype validation uses the vendored `hrl-restoration-schema` `v1.0.0` LinkML schema and the `RestorationProjectSubmission` class. | The full Azure pipeline that creates canonical records is not available yet; submission fields are the current practical contract. *(Superseded in part by Decision 60: the pipeline exists and pins `v1.3.1`; the vendored `v1.0.0` copy now serves only the local fixture conversion.)* |
 | 18 | v0.1 | Accessibility target is WCAG 2.2 Level AA, selected WCAG 2.2 Level AAA criteria where applicable, and equivalent non-map access to essential map content and workflows. | Disability access is a core public-service requirement, not a minimum-compliance afterthought. |
 | 19 | 2026-06-02 | Prototype basemap: OpenFreeMap Positron style (`https://tiles.openfreemap.org/styles/positron`). | Freely accessible, no API key required, desaturated light style that recedes behind data layers. Production target remains Protomaps on Azure Blob (Decision 8). |
-| 20 | 2026-06-02 | URL state uses plain query parameters for all prototype state; base64 encoding deferred. | All prototype state (centre, zoom, selection, hidden types, watershed visibility) is low-cardinality; human-readable params suffice and are easier to debug and share. |
+| 20 | 2026-06-02 | URL state uses plain query parameters for all prototype state; base64 encoding deferred. | All prototype state (center, zoom, selection, hidden types, watershed visibility) is low-cardinality; human-readable params suffice and are easier to debug and share. |
 | 21 | 2026-06-02 | Sacramento watershed boundary sourced from USGS WBD REST service (HUC4 1802), simplified with Ramer-Douglas-Peucker (ε = 0.002°) to ~1800 points / 38 KB, and committed to `public/data/watershed.geojson`. | USGS WBD is the authoritative federal source; simplification makes it browser-feasible. Reproducible via `scripts/fetch-watershed.py`. Superseded by Decision 28's clearer filename. |
-| 22 | 2026-06-02 | Headline tiles positioned at bottom-centre of the map area. | Avoids overlap with the left layer panel and the bottom-right MapLibre navigation controls; readable on wide screens. |
-| 23 | 2026-06-02 | Minimum `--text-tertiary` colour is `#767673` (~4.6:1 on white). | Original value `#888884` (~3.6:1) failed the WCAG 2.2 AA 4.5:1 threshold for normal-sized text. The new value clears the threshold while preserving the warm neutral character of the palette. |
+| 22 | 2026-06-02 | Headline tiles positioned at bottom-center of the map area. | Avoids overlap with the left layer panel and the bottom-right MapLibre navigation controls; readable on wide screens. |
+| 23 | 2026-06-02 | Minimum `--text-tertiary` color is `#767673` (~4.6:1 on white). | Original value `#888884` (~3.6:1) failed the WCAG 2.2 AA 4.5:1 threshold for normal-sized text. The new value clears the threshold while preserving the warm neutral character of the palette. |
 | 24 | 2026-06-19 | Prototype watershed context includes both Sacramento HUC4 1802 and San Joaquin HUC4 1804 boundaries from USGS WBD. | HRL project geography spans the Sacramento watershed and Bay-Delta context; the San Joaquin outline improves regional orientation without adding much data weight. |
 | 25 | 2026-06-19 | Prototype includes the Sacramento-San Joaquin Delta legal boundary from the DWR `i03_LegalDeltaBoundary` ArcGIS service, default hidden. | The Delta is a key program geography, but the legal boundary is reference context rather than an ambient default layer. |
 | 26 | 2026-06-19 | Prototype stream-network base layer is generated from NHDPlus V2 VPU 18 and shipped as `public/data/streams.pmtiles`, with zoom-dependent reveal by Strahler stream order. | NHDPlus V2 provides statewide California flow-network attributes needed for scale-aware rendering; PMTiles keeps the large hydrography layer browser-feasible. |
@@ -570,7 +572,7 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 33 | 2026-06-19 | Watershed boundaries are simplified with Ramer-Douglas-Peucker ε = 0.0007° and written with 5-decimal coordinate precision. | The earlier ε = 0.002° / 4-decimal output made the HUC outlines visibly jagged against the terrain basemap. The smaller tolerance preserves smoother watershed shape while keeping the three GeoJSON context files browser-feasible. Supersedes the simplification tolerance recorded in Decision 21. |
 | 34 | 2026-06-19 | The prototype top bar uses the full name "Healthy Rivers and Landscapes Restoration Dashboard" and exposes a concise About popup instead of a separate About page. | The full name is clearer for public and regulator audiences than the HRL abbreviation alone. A compact modal provides immediate program and data-context orientation without pulling users out of the map; a fuller methodology surface remains a production requirement. |
 | 35 | 2026-07-09 | The dashboard exposes dataset-level methodology and provenance context rather than project-level source fields. | The current approved public provenance story is that HRL participating entities submitted the project data, the dataset was checked against the HRL restoration project schema, and the last dataset update shown is June 19, 2026. Project-level source fields are not displayed; questions route to HealthyRiversandLandscapes@resources.ca.gov. |
-| 35 | 2026-06-19 | Prototype visual styling uses a light-touch palette inspired by the public HRL site, with deep teal as the primary UI accent and blue-grey hydrography for the stream network. | The palette gives the dashboard HRL identity without overpowering project symbology. Blue-grey stream styling keeps hydrography legible as contextual base information and avoids visual competition with watershed outlines and project colours. |
+| 35 | 2026-06-19 | Prototype visual styling uses a light-touch palette inspired by the public HRL site, with deep teal as the primary UI accent and blue-gray hydrography for the stream network. | The palette gives the dashboard HRL identity without overpowering project symbology. Blue-gray stream styling keeps hydrography legible as contextual base information and avoids visual competition with watershed outlines and project colors. |
 | 36 | 2026-06-22 | Public project data outputs use `public/data/hrl_restoration_projects.*` filenames and are exposed through a top-bar Download data menu as GeoJSON, GeoPackage, and CSV. | Descriptive filenames are clearer than generic `projects.*` downloads, and providing GIS plus non-spatial formats makes prototype review and data QA easier without requiring production data infrastructure. *(Partly superseded by Decision 60: production serves `projects.*` from the snapshot, adopting the pipeline's names under the single-producer contract; the descriptive filenames remain for the local fixtures. The Download menu and the three formats stand. Whether the saved download should present a friendlier filename via `<a download>` is an open UX question.)* |
 | 37 | 2026-06-22 | Structured beta testing is documented in `beta-testing/README.md` and collected through an external form shared by email, not through an in-app feedback button or frontend persistence. | The first review round needs actionable, task-based feedback without adding backend scope or cluttering the map UI. Keeping the process in-repo makes the review protocol versioned alongside development. |
 | 38 | 2026-07-08 | Prototype acreage UI labels use "submitted habitat acreage" rather than generic "acres." | The vendored submission schema defines `acreage` as total project acreage restored as habitat and says each acre should be counted once; habitat-specific acreage fields are submitted values anticipated to be verified through the HRL accounting process, not verified canonical accounting outcomes. |
@@ -582,7 +584,7 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 44 | 2026-07-09 | HRL tributary watershed names are exposed through the layer controls and methodology text, not as on-map watershed labels. | The Sacramento River watershed is a higher-level parent geography for much of the HRL area, so an on-map label can appear to identify other local tributary watersheds at closer zooms. Removing watershed text labels avoids misleading local interpretation while keeping the boundaries available for spatial orientation. |
 | 45 | 2026-07-09 | Boundary context layers default OFF on initial launch, including HRL tributary watersheds, the Delta legal boundary, and Yolo/Sutter bypass boundaries. HRL tributary watershed URL state is encoded as `visibleTributaries`, where an absent parameter means no tributary watershed boundaries are visible. | Boundary context is useful for inspection, but showing all boundary layers on first load competes with project locations, streams, and terrain. Default-off boundaries keep the ambient map simpler while preserving explicit opt-in controls for users who want watershed or reference-boundary context. |
 | 46 | 2026-07-09 | Polygon projects render as low-zoom overview point markers below a per-project, footprint-size-based fade threshold, cross-fading into the true polygon fill/outline as the footprint becomes legible. Marker placement uses a guaranteed-interior "point on surface" (area centroid if interior, otherwise the widest interior scanline midpoint) rather than a bounding-box or area centroid alone. | Round 1 feedback (R1-08) found small projects invisible at the default statewide extent, making project distribution look sparser than it is. A single fixed low-zoom polygon style could not serve both large and small footprints well, so fade timing is derived per project from footprint size. Bounding-box and unconstrained area centroids can fall outside concave or crescent polygons (e.g. L-shaped bypass footprints), which would misplace a project's marker outside its own boundary. |
-| 47 | 2026-07-09 | On initial load without shared URL state, the map auto-fits to the bounds of all currently visible projects (max zoom 9) instead of a fixed default extent; a shared URL's exact centre and zoom are honoured instead of being overridden by auto-fit. A zoom-reactive on-map hint and a first-run overlay sentence tell users that low-zoom points expand into mapped boundaries on zoom-in. | A data-driven initial extent serves the current and future project footprint better than a fixed frame, while preserving exact shared-URL views for communication use cases (Decision 5, Section 8). Because most projects still render as overview markers (Decision 46) at that extent, users need an explicit, self-removing cue that zooming in reveals true boundaries. |
+| 47 | 2026-07-09 | On initial load without shared URL state, the map auto-fits to the bounds of all currently visible projects (max zoom 9) instead of a fixed default extent; a shared URL's exact center and zoom are honored instead of being overridden by auto-fit. A zoom-reactive on-map hint and a first-run overlay sentence tell users that low-zoom points expand into mapped boundaries on zoom-in. | A data-driven initial extent serves the current and future project footprint better than a fixed frame, while preserving exact shared-URL views for communication use cases (Decision 5, Section 8). Because most projects still render as overview markers (Decision 46) at that extent, users need an explicit, self-removing cue that zooming in reveals true boundaries. |
 | 48 | 2026-07-13 | The dashboard links to official CNRA and State Water Resources Control Board pages for HRL program and Bay-Delta Water Quality Control Plan context, rather than maintaining original Plan of Implementation or Bay-Delta Update explanatory text in the app. | HRL Habitat Team discussion identified the CNRA HRL website and SWRCB Bay-Delta pages as the maintained sources for this policy and regulatory context. Linking from the About and methodology surfaces addresses Round 1 feedback R1-20 while avoiding duplicate or stale policy language in the dashboard. |
 | 49 | 2026-07-13 | Public UI labels use "project acres" or compact "total project acres" for acreage values, with help text explaining that the values are reported by HRL participating entities for public orientation and are not final HRL habitat accounting acres. | This keeps visible labels plain and confident while avoiding the procedural ambiguity of "submitted" in compact UI. The methodology surface can still explain provenance and validation separately. |
 | 50 | 2026-07-13 | Acreage caveats appear as targeted inline help on the headline acreage tile, project detail acreage heading, and habitat-type acreage breakdown rather than in every compact map or project-list context. | Inline help addresses Round 1 acreage confusion where users are most likely to infer accounting meaning, while keeping the map, tooltip, and project list readable and non-defensive. |
@@ -595,4 +597,4 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 57 | 2026-07-20 | The dashboard's current milestone is version `0.2.0`. | Version 0.2.0 captures the substantial expansion beyond the initial 0.1.0 prototype, including the fuller map experience, project browsing and filtering, context layers, data downloads, public orientation, and deployment to Azure Static Web Apps. It remains a beta milestone ahead of the planned 1.0.0 public release. |
 | 58 | 2026-07-20 | Interactive dashboard use is supported on tablet and desktop, not phone-sized screens. Phones receive an accessible notice and essential informational actions (purpose, methodology, contact, and data downloads), while map exploration, layer controls, and project browsing require a larger screen. | The map, layer rail, project browsing, and polygon inspection are information-dense and cannot provide a useful phone experience. This sets an honest product boundary without weakening the WCAG 2.2 AA obligation for supported surfaces or leaving phone visitors at a dead end. |
 | 59 | 2026-07-24 | The public dashboard is routed through Azure Front Door beneath `/restoration-map/`; the application is built with that browser-visible base path while Front Door removes the prefix before forwarding requests to the root-hosted Azure Static Web App. Local development and Azure Static Web Apps preview environments remain rooted at `/`. | A shared public hostname needs path-based routing for the restoration map and future HRL applications. The separate browser-visible and origin paths keep each application independently deployed while preserving a stable public URL. |
-| 60 | 2026-08-31 | Production reads the approved public project snapshot from Azure. The deploy workflow sets `VITE_PUBLIC_SNAPSHOT_URL` to the production `current.json` behind the `restoration-data` Front Door route; `src/data/project-data-source.ts` resolves the project data, map source, and downloads from that single pointer (no separate `manifest.json`). Builds with no snapshot URL (local dev, previews, tests) keep using the checked-in `public/data/` project fixtures. A pointer or fetch failure shows a visible error surface, never a silent fallback to fixtures. The production infrastructure repository is `hrl-azure-infrastructure` and the producing pipeline is `hrl-restoration-data-pipeline` (operator-run `hrl-pipeline promote`; no service or queue). Rollback is a `current.json` pointer move, not a map redeploy. | This supersedes the "not yet" parts of Decisions 15 and 17 and the §9.5 framing, and corrects Decision 14's repo name: the producing/serving repositories are `hrl-restoration-data-pipeline` and `hrl-azure-infrastructure` (there is no `hrl-data-infrastructure` in this workflow). Decision 14's principle stands &mdash; the dashboard reads only the approved published snapshot, never a primary source. The operator-run publication workflow and the Front Door data route now exist and are verified live. Context layers remain repo-hosted static assets. The single-pointer contract matches the pipeline's actual `hrl-pipeline promote` output; see `docs/public-snapshot-migration.md`. The prototype's own `convert-gpkg.py` and vendored `RestorationProjectSubmission` schema stay in use only for the development fixtures. |
+| 60 | 2026-08-31 | Production reads the approved public project snapshot from Azure. The deploy workflow sets `VITE_PUBLIC_SNAPSHOT_URL` to the production `current.json` behind the `restoration-data` Front Door route; `src/data/project-data-source.ts` resolves the project data, map source, and downloads from that single pointer (no separate `manifest.json`). Builds with no snapshot URL (local dev, previews, tests) keep using the checked-in `public/data/` project fixtures. A pointer or fetch failure shows a visible error surface, never a silent fallback to fixtures. The production infrastructure repository is `hrl-azure-infrastructure` and the producing pipeline is `hrl-restoration-data-pipeline` (operator-run `hrl-pipeline promote`; no service or queue). Rollback is a `current.json` pointer move, not a map redeploy. | This supersedes the "not yet" parts of Decisions 15 and 17 and the §9.5 framing, and corrects Decision 14's repo name: the producing/serving repositories are `hrl-restoration-data-pipeline` and `hrl-azure-infrastructure` (there is no `hrl-data-infrastructure` in this workflow). Decision 14's principle stands - the dashboard reads only the approved published snapshot, never a primary source. The operator-run publication workflow and the Front Door data route now exist and are verified live. Context layers remain repo-hosted static assets. The single-pointer contract matches the pipeline's actual `hrl-pipeline promote` output; see `docs/public-snapshot-migration.md`. The prototype's own `convert-gpkg.py` and vendored `RestorationProjectSubmission` schema stay in use only for the development fixtures. |

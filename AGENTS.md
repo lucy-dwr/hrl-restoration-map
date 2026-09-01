@@ -21,12 +21,12 @@ files are the local dev / preview / test fixtures. See Decision 60 and
 
 ## Current Implementation Status
 
-The early-implementation dashboard is deployed to Azure Static Web Apps. What
-exists:
+The dashboard is in production on Azure Static Web Apps at
+`https://hrl.water.ca.gov/restoration-map/`. What exists:
 
-- Full-bleed MapLibre map rendering project polygons (in production from the Azure public snapshot via `src/data/project-data-source.ts`; locally from the `public/data/` fixture), with project-type colour symbology, hover tooltip, selection halo, and click-to-inspect selection.
+- Full-bleed MapLibre map rendering project polygons (in production from the Azure public snapshot via `src/data/project-data-source.ts`; locally from the `public/data/` fixture), with project-type color symbology, hover tooltip, selection halo, and click-to-inspect selection.
 - Low-zoom overview point markers for polygon projects, placed at a guaranteed-interior "point on surface" of each footprint (not a bounding-box/area centroid, which can fall outside concave shapes) and cross-fading into the true polygon fill/outline on a per-project schedule driven by footprint size, so small projects stay discoverable at the default extent (addresses Round 1 R1-08). A zoom-reactive on-map hint and a first-run overlay sentence explain that points expand into boundaries on zoom-in.
-- On initial load without shared URL state, the map auto-fits to the bounds of all currently visible projects (max zoom 9) rather than a fixed default extent; a shared URL's exact centre and zoom are honoured instead.
+- On initial load without shared URL state, the map auto-fits to the bounds of all currently visible projects (max zoom 9) rather than a fixed default extent; a shared URL's exact center and zoom are honored instead.
 - Top bar branded as "Healthy Rivers and Landscapes Restoration Dashboard" with compact purpose text, a Download data menu, About popup, public-status guidance, and a general Contact HRL action.
 - First-run orientation overlay that frames the map as a public overview of early implementation and proposed restoration project locations, not verified habitat accounting.
 - Filter-aware headline tiles strip (project count and total project acres).
@@ -36,9 +36,9 @@ exists:
 - Sacramento-San Joaquin Delta legal boundary layer (`public/data/delta-boundary.geojson`) sourced from the DWR `i03_LegalDeltaBoundary` ArcGIS service.
 - Yolo and Sutter bypass boundary layers (`public/data/yolo-bypass-boundary.geojson`, `public/data/sutter-bypass-boundary.geojson`) sourced from the DWR `i12_Flood_Bypasses_2014` ArcGIS service for representational context.
 - California stream-network base layer (`public/data/streams.pmtiles`) built from NHDPlus V2 (VPU 18), served as vector tiles via the `pmtiles://` protocol with zoom-dependent reveal by Strahler stream order and dynamic labels for named mainstems / major tributaries.
-- Quiet light basemap with MapLibre-rendered DEM hillshade terrain context, HRL-inspired accessible UI palette, blue-grey hydrography, and optional Esri World Imagery inspection mode.
-- URL state encoding map centre/zoom, selected project, hidden types, basemap mode, boundary visibility, and stream-network visibility as query parameters.
-- Design tokens in `src/styles/tokens.css`; WCAG-AA-passing colour contrast for all text.
+- Quiet light basemap with MapLibre-rendered DEM hillshade terrain context, HRL-inspired accessible UI palette, blue-gray hydrography, and optional Esri World Imagery inspection mode.
+- URL state encoding map center/zoom, selected project, hidden types, basemap mode, boundary visibility, and stream-network visibility as query parameters.
+- Design tokens in `src/styles/tokens.css`; WCAG-AA-passing color contrast for all text.
 
 **Accessibility hardening status:** Automated WCAG A/AA regression checks cover
 representative dashboard states, and a thorough but non-exhaustive VoiceOver
@@ -54,7 +54,7 @@ hrl-restoration-map/
 ├── AGENTS.md                  # Coding-agent and contribution instructions
 ├── SPEC.md                    # Umbrella product and architecture spec
 ├── README.md                  # Human-facing setup and contribution overview
-├── beta-testing/              # Structured beta testing protocol and form content
+├── beta-testing/              # Records from the pre-production beta-testing rounds
 ├── docs/                      # public-snapshot-migration.md, accessibility-testing.md, specs/
 ├── data/
 │   └── source/                # Local source data, including GeoPackage files
@@ -79,8 +79,8 @@ hrl-restoration-map/
 │   │   └── top-bar/           # Program identity and navigation bar
 │   ├── data/                  # project-data-source.ts (the snapshot/fixture seam), types.ts
 │   ├── features/
-│   │   └── map/               # MapLibre map component and project-type colour palette
-│   ├── lib/                   # url-state.ts — URL read/write utilities
+│   │   └── map/               # MapLibre map component and project-type color palette
+│   ├── lib/                   # url-state.ts - URL read/write utilities
 │   └── styles/                # global.css, tokens.css
 ├── tests/                     # accessibility/ and deployment-path/ (Playwright), data/ (Vitest)
 └── scripts/
@@ -126,7 +126,7 @@ snapshot is already filtered to; never render or require canonical-only or
 private fields.
 
 1. Put the source GeoPackage under `data/source/`.
-2. Run `python scripts/convert-gpkg.py` to convert the relevant layer into `public/data/hrl_restoration_projects.geojson`, `public/data/hrl_restoration_projects.gpkg`, and `public/data/hrl_restoration_projects.csv`. Normalise and validate fields against `RestorationProjectSubmission` during conversion.
+2. Run `python scripts/convert-gpkg.py` to convert the relevant layer into `public/data/hrl_restoration_projects.geojson`, `public/data/hrl_restoration_projects.gpkg`, and `public/data/hrl_restoration_projects.csv`. Normalize and validate fields against `RestorationProjectSubmission` during conversion.
 3. Run `python scripts/fetch-watershed.py` to fetch and simplify HRL tributary watershed boundaries from the USGS WBD REST service and write them to `public/data/hrl-tributary-watersheds.geojson`.
 4. Run `python scripts/fetch-delta-boundary.py` to fetch and simplify the Sacramento-San Joaquin Delta legal boundary from the DWR ArcGIS service and write it to `public/data/delta-boundary.geojson`.
 5. Run `python scripts/fetch-bypass-boundaries.py` to fetch and simplify the representational Yolo and Sutter bypass boundaries from the DWR `i12_Flood_Bypasses_2014` ArcGIS service and write them to `public/data/yolo-bypass-boundary.geojson` and `public/data/sutter-bypass-boundary.geojson`.

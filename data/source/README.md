@@ -1,7 +1,7 @@
 # Source Data
 
 Local source GeoPackage for the **development and test fixtures** in
-`public/data/`. Production project data does not come from here &mdash; it is the
+`public/data/`. Production project data does not come from here - it is the
 approved public snapshot published by `hrl-restoration-data-pipeline` (see
 [`../../docs/public-snapshot-migration.md`](../../docs/public-snapshot-migration.md)).
 

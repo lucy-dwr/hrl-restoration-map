@@ -1,6 +1,6 @@
 # Layer catalog sub-specification
 
-**Status:** Adopted for the current prototype  
+**Status:** Adopted; in production  
 **Parent:** [`SPEC.md`](../../SPEC.md), Sections 7, 9.3, and 16
 
 This catalog describes map layers exposed by the dashboard. It does not approve new reference layers; additions require product and source review.
