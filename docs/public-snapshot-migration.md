@@ -1,153 +1,141 @@
-# Migrating the map to an approved public snapshot
+# How the map consumes the public snapshot
 
-## Purpose and current state
+## Current state
 
-The deployed beta reads project data from checked-in files under `public/data/`.
-That remains the active source until the HRL publication workflow has produced
-and approved a public snapshot.
+**In production the map reads the approved public snapshot from Azure.** The
+deploy workflow sets `VITE_PUBLIC_SNAPSHOT_URL` to the production `current.json`
+(behind the `restoration-data` Front Door route). `App.tsx` resolves the data
+source from it and keeps it in React state, so the map load and all three
+download links use the same resolved instance.
 
-That workflow is operator-run (see
-[`hrl-azure-infrastructure/PIPELINE_INFRA.md`](https://github.com/lucy-dwr/hrl-azure-infrastructure/blob/main/PIPELINE_INFRA.md)):
-an HRL data operator validates a submission with `hrl-pipeline`, and after
-review runs `hrl-pipeline promote`, which writes the immutable versioned public
-files and updates `current.json`. There is no promotion service or queue.
+**Locally, and in previews and tests**, `VITE_PUBLIC_SNAPSHOT_URL` is unset and
+the app uses the checked-in fixtures under `public/data/`.
 
-The consumer seam is [`src/data/project-data-source.ts`](../src/data/project-data-source.ts).
-It provides two implementations of the same `ProjectDataSource` interface:
+The consumer seam is
+[`src/data/project-data-source.ts`](../src/data/project-data-source.ts). It
+provides two implementations of one `ProjectDataSource` interface:
 
-| Source | Constructor | Status |
+| Source | Constructor | Used |
 | --- | --- | --- |
-| Checked-in beta files | `createStaticProjectDataSource(import.meta.env.BASE_URL)` | Active |
-| Approved public snapshot | `resolvePublicSnapshotProjectDataSource(currentUrl)` | Implemented but inactive |
+| Approved public snapshot | `resolvePublicSnapshotProjectDataSource(currentUrl)` | Production |
+| Checked-in fixture files | `createStaticProjectDataSource(import.meta.env.BASE_URL)` | Local dev, previews, tests |
 
-`App.tsx` currently constructs only the static source. The map load and all
-three download links receive their URLs from that source, so a later switch is
-contained there rather than spread across map components.
+The snapshot is produced by the operator-run pipeline (see
+[`hrl-azure-infrastructure/PIPELINE_INFRA.md`](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-azure-infrastructure/blob/main/PIPELINE_INFRA.md)):
+`hrl-pipeline promote` writes the immutable versioned public files and updates
+`current.json`. There is no promotion service or queue.
 
-## Required public contract
+## The consumer contract
 
-This is the map consumer's proposed contract. It is **not** an approval to
-publish data and must be agreed with the data-pipeline maintainers before the
-map is changed. Do not point the app at a candidate, validation report,
-canonical record, or a private Azure container.
-
-The public location must contain an uncacheable pointer and immutable,
-versioned files. This is `hrl-pipeline promote`'s actual output shape
+The public location contains an uncacheable pointer and immutable, versioned
+files. This is `hrl-pipeline promote`'s output shape
 (`hrl_restoration_pipeline.publication.activate_local_snapshot` /
-`publish_local`) — the resolver adopts the pipeline's names rather than the
-other way around, since there is only one producer:
+`publish_local`); the resolver adopts the pipeline's names, since there is one
+producer.
 
 ```text
 restoration-projects/
   current.json
-  2026-08-24/
+  2026-08-31/
     metadata.json
-    projects.geojson
+    projects.geojson      WGS84 lng/lat (CRS84)
     projects.gpkg
     projects.csv
 ```
 
-`current.json` is the whole pointer — there is no separate manifest file. It
-identifies the approved snapshot and every artifact's path, relative to
+`current.json` is the whole pointer &mdash; there is no separate manifest file.
+It identifies the approved snapshot and every artifact's path, relative to
 `current.json` itself:
 
 ```json
 {
-  "snapshot_version": "2026-08-24",
+  "snapshot_version": "2026-08-31",
   "schema_version": "v1.3.1",
-  "pipeline_version": "0.4.0",
+  "pipeline_version": "0.3.0",
   "artifacts": {
-    "projects.geojson": "2026-08-24/projects.geojson",
-    "projects.gpkg": "2026-08-24/projects.gpkg",
-    "projects.csv": "2026-08-24/projects.csv",
-    "metadata.json": "2026-08-24/metadata.json"
+    "projects.geojson": "2026-08-31/projects.geojson",
+    "projects.gpkg": "2026-08-31/projects.gpkg",
+    "projects.csv": "2026-08-31/projects.csv",
+    "metadata.json": "2026-08-31/metadata.json"
   },
   "output_checksums": { "...": "..." }
 }
 ```
 
-The resolver only reads `snapshot_version` and the `projects.geojson` /
+The resolver reads only `snapshot_version` and the `projects.geojson` /
 `projects.gpkg` / `projects.csv` entries of `artifacts` (`metadata.json` and
-`output_checksums` are producer bookkeeping, not required by the map). It
-rejects a missing required field, a failed HTTP request, or an artifact URL
-that moves to another origin. It intentionally does not construct file URLs
-from a version string; it follows only the approved pointer.
+`output_checksums` are producer bookkeeping). It rejects a missing required
+field, a failed HTTP request, or an artifact URL that moves to another origin.
+It does not construct URLs from a version string &mdash; it follows only the
+approved pointer.
 
-## Readiness gate
+**Serving requirements:** `current.json` is served `no-cache`; versioned
+artifacts are publicly readable, have immutable cache headers, and allow the
+dashboard's public origin through CORS; every URL is HTTPS behind the approved
+Front Door route with no storage key, SAS token, or credential.
 
-Do not activate this path until all of these are true:
-
-1. `hrl-pipeline promote`, run by the HRL data operator, has passed a synthetic
-   end-to-end acceptance run, including human `_APPROVE` and a conditional
-   `current.json` update.
-2. The snapshot is in the public export surface and contains only
-   privacy-filtered `RestorationProjectPublicRecord` fields.
-3. The producer emits the pointer shape above, the three named artifacts, and
-   a matching immutable version directory (this is `hrl-pipeline promote`'s
-   existing, unmodified output — no producer change is required).
-4. `current.json` is served with `no-cache`; versioned artifact responses are
-   publicly readable, have immutable cache headers, and allow the dashboard's
-   public origin through CORS.
-5. The exact public URL is HTTPS, is available through the approved Front Door
-   route or other approved public endpoint, and does not require a storage key,
-   SAS token, account credential, or browser authentication.
-6. The operational team has tested a bad/missing pointer and a rollback by
-   moving `current.json` to a preceding known-good snapshot.
-
-The local pipeline's present development output is not, by itself, evidence
-that these gates have been met.
-
-## Activation walkthrough
-
-1. **Confirm the contract, in place.** The map resolver
-   (`src/data/project-data-source.ts`) already reads `hrl-pipeline promote`'s
-   real `current.json` shape; no further reconciliation is required. If either
-   side ever changes its shape, update both with tests before activation, per
-   `PIPELINE_INFRA.md`'s cross-repository change discipline.
-
-2. **Publish an approved snapshot.** Use `hrl-pipeline promote` against an
-   `_APPROVE`d candidate; do not copy files manually or point the map at a
-   publication candidate. Record the immutable snapshot version and the public
-   pointer URL in the operational change record.
-
-3. **Test the public endpoint before changing the app.** From a browser on the
-   dashboard origin, fetch `current.json`, then each of its artifact URLs.
-   Confirm the GeoJSON renders, downloads open the expected versioned files,
-   and response headers meet the readiness gate.
-
-4. **Make the small, reviewed app change.** In
-   [`src/app/App.tsx`](../src/app/App.tsx), replace the static-only source
-   bootstrap with an asynchronous call to
-   `resolvePublicSnapshotProjectDataSource(publicCurrentUrl)`. Keep the source
-   in React state so the map load and download links use the *same resolved
-   instance*. Do not infer URLs from `snapshot_version`, and do not put the
-   public URL, Azure account identifier, or credentials in the resolver.
-
-   The public pointer URL belongs in reviewed deployment configuration, such as
-   a Vite `VITE_` build variable, rather than in a source-code constant. Add
-   it only in the production deployment after review; keep local development
-   and test fixtures on `createStaticProjectDataSource` unless there is a
-   deliberate integration test environment.
-
-5. **Define failure behavior in the activation change.** A production pointer
-   failure must be visible to users and operators; do not silently show stale
-   checked-in data as if it were the approved snapshot. Static data remains a
-   development and test fixture. The normal operational rollback is to restore
-   `current.json` to the previous approved immutable snapshot.
-
-6. **Run the map checks.** At minimum run `pnpm test:unit`, `pnpm run build`,
-   `pnpm test:deployment-path`, and `pnpm test:a11y`. Add an integration test
-   using a representative public pointer, malformed pointer, missing artifact,
-   and rolled-back pointer before merging the activation change.
-
-7. **Update public-facing data language.** Replace beta-specific references to
-   checked-in generated data only after the endpoint is live and verified.
-   Preserve the local conversion scripts and static fixtures for development,
-   regression tests, and emergency diagnosis.
+If either side's shape ever changes, update the pipeline
+(`publication.py`), the Terraform / CORS (`prod/apps`), this resolver and its
+tests, and the docs together &mdash; see
+[`PIPELINE_INFRA.md` &rarr; "Cross-repository change discipline"](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-azure-infrastructure/blob/main/PIPELINE_INFRA.md#cross-repository-change-discipline).
 
 ## Rollback
 
-Do not redeploy the map to roll back a normal public data issue. Restore the
-public `current.json` pointer to the previously approved, immutable snapshot
-using the publication process. If the map integration itself is faulty, revert
-the reviewed map activation change and deploy the prior static-source build.
+**A bad published snapshot is fixed in the publication layer, not by
+redeploying the map.** The map shows whatever `current.json` points at.
+
+1. Restore `current.json` to the previous approved, immutable snapshot, using
+   the publication process (re-upload the prior `current.json`, or re-run the
+   operator's upload with the prior version's pointer). The versioned folders
+   are immutable and still present, so this is a pointer move only.
+2. Do **not** roll back to a snapshot known to be broken. In particular, never
+   point `current.json` at `2026-08-27` &mdash; it predates the CRS fix and its
+   coordinates are wrong.
+3. The live map follows the pointer within about 10&ndash;15 minutes (Front Door
+   edge cache), with no redeploy.
+
+If the fault is in the **map's integration** rather than the data &mdash; the
+resolver, the error handling, the build wiring &mdash; revert the offending map
+change and deploy the previous build. The static fixtures remain as a
+development and emergency-diagnosis source.
+
+Escalation contacts:
+[`hrl-azure-infrastructure/MAINTENANCE.md`](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-azure-infrastructure/blob/main/MAINTENANCE.md).
+
+## Appendix: how the cutover happened
+
+The map was activated against the Azure snapshot in
+[#5](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-map/pull/5) /
+[#6](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-map/pull/6) (2026-08-31), after
+the readiness gate below was met.
+
+Activating it immediately surfaced a bug the static fixtures never had:
+`LngLatBounds.extend()` in MapLibre throws on an out-of-range coordinate, with
+no React error boundary, so the whole tree crashed to a blank page. The
+published `projects.geojson` was in EPSG:3310 projected metres instead of WGS84
+lon/lat. Two fixes followed, one in each repo:
+
+- **Map:** `src/features/map/Map.tsx` skips invalid positions when computing map
+  bounds instead of crashing.
+- **Pipeline:** `hrl-pipeline promote` now reprojects the published
+  `projects.geojson` to WGS84 / CRS84, keeps `projects.gpkg` in EPSG:3310, and
+  range-checks coordinates on both submission validation and promotion. The
+  corrected `2026-08-31` snapshot was re-run from the same raw submission and is
+  live.
+
+### The readiness gate that was met
+
+1. `hrl-pipeline promote` passed an end-to-end run including human `_APPROVE`
+   and a conditional `current.json` update.
+2. The snapshot contains only privacy-filtered `RestorationProjectPublicRecord`
+   fields.
+3. The producer emits the pointer shape above, the three named artifacts, and a
+   matching immutable version directory &mdash; unmodified `hrl-pipeline promote`
+   output.
+4. `current.json` is `no-cache`; versioned artifacts are publicly readable, have
+   immutable cache headers, and allow the dashboard origin through CORS.
+5. The public URL is HTTPS behind the approved Front Door route, with no
+   credential.
+6. A bad/missing pointer and a pointer rollback were exercised (the
+   `2026-08-27` &rarr; `2026-08-31` swap was a real `current.json` move to a new
+   version with no redeploy, browser-verified).

@@ -1,12 +1,15 @@
 # Generated Data
 
-Generated browser-readable data for the local prototype lives here.
+Generated browser-readable data for **local development and tests** lives here.
+In production the app reads the project data from the Azure public snapshot, not
+from this directory (see
+[`../../docs/public-snapshot-migration.md`](../../docs/public-snapshot-migration.md)).
 
 Start with `hrl_restoration_projects.geojson`, `hrl_restoration_projects.gpkg`,
-and `hrl_restoration_projects.csv` generated from the GeoPackage in
-`data/source/` and validated against the vendored LinkML
-`RestorationProjectSubmission` schema. If GeoJSON becomes too large or slow,
-replace or supplement it with generated vector tiles.
+and `hrl_restoration_projects.csv`, generated from the GeoPackage in
+`data/source/` by `scripts/convert-gpkg.py` and validated against the vendored
+LinkML `RestorationProjectSubmission` schema. If GeoJSON becomes too large or
+slow, replace or supplement it with generated vector tiles.
 
 The project downloads are the public-facing project data objects. GeoJSON is the
 browser map source and preserves multivalued fields as arrays. GeoPackage keeps
@@ -22,14 +25,14 @@ DWR flood bypasses service, and `streams.pmtiles` from NHDPlus V2 source data.
 
 Files here should be reproducible from source data and conversion scripts.
 
-## Future public publication seam
+## The production data source
 
-The deployed beta continues to read these checked-in files. The app also has a
-unit-tested, inactive consumer seam in `src/data/project-data-source.ts` for a
-future approved public snapshot. It expects `current.json` to identify a
-version and a same-origin `manifest.json`; the manifest then identifies the
-three immutable project artifacts by their public filenames. This is not an
-active browser data source or approval to publish data. Coordinate the exact
-pointer and manifest contract with the data-pipeline repository before the map
-is switched away from this directory. The full readiness gate and activation
-walkthrough are in [the public snapshot migration guide](../../docs/public-snapshot-migration.md).
+Production reads the approved public snapshot from Azure through the consumer
+seam in `src/data/project-data-source.ts`
+(`resolvePublicSnapshotProjectDataSource`), following a single `current.json`
+pointer &mdash; there is no separate `manifest.json`. The pipeline
+(`hrl-restoration-data-pipeline`) writes `projects.geojson` / `.gpkg` / `.csv`
+plus `metadata.json` per immutable version. The files in this directory are the
+fixtures the seam falls back to when `VITE_PUBLIC_SNAPSHOT_URL` is unset. The
+contract and the rollback procedure are in
+[the public snapshot consumer contract](../../docs/public-snapshot-migration.md).

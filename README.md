@@ -112,24 +112,28 @@ as a dashboard link.
 
 ## Data and updates
 
-Today, the app serves checked-in, browser-ready files from `public/data/`.
-Those public GeoJSON, GeoPackage, and CSV downloads are reproducibly generated
-from the local source GeoPackage and validated against the vendored HRL LinkML
-schema. The browser never reads the source GeoPackage directly.
+**In production, the app reads the approved public snapshot from Azure.** The
+deployment sets `VITE_PUBLIC_SNAPSHOT_URL` to the production `current.json`
+(served behind the `restoration-data` Front Door route), and
+`src/data/project-data-source.ts` resolves the project data, map source, and all
+three downloads from it. That snapshot is produced by
+[`hrl-restoration-data-pipeline`](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-data-pipeline)
+and is already filtered to the public record profile &mdash; no contact details,
+internal comments, source metadata, or non-public funding.
 
-The conversion process removes submission contact details, internal comments,
-source metadata, and non-public funding information before public data are
-produced. Do not add those fields back to the app or downloads without explicit
-approval.
+**Locally, the app uses the checked-in fixtures in `public/data/`.** A build
+with no `VITE_PUBLIC_SNAPSHOT_URL` (local dev, previews, tests) reads those
+files. They are reproducibly generated from a local source GeoPackage by the
+scripts in [`scripts/`](scripts/README.md) and validated against the vendored
+LinkML schema. They are development fixtures, not the production data path; do
+not add private fields to them.
 
-For a normal UI change, no data regeneration is needed. If you are updating
-project or context-layer data, start with the [data script guide](scripts/README.md).
-The project will move to reading a published Azure-hosted data object when the
-HRL data-serving workflow is ready; until then, the checked-in generated files
-are the source used by the deployed app.
-
-For the required approval gate, consumer contract, activation steps, and
-rollback procedure, see [Migrating the map to an approved public snapshot](docs/public-snapshot-migration.md).
+For a normal UI change, no data regeneration is needed. For the consumer
+contract the app enforces on `current.json`, and the **rollback procedure** when
+a published snapshot is bad, see
+[How the map consumes the public snapshot](docs/public-snapshot-migration.md).
+A pointer or fetch failure in production shows a visible error surface; the app
+never silently falls back to stale fixtures.
 
 ## Status
 
@@ -140,10 +144,10 @@ hostname remains an origin/debug endpoint, not the public dashboard URL.
 Every push to `main` runs the GitHub Actions workflow, builds the Vite app with
 Node 24 and pnpm, and deploys the resulting static site.
 
-Application hosting is in place, but the production HRL data-serving
-infrastructure, published snapshot manifests, and Azure-hosted data/tile
-delivery are still future work. The current deployment uses the generated static
-data committed in this repository.
+The production app reads the approved public project snapshot from Azure Blob
+Storage through Azure Front Door (the `restoration-data` route). Context layers
+(watersheds, boundaries, stream tiles) are still served as generated static
+files committed here.
 
 ## Where to go next
 
@@ -155,12 +159,12 @@ data committed in this repository.
 | Regenerate project or context layer data | [Data script guide](scripts/README.md) |
 | Learn about the local source package | [Source data notes](data/source/README.md) |
 | Understand the generated public data | [Generated data notes](public/data/README.md) |
-| Prepare the approved public snapshot migration | [Public snapshot migration](docs/public-snapshot-migration.md) |
+| Understand how the map reads the Azure snapshot, and roll one back | [Public snapshot consumer contract](docs/public-snapshot-migration.md) |
 | Review structured beta-testing materials | [Beta testing](beta-testing/README.md) |
 | See notable project changes | [Changelog](CHANGELOG.md) |
 | Review community expectations | [Code of Conduct](CODE_OF_CONDUCT.md) |
 
-Found a bug or have an idea? [Open an issue](https://github.com/lucy-dwr/hrl-restoration-map/issues).
+Found a bug or have an idea? [Open an issue](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-map/issues).
 
 ## License
 
