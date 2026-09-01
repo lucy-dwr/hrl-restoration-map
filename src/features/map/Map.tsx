@@ -337,6 +337,15 @@ function eachPosition(coords: unknown, visit: (position: Position) => void) {
   for (const child of coords) eachPosition(child, visit)
 }
 
+function isValidLngLat(position: Position): boolean {
+  const [lng, lat] = position
+  return (
+    Number.isFinite(lng) && Number.isFinite(lat)
+    && lng >= -180 && lng <= 180
+    && lat >= -90 && lat <= 90
+  )
+}
+
 function extendBounds(bounds: maplibregl.LngLatBounds, geometry: Geometry | null) {
   if (!geometry) return
   if (geometry.type === 'GeometryCollection') {
@@ -344,6 +353,10 @@ function extendBounds(bounds: maplibregl.LngLatBounds, geometry: Geometry | null
     return
   }
   eachPosition(geometry.coordinates, position => {
+    // A geometry stored in the wrong coordinate system (projected meters
+    // instead of WGS84 lng/lat, say) throws inside LngLatBounds.extend and
+    // takes down the whole map — one bad record should never do that.
+    if (!isValidLngLat(position)) return
     bounds.extend([position[0], position[1]])
   })
 }
