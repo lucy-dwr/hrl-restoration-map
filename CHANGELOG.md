@@ -11,6 +11,14 @@ applicable.
 
 ### Added
 
+- Activated the approved public snapshot in production: the deployed app reads
+  project data, the map source, and all three downloads from the Azure-hosted
+  `current.json` (behind the `restoration-data` Front Door route) via
+  `resolvePublicSnapshotProjectDataSource`, wired through
+  `VITE_PUBLIC_SNAPSHOT_URL`. Builds with no snapshot URL (local dev, previews,
+  tests) still use the checked-in `public/data/` fixtures. A pointer or fetch
+  failure shows a visible error surface rather than silently serving stale
+  fixtures.
 - Added an accessible phone-sized unsupported-surface notice with the
   dashboard's purpose, methodology, contact option, and public data downloads.
   Interactive map exploration remains supported on tablet and desktop screens.
@@ -54,12 +62,20 @@ applicable.
 - Added configurable Vite public-base-path support and automated browser
   coverage for the `/restoration-map/` Azure Front Door deployment path.
 
+### Fixed
+
+- Stopped one invalid geometry coordinate from crashing the whole map:
+  `src/features/map/Map.tsx` now skips invalid positions when computing map
+  bounds instead of letting MapLibre's `LngLatBounds.extend()` throw
+  uncaught. Surfaced when the first real Azure snapshot briefly carried
+  projected-metre coordinates.
+
 ### Changed
 
 - Strengthened the top-bar identity with a two-line dashboard title, clearer
   purpose-text spacing, and the official transparent HRL favicon mark.
 - Refreshed the generated public project data from
-  `data/source/2026-07-20-v11.gpkg`.
+  `data/source/2026-07-20-v13.gpkg`.
 - Clarified the relationship between reported project acres, total HRL habitat
   acres, and the habitat-type acreage breakdown in the project detail panel.
 - Expanded URL state to include basemap mode and context-layer visibility.

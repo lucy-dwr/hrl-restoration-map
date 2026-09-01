@@ -18,9 +18,17 @@ Read [SPEC.md](SPEC.md) before proposing or writing code. Treat the Decision Log
 in that file as canonical. Do not reverse a logged decision without proposing a
 superseding entry.
 
-The deployed application currently serves generated static data from
-`public/data/`. Do not assume Azure Blob, published snapshot manifests, or the
-production `hrl-data-infrastructure` serving contract exist yet.
+**Data sources.** In production the deployed app reads the approved public
+snapshot from Azure &mdash; `current.json` behind the `restoration-data` Front
+Door route, resolved in `src/data/project-data-source.ts`. The checked-in files
+under `public/data/` are the **local development and test fixtures**; a build
+with no `VITE_PUBLIC_SNAPSHOT_URL` set (local dev, previews, tests) uses them.
+The production serving infrastructure lives in
+[`hrl-azure-infrastructure`](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-azure-infrastructure),
+and the pipeline that produces the snapshot is
+[`hrl-restoration-data-pipeline`](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-data-pipeline).
+See [`docs/public-snapshot-migration.md`](docs/public-snapshot-migration.md) for
+the consumer contract and the rollback procedure.
 
 ## Development Setup
 
@@ -53,11 +61,17 @@ important states, not only their initial rendering.
 
 ## Data Workflow
 
-The browser app should not load source GeoPackage files directly. Use the
-repeatable data workflow instead:
+**Production project data is not generated in this repository.** It comes from
+`hrl-restoration-data-pipeline` (`hrl-pipeline promote`), which writes the
+privacy-filtered public snapshot the deployed app reads. Do not use the scripts
+below to change what production shows.
+
+The scripts below regenerate the **local fixtures and the context layers**
+(watersheds, boundaries, streams). The browser app never reads a source
+GeoPackage directly.
 
 1. Put source GeoPackage files under `data/source/`.
-2. Run `python scripts/convert-gpkg.py` to generate
+2. Run `python scripts/convert-gpkg.py` to generate the local project fixtures
    `public/data/hrl_restoration_projects.geojson`,
    `public/data/hrl_restoration_projects.gpkg`, and
    `public/data/hrl_restoration_projects.csv`.
@@ -72,12 +86,17 @@ repeatable data workflow instead:
    `public/data/streams.pmtiles`.
 7. Keep generated files replaceable by re-running the scripts.
 
-Normalize and validate project data against the vendored LinkML
-`RestorationProjectSubmission` schema in
-`schemas/hrl/linkml/hrl_restoration_project.yaml`.
+The fixture conversion normalizes and validates project data against the
+vendored LinkML `RestorationProjectSubmission` schema in
+`schemas/hrl/linkml/hrl_restoration_project.yaml`. The vendored copy is for the
+local fixture workflow only; the authoritative schema is
+[`hrl-restoration-schema`](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-schema)
+and the production pipeline pins it directly.
 
-Do not require fields that only exist on `RestorationProjectCanonicalRecord`
-until the production validation and ingestion pipeline exists.
+The app consumes the **public** profile
+(`RestorationProjectPublicRecord`) &mdash; the pipeline's public snapshot is
+already filtered to it. Do not render or require canonical-only or private
+fields (see "Privacy and Public Data" below).
 
 ## Privacy and Public Data
 

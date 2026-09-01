@@ -4,22 +4,27 @@ This file explains how to work in the repo. The product, design, data, and archi
 
 Read `SPEC.md` before writing code. Treat its Decision Log as canonical, and do not reverse a logged decision without proposing a superseding entry.
 
-The cross-repository data workflow (how an approved public snapshot is produced
-and what this map is allowed to read) is described in
-[`hrl-azure-infrastructure/PIPELINE_INFRA.md`](https://github.com/lucy-dwr/hrl-azure-infrastructure/blob/main/PIPELINE_INFRA.md).
+The cross-repository data workflow (how the approved public snapshot is produced
+and what this map reads) is described in
+[`hrl-azure-infrastructure/PIPELINE_INFRA.md`](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-azure-infrastructure/blob/main/PIPELINE_INFRA.md);
+roles and ownership are in
+[`hrl-azure-infrastructure/DIVISION_OF_RESPONSIBILITIES.md`](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-azure-infrastructure/blob/main/DIVISION_OF_RESPONSIBILITIES.md).
 That workflow is operator-run: an HRL data operator validates and promotes
 submissions with `hrl-pipeline` and uploads the versioned public snapshot plus
-`current.json`. There is no ingestion service, queue, or Container App to
-target. This repository is unchanged by that: keep using the checked-in
-`public/data/` files and the inactive `ProjectDataSource` seam until an approved
-snapshot exists.
+`current.json`. There is no ingestion service, queue, or Container App.
+
+**In production this map reads that Azure snapshot** through
+`resolvePublicSnapshotProjectDataSource` in `src/data/project-data-source.ts`
+(wired via `VITE_PUBLIC_SNAPSHOT_URL`). The checked-in `public/data/` project
+files are the local dev / preview / test fixtures. See Decision 60 and
+[`docs/public-snapshot-migration.md`](docs/public-snapshot-migration.md).
 
 ## Current Implementation Status
 
 The early-implementation dashboard is deployed to Azure Static Web Apps. What
 exists:
 
-- Full-bleed MapLibre map rendering project polygons from `public/data/hrl_restoration_projects.geojson`, with project-type colour symbology, hover tooltip, selection halo, and click-to-inspect selection.
+- Full-bleed MapLibre map rendering project polygons (in production from the Azure public snapshot via `src/data/project-data-source.ts`; locally from the `public/data/` fixture), with project-type colour symbology, hover tooltip, selection halo, and click-to-inspect selection.
 - Low-zoom overview point markers for polygon projects, placed at a guaranteed-interior "point on surface" of each footprint (not a bounding-box/area centroid, which can fall outside concave shapes) and cross-fading into the true polygon fill/outline on a per-project schedule driven by footprint size, so small projects stay discoverable at the default extent (addresses Round 1 R1-08). A zoom-reactive on-map hint and a first-run overlay sentence explain that points expand into boundaries on zoom-in.
 - On initial load without shared URL state, the map auto-fits to the bounds of all currently visible projects (max zoom 9) rather than a fixed default extent; a shared URL's exact centre and zoom are honoured instead.
 - Top bar branded as "Healthy Rivers and Landscapes Restoration Dashboard" with compact purpose text, a Download data menu, About popup, public-status guidance, and a general Contact HRL action.
@@ -50,14 +55,15 @@ hrl-restoration-map/
 ├── SPEC.md                    # Umbrella product and architecture spec
 ├── README.md                  # Human-facing setup and contribution overview
 ├── beta-testing/              # Structured beta testing protocol and form content
+├── docs/                      # public-snapshot-migration.md, accessibility-testing.md, specs/
 ├── data/
 │   └── source/                # Local source data, including GeoPackage files
 ├── public/
 │   └── data/
-│       ├── hrl_restoration_projects.geojson  # Generated from GeoPackage via scripts/convert-gpkg.py
-│       ├── hrl_restoration_projects.gpkg  # Generated public GeoPackage download via scripts/convert-gpkg.py
-│       ├── hrl_restoration_projects.csv  # Generated public non-spatial CSV download via scripts/convert-gpkg.py
-│       ├── hrl-tributary-watersheds.geojson  # Fetched from USGS WBD via scripts/fetch-watershed.py
+│       ├── hrl_restoration_projects.geojson  # LOCAL FIXTURE (dev/test only); production reads the Azure snapshot
+│       ├── hrl_restoration_projects.gpkg  # local fixture, via scripts/convert-gpkg.py
+│       ├── hrl_restoration_projects.csv  # local fixture, via scripts/convert-gpkg.py
+│       ├── hrl-tributary-watersheds.geojson  # context layer (served in prod), from USGS WBD
 │       ├── delta-boundary.geojson  # Fetched from DWR via scripts/fetch-delta-boundary.py
 │       ├── yolo-bypass-boundary.geojson  # Fetched from DWR via scripts/fetch-bypass-boundaries.py
 │       ├── sutter-bypass-boundary.geojson  # Fetched from DWR via scripts/fetch-bypass-boundaries.py
@@ -71,14 +77,14 @@ hrl-restoration-map/
 │   │   ├── layer-panel/       # Collapsible layer toggle rail
 │   │   ├── tiles/             # Headline metric tiles
 │   │   └── top-bar/           # Program identity and navigation bar
-│   ├── data/                  # types.ts — ProjectProperties and related types
+│   ├── data/                  # project-data-source.ts (the snapshot/fixture seam), types.ts
 │   ├── features/
 │   │   └── map/               # MapLibre map component and project-type colour palette
 │   ├── lib/                   # url-state.ts — URL read/write utilities
 │   └── styles/                # global.css, tokens.css
-├── tests/                     # (not yet populated)
+├── tests/                     # accessibility/ and deployment-path/ (Playwright), data/ (Vitest)
 └── scripts/
-    ├── convert-gpkg.py        # Converts source GeoPackage to public/data/hrl_restoration_projects.*
+    ├── convert-gpkg.py        # Builds the LOCAL project fixture from data/source/*.gpkg
     ├── fetch-watershed.py     # Fetches HRL tributary watershed boundaries from USGS WBD
     ├── fetch-delta-boundary.py # Fetches Sacramento-San Joaquin Delta legal boundary from DWR
     ├── fetch-bypass-boundaries.py # Fetches Yolo and Sutter bypass boundaries from DWR
@@ -101,17 +107,23 @@ Use the stack decisions in `SPEC.md` Section 10:
 - Vitest for unit tests and Playwright for critical end-to-end paths
 - pnpm as the package manager
 
-The application deploys to Azure Static Web Apps through GitHub Actions. Do not
-assume Azure Blob data/tile hosting, published snapshot manifests, or
-`hrl-data-infrastructure` serving outputs exist yet.
+The application deploys to Azure Static Web Apps through GitHub Actions. In
+production it reads the project snapshot from Azure Blob Storage through Azure
+Front Door (Decision 60); the infrastructure repository is
+`hrl-azure-infrastructure`. Tile hosting on Azure Blob is still anticipated,
+not built.
 
-## Prototype Data Workflow
+## Local fixture data workflow
 
-The current source dataset is a GeoPackage. The app should not try to load the GeoPackage directly in the browser.
+The scripts below regenerate the **local fixtures and context layers**, not the
+production project data (that comes from `hrl-restoration-data-pipeline`). The
+app should not load a GeoPackage directly in the browser.
 
-The current schema contract is the vendored LinkML schema in `schemas/hrl/linkml/hrl_restoration_project.yaml`. For now, use the `RestorationProjectSubmission` class. Do not require fields that only exist on `RestorationProjectCanonicalRecord`, such as program-assigned canonical fields, until the Azure validation/ingestion pipeline exists.
-
-Use this workflow until the production data infrastructure exists:
+The fixture conversion validates against the vendored LinkML schema in
+`schemas/hrl/linkml/hrl_restoration_project.yaml` (`RestorationProjectSubmission`
+class). The app consumes the public-record profile, which the production
+snapshot is already filtered to; never render or require canonical-only or
+private fields.
 
 1. Put the source GeoPackage under `data/source/`.
 2. Run `python scripts/convert-gpkg.py` to convert the relevant layer into `public/data/hrl_restoration_projects.geojson`, `public/data/hrl_restoration_projects.gpkg`, and `public/data/hrl_restoration_projects.csv`. Normalise and validate fields against `RestorationProjectSubmission` during conversion.
@@ -129,7 +141,7 @@ If schema-derived TypeScript types or validators are added, generate them from t
 
 - Files and directories: `kebab-case` for most files; `PascalCase` only for React component files
 - TypeScript identifiers: `camelCase` for variables and functions, `PascalCase` for types and components, `SCREAMING_SNAKE_CASE` for compile-time constants
-- Data fields: `snake_case` end-to-end to match `hrl-data-infrastructure`
+- Data fields: `snake_case` end-to-end to match the HRL schema and pipeline output
 - Use two-space indentation
 - Rely on Prettier for formatting
 - Prefer explicit imports over default imports for components

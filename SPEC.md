@@ -4,8 +4,9 @@
 **Working repo name:** `hrl-restoration-map`  
 **Related repos:**
 
-- `hrl-data-infrastructure` — pipelines, storage, and publication architecture at `lucy-dwr.github.io/hrl-data-infrastructure`
-- `hrl-docs` — companion documentation site at `lucy-dwr.github.io/hrl-docs`
+- `hrl-restoration-data-pipeline` — the operator-run validation and publication tool (`hrl-pipeline` / `hrl-pipeline promote`)
+- `hrl-azure-infrastructure` — the Terraform for the Azure storage and Front Door routing that serves the published snapshot, plus the cross-repo `PIPELINE_INFRA.md`
+- `hrl-docs` — companion documentation site at `healthy-rivers-and-landscapes-science.github.io/hrl-docs`
 
 ---
 
@@ -17,7 +18,7 @@ The Decision Log at the end is the canonical record of what is settled. Do not r
 
 This document is intentionally an umbrella spec. It links to adopted and planned sub-specs (see Section 16), which are elaborated as the project needs more detail. Repository workflow, coding agent instructions, and contribution mechanics live in [`AGENTS.md`](AGENTS.md).
 
-This repository is the deployed beta. The application is hosted on Azure Static Web Apps; published snapshot manifests and the full `hrl-data-infrastructure` serving contract are not set up yet. Current development and deployment use generated data and assets stored in this repo.
+This repository is the deployed beta. The application is hosted on Azure Static Web Apps behind Azure Front Door. **In production it reads the approved public project snapshot from Azure Blob Storage** (a single `current.json` pointer behind the `restoration-data` Front Door route), produced by the operator-run `hrl-restoration-data-pipeline` and served through infrastructure defined in `hrl-azure-infrastructure` (Decision 60). Context layers and the local development/test project fixtures are still generated assets stored in this repo. The infrastructure repository is `hrl-azure-infrastructure`, not `hrl-data-infrastructure`.
 
 ---
 
@@ -58,7 +59,7 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 - Include scripts that convert the GeoPackage into browser-readable static data.
 - Render restoration project features on a MapLibre map.
 - Support a small set of representative interactions: layer visibility, click-to-inspect, and headline metrics where the source data support them.
-- Treat Azure Blob data/tile hosting, related data infrastructure, and published snapshot manifests as future work; the application itself deploys to Azure Static Web Apps.
+- Read production project data from the approved public snapshot on Azure Blob Storage via a single `current.json` pointer (Decision 60); keep the local GeoPackage-to-fixtures scripts for development and tests. Azure Blob *tile* hosting remains future work.
 
 **Implementation status as of v0.2:**
 
@@ -96,10 +97,10 @@ Public-facing interface copy should use plain language written for an 8th-grade 
 - Click-to-inspect for any project (project name, type, project stage, lead entity, system, acreage where available).
 - Layer toggling for project types, HRL tributary watersheds, and reference boundaries.
 - URL-encoded state (center, zoom, active layers, selected project, time range if applicable).
-- "Download data" affordances linking back to canonical datasets in the HRL data infrastructure.
+- "Download data" affordances serving the GeoJSON, GeoPackage, and CSV from the same approved public snapshot the map reads.
 - Concise "About this map" popup, plus fuller methodology and data-source context before production launch.
 - Accessibility with WCAG 2.2 Level AA conformance, with selected WCAG 2.2 Level AAA criteria where applicable.
-- Static deploy to Azure Static Web Apps; Azure Blob remains the anticipated production data and tile substrate.
+- Static deploy to Azure Static Web Apps; production project data reads from Azure Blob Storage via `current.json` (Decision 60); Azure Blob remains the anticipated tile substrate.
 
 ### 3.3 Potential future features
 
@@ -360,11 +361,16 @@ The current catalog is maintained in the adopted [`layer-catalog.md`](docs/specs
 
 Additional layers under consideration (see Open Questions): administrative boundaries (county, water district, fish management zone).
 
-### 9.4 Prototype data origin
+### 9.4 Local fixture data origin
 
-Current prototype data starts from a local GeoPackage committed to or placed inside this repo. The browser should not read the GeoPackage directly. Instead, add a script that converts the GeoPackage into static browser-readable data before the app runs.
+> Superseded in part by Decision 60: production no longer uses this path. The
+> steps below now describe how the **local development and test fixtures** in
+> `public/data/` are produced. Production project data comes from the Azure
+> public snapshot (§9.5).
 
-The current machine-readable data contract is the vendored LinkML schema at `schemas/hrl/linkml/hrl_restoration_project.yaml`, copied from `lucy-dwr/hrl-restoration-schema` release `v1.0.0`. The prototype works with the `RestorationProjectSubmission` class. The `RestorationProjectCanonicalRecord` class describes a future validated/standardized dataset with program-assigned fields, but the Azure pipeline that produces that dataset does not exist yet.
+Local fixture data starts from a GeoPackage committed to or placed inside this repo. The browser does not read the GeoPackage directly; `scripts/convert-gpkg.py` converts it into static browser-readable data.
+
+The vendored LinkML schema at `schemas/hrl/linkml/hrl_restoration_project.yaml`, copied from `Healthy-Rivers-and-Landscapes-Science/hrl-restoration-schema` release `v1.0.0`, is used to normalize and validate the fixture during conversion. The authoritative schema is that repository at its current release; the production pipeline pins it directly. The prototype fixture uses the `RestorationProjectSubmission` class; the app consumes the privacy-filtered public profile, which the production snapshot is already filtered to.
 
 Recommended prototype path:
 
@@ -379,9 +385,17 @@ GeoJSON is the simplest representation for small vector features because MapLibr
 
 ### 9.5 Production data origin
 
-In the production target, dashboard data are snapshots produced by `hrl-data-infrastructure` pipelines and published to the Storage and Serving layer (Azure Blob). The dashboard should not read from primary sources directly. Vector tile generation via tippecanoe or equivalent is expected to become a data-infrastructure responsibility once the production data contract exists.
+Production project data is the approved public snapshot produced by
+`hrl-restoration-data-pipeline` (`hrl-pipeline promote`, operator-run) and
+published to Azure Blob Storage, served through the `restoration-data` Azure
+Front Door route. The dashboard follows a single `current.json` pointer and does
+not read from primary sources directly. The consumer contract and rollback
+procedure are in [`docs/public-snapshot-migration.md`](docs/public-snapshot-migration.md);
+the infrastructure is defined in `hrl-azure-infrastructure`. See Decision 60.
 
-Data refresh cadence: TBD (see Open Questions). Likely nightly for v1.
+Refresh cadence is event-driven, not scheduled: a new snapshot goes live when an
+operator publishes an approved submission. Context-layer vector tiles are still
+generated in this repository.
 
 ---
 
@@ -402,7 +416,7 @@ Data refresh cadence: TBD (see Open Questions). Likely nightly for v1.
 - **Linting / formatting:** ESLint + Prettier with a shared config.
 - **Package manager:** pnpm.
 - **Prototype hosting:** Local Vite dev server.
-- **Production application hosting:** Azure Static Web Apps remains the root-hosted application origin. Azure Front Door is the public routing layer, exposing the dashboard beneath `/restoration-map/` while removing that prefix before requests reach the origin. Azure Blob remains the production data and tile substrate.
+- **Production application hosting:** Azure Static Web Apps remains the root-hosted application origin. Azure Front Door is the public routing layer, exposing the dashboard beneath `/restoration-map/` and the published data snapshot beneath `/restoration-data/`, removing each prefix before requests reach its origin. Project data is served from Azure Blob (Decision 60); Azure Blob remains the anticipated tile substrate.
 
 ### 10.2 Why not other options
 
@@ -414,18 +428,15 @@ Data refresh cadence: TBD (see Open Questions). Likely nightly for v1.
 
 ---
 
-## 11. Integration with `hrl-data-infrastructure`
+## 11. Integration with the publication workflow
 
-The production dashboard is downstream of the four-layer data architecture and reads only from the Storage and Serving layer.
+The production dashboard is downstream of the restoration data workflow and reads only the approved public snapshot &mdash; never a primary source, a validation candidate, or a private container.
 
-For the current prototype, that infrastructure is not available. Use the local GeoPackage workflow in Section 9.4 instead.
+- The dashboard does not run the pipeline and does not write project data.
+- In production, `VITE_PUBLIC_SNAPSHOT_URL` points the build at the production `current.json` (behind the `restoration-data` Front Door route). At runtime `src/data/project-data-source.ts` fetches that pointer and resolves the project data, map source, and downloads from it. Local dev, previews, and tests use the checked-in fixtures instead.
+- A new snapshot goes live when an operator runs `hrl-pipeline promote` and uploads `current.json`; the map follows within the Front Door cache window, with no redeploy.
 
-- The production dashboard does not run data-infrastructure pipelines.
-- The dashboard does not write project data.
-- The production dashboard's build step pulls a versioned snapshot manifest from Azure Blob and resolves the URIs of the latest published datasets.
-- Each released production version of the dashboard pins to a snapshot manifest version, so a deployed dashboard is reproducible.
-
-The future exact contract between the two repos will live in a jointly owned `data-contract.md` sub-spec once the serving architecture is proposed.
+The consumer contract and rollback procedure are in [`docs/public-snapshot-migration.md`](docs/public-snapshot-migration.md); the producer is `hrl-restoration-data-pipeline` and the serving infrastructure is `hrl-azure-infrastructure`. See Decision 60.
 
 ---
 
@@ -495,7 +506,7 @@ Annotated list. Use these as design and behavior references during implementatio
 ### Planned
 
 1. `project-stage.md` — confirmed `ProjectStageEnum` visual treatment beyond the current detail display.
-2. `data-contract.md` — joint contract with `hrl-data-infrastructure` for snapshot publication and consumption; defer until that serving architecture is proposed.
+2. `data-contract.md` — superseded before adoption. The snapshot publication/consumption contract now lives in [`docs/public-snapshot-migration.md`](docs/public-snapshot-migration.md) and Decision 60; no separate sub-spec is needed.
 3. `data-model.md` — full canonical project record schema and companion tables; defer while the prototype uses the vendored submission schema.
 4. `first-run.md` — copy and layout for the orientation overlay, if that surface begins to change independently.
 5. `testing.md` — test levels and critical end-to-end paths, to accompany a formal test suite.
@@ -508,7 +519,7 @@ These do not block v1 scaffolding but must be resolved before v1 ship.
 
 - **Formal visual identity.** The prototype uses a light-touch HRL-inspired palette and the favicon from the HRL site hosted by the public water agency signatories, but production still needs a decision on logo use and any formal multi-agency brand requirements.
 - **Project-stage display beyond details.** The detail panel displays all `ProjectStageEnum` values as current project stage. How should multivalued stage values be summarized for symbology, filters, and headline tiles?
-- **Data refresh cadence.** Proposed: nightly. Confirm with `hrl-data-infrastructure` plans.
+- **Data refresh cadence.** Event-driven: a new snapshot goes live when an operator publishes an approved submission (Decision 60). There is no scheduled refresh.
 - **Hosting domain.** Subdomain of an existing DWR or HRL domain, or a new domain? Affects DNS, SSL, and link strategy from partner sites.
 - **Photo / media policy.** Project records may include photos at some point (process and management to be determined). What is the rights and consent process for displaying them publicly?
 - **Spanish-language support timing.** Year 1 stretch goal, or deferred?
@@ -537,10 +548,10 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 11 | v0.1 | Static deploy; no server runtime. | Matches eight-year, no-lock-in, low-ops posture. |
 | 12 | v0.1 | English-only in v1; Spanish considered for near-future. | Scope discipline for 3–6 month timeline; do not preclude i18n in component design. |
 | 13 | v0.1 | No user accounts or authentication in v1. | Out of scope. |
-| 14 | v0.1 | Production dashboard reads only from `hrl-data-infrastructure` Storage and Serving layer; never from primary sources. | Preserves the four-layer architecture and the immutability of raw data. |
-| 15 | v0.1 | Current repo phase is a local prototype using a local GeoPackage converted to browser-readable static data. | Azure hosting and the production data-serving contract are not available yet; the prototype needs a practical local path. |
+| 14 | v0.1 | Production dashboard reads only from `hrl-data-infrastructure` Storage and Serving layer; never from primary sources. | Preserves the four-layer architecture and the immutability of raw data. *(Repo name corrected by Decision 60 &mdash; the serving layer is `hrl-azure-infrastructure` fed by `hrl-restoration-data-pipeline`; the principle stands.)* |
+| 15 | v0.1 | Current repo phase is a local prototype using a local GeoPackage converted to browser-readable static data. | Azure hosting and the production data-serving contract are not available yet; the prototype needs a practical local path. *(Superseded in part by Decision 60: production now reads the Azure snapshot; the checked-in data is the dev/test fixture path.)* |
 | 16 | v0.1 | Convert the GeoPackage to GeoJSON first, then move to vector tiles only if performance requires it. | GeoJSON is easiest to inspect and wire into MapLibre; vector tiles add complexity that should be justified by dataset size or rendering performance. |
-| 17 | v0.1 | Prototype validation uses the vendored `hrl-restoration-schema` `v1.0.0` LinkML schema and the `RestorationProjectSubmission` class. | The full Azure pipeline that creates canonical records is not available yet; submission fields are the current practical contract. |
+| 17 | v0.1 | Prototype validation uses the vendored `hrl-restoration-schema` `v1.0.0` LinkML schema and the `RestorationProjectSubmission` class. | The full Azure pipeline that creates canonical records is not available yet; submission fields are the current practical contract. *(Superseded in part by Decision 60: the pipeline exists and pins `v1.3.1`; the vendored `v1.0.0` copy now serves only the local fixture conversion.)* |
 | 18 | v0.1 | Accessibility target is WCAG 2.2 Level AA, selected WCAG 2.2 Level AAA criteria where applicable, and equivalent non-map access to essential map content and workflows. | Disability access is a core public-service requirement, not a minimum-compliance afterthought. |
 | 19 | 2026-06-02 | Prototype basemap: OpenFreeMap Positron style (`https://tiles.openfreemap.org/styles/positron`). | Freely accessible, no API key required, desaturated light style that recedes behind data layers. Production target remains Protomaps on Azure Blob (Decision 8). |
 | 20 | 2026-06-02 | URL state uses plain query parameters for all prototype state; base64 encoding deferred. | All prototype state (centre, zoom, selection, hidden types, watershed visibility) is low-cardinality; human-readable params suffice and are easier to debug and share. |
@@ -560,7 +571,7 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 34 | 2026-06-19 | The prototype top bar uses the full name "Healthy Rivers and Landscapes Restoration Dashboard" and exposes a concise About popup instead of a separate About page. | The full name is clearer for public and regulator audiences than the HRL abbreviation alone. A compact modal provides immediate program and data-context orientation without pulling users out of the map; a fuller methodology surface remains a production requirement. |
 | 35 | 2026-07-09 | The dashboard exposes dataset-level methodology and provenance context rather than project-level source fields. | The current approved public provenance story is that HRL participating entities submitted the project data, the dataset was checked against the HRL restoration project schema, and the last dataset update shown is June 19, 2026. Project-level source fields are not displayed; questions route to HealthyRiversandLandscapes@resources.ca.gov. |
 | 35 | 2026-06-19 | Prototype visual styling uses a light-touch palette inspired by the public HRL site, with deep teal as the primary UI accent and blue-grey hydrography for the stream network. | The palette gives the dashboard HRL identity without overpowering project symbology. Blue-grey stream styling keeps hydrography legible as contextual base information and avoids visual competition with watershed outlines and project colours. |
-| 36 | 2026-06-22 | Public project data outputs use `public/data/hrl_restoration_projects.*` filenames and are exposed through a top-bar Download data menu as GeoJSON, GeoPackage, and CSV. | Descriptive filenames are clearer than generic `projects.*` downloads, and providing GIS plus non-spatial formats makes prototype review and data QA easier without requiring production data infrastructure. |
+| 36 | 2026-06-22 | Public project data outputs use `public/data/hrl_restoration_projects.*` filenames and are exposed through a top-bar Download data menu as GeoJSON, GeoPackage, and CSV. | Descriptive filenames are clearer than generic `projects.*` downloads, and providing GIS plus non-spatial formats makes prototype review and data QA easier without requiring production data infrastructure. *(Partly superseded by Decision 60: production serves `projects.*` from the snapshot, adopting the pipeline's names under the single-producer contract; the descriptive filenames remain for the local fixtures. The Download menu and the three formats stand. Whether the saved download should present a friendlier filename via `<a download>` is an open UX question.)* |
 | 37 | 2026-06-22 | Structured beta testing is documented in `beta-testing/README.md` and collected through an external form shared by email, not through an in-app feedback button or frontend persistence. | The first review round needs actionable, task-based feedback without adding backend scope or cluttering the map UI. Keeping the process in-repo makes the review protocol versioned alongside development. |
 | 38 | 2026-07-08 | Prototype acreage UI labels use "submitted habitat acreage" rather than generic "acres." | The vendored submission schema defines `acreage` as total project acreage restored as habitat and says each acre should be counted once; habitat-specific acreage fields are submitted values anticipated to be verified through the HRL accounting process, not verified canonical accounting outcomes. |
 | 39 | 2026-07-08 | Prototype acreage UI labels use "total project acres" for compact display, superseding Decision 38's "submitted habitat acreage" wording. | "Total project acres" aligns more closely with the schema title "Total project acreage" while avoiding dense or overly technical labels in the map tiles, tooltips, project list, and detail panel. Short helper text carries the counted-once caveat where space allows. |
@@ -584,3 +595,4 @@ A canonical, append-only record of settled decisions. Add new entries at the bot
 | 57 | 2026-07-20 | The dashboard's current milestone is version `0.2.0`. | Version 0.2.0 captures the substantial expansion beyond the initial 0.1.0 prototype, including the fuller map experience, project browsing and filtering, context layers, data downloads, public orientation, and deployment to Azure Static Web Apps. It remains a beta milestone ahead of the planned 1.0.0 public release. |
 | 58 | 2026-07-20 | Interactive dashboard use is supported on tablet and desktop, not phone-sized screens. Phones receive an accessible notice and essential informational actions (purpose, methodology, contact, and data downloads), while map exploration, layer controls, and project browsing require a larger screen. | The map, layer rail, project browsing, and polygon inspection are information-dense and cannot provide a useful phone experience. This sets an honest product boundary without weakening the WCAG 2.2 AA obligation for supported surfaces or leaving phone visitors at a dead end. |
 | 59 | 2026-07-24 | The public dashboard is routed through Azure Front Door beneath `/restoration-map/`; the application is built with that browser-visible base path while Front Door removes the prefix before forwarding requests to the root-hosted Azure Static Web App. Local development and Azure Static Web Apps preview environments remain rooted at `/`. | A shared public hostname needs path-based routing for the restoration map and future HRL applications. The separate browser-visible and origin paths keep each application independently deployed while preserving a stable public URL. |
+| 60 | 2026-08-31 | Production reads the approved public project snapshot from Azure. The deploy workflow sets `VITE_PUBLIC_SNAPSHOT_URL` to the production `current.json` behind the `restoration-data` Front Door route; `src/data/project-data-source.ts` resolves the project data, map source, and downloads from that single pointer (no separate `manifest.json`). Builds with no snapshot URL (local dev, previews, tests) keep using the checked-in `public/data/` project fixtures. A pointer or fetch failure shows a visible error surface, never a silent fallback to fixtures. The production infrastructure repository is `hrl-azure-infrastructure` and the producing pipeline is `hrl-restoration-data-pipeline` (operator-run `hrl-pipeline promote`; no service or queue). Rollback is a `current.json` pointer move, not a map redeploy. | This supersedes the "not yet" parts of Decisions 15 and 17 and the §9.5 framing, and corrects Decision 14's repo name: the producing/serving repositories are `hrl-restoration-data-pipeline` and `hrl-azure-infrastructure` (there is no `hrl-data-infrastructure` in this workflow). Decision 14's principle stands &mdash; the dashboard reads only the approved published snapshot, never a primary source. The operator-run publication workflow and the Front Door data route now exist and are verified live. Context layers remain repo-hosted static assets. The single-pointer contract matches the pipeline's actual `hrl-pipeline promote` output; see `docs/public-snapshot-migration.md`. The prototype's own `convert-gpkg.py` and vendored `RestorationProjectSubmission` schema stay in use only for the development fixtures. |

@@ -1,8 +1,16 @@
 # Scripts
 
-Repeatable local prototype data-conversion scripts. Generated outputs land in
+Repeatable local data-conversion scripts. Generated outputs land in
 `public/data/` and are meant to be replaceable by re-running these commands
 rather than hand-edited.
+
+**These produce local fixtures and context layers, not production project
+data.** In production the app reads the project snapshot from Azure, published
+by `hrl-restoration-data-pipeline` (`hrl-pipeline promote`); `convert-gpkg.py`
+here is only for the checked-in development fixtures. The context layers
+(watersheds, boundaries, streams) *are* served from `public/data/` in
+production. See
+[`../docs/public-snapshot-migration.md`](../docs/public-snapshot-migration.md).
 
 Python deps for the scripts that need them are in `requirements.txt`:
 

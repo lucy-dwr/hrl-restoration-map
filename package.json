@@ -6,12 +6,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lucy-dwr/hrl-restoration-map.git"
+    "url": "git+https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-map.git"
   },
   "bugs": {
-    "url": "https://github.com/lucy-dwr/hrl-restoration-map/issues"
+    "url": "https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-map/issues"
   },
-  "homepage": "https://github.com/lucy-dwr/hrl-restoration-map#readme",
+  "homepage": "https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-restoration-map#readme",
   "type": "module",
   "scripts": {
     "dev": "vite",
