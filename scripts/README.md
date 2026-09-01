@@ -94,5 +94,5 @@ tags each feature with a zoom level so smaller waterbodies only appear as the
 user zooms in. If the EPA download URLs 404 (the revision
 numbers rotate), download the CA VPU 18 archives by hand from the
 [EPA NHDPlus page](https://www.epa.gov/waterdata/get-nhdplus-national-hydrography-dataset-plus-data),
-drop them in `data/source/nhdplus/`, and re-run — the script reuses anything
+drop them in `data/source/nhdplus/`, and re-run - the script reuses anything
 already present there.

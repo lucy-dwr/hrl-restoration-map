@@ -1,6 +1,6 @@
 # Palette and branding sub-specification
 
-**Status:** Adopted for the current prototype  
+**Status:** Adopted; in production  
 **Parent:** [`SPEC.md`](../../SPEC.md), Sections 6 and 16
 
 This document is the shared palette, brand asset, and presentation guidance contract for the dashboard and related HRL materials. It inherits the umbrella specification and does not settle the pending formal multi-agency production identity decision.
@@ -85,8 +85,8 @@ No final HRL brand typeface has been selected. For working materials, use the re
 
 | Size | Typical use |
 |---|---:|
-| 11–12px | Fine metadata and compact labels |
-| 14–15px | Default body text |
+| 11-12px | Fine metadata and compact labels |
+| 14-15px | Default body text |
 | 18px | Section headings |
 | 22px and above | Major headings and slide titles |
 

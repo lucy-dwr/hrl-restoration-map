@@ -30,7 +30,7 @@ Files here should be reproducible from source data and conversion scripts.
 Production reads the approved public snapshot from Azure through the consumer
 seam in `src/data/project-data-source.ts`
 (`resolvePublicSnapshotProjectDataSource`), following a single `current.json`
-pointer &mdash; there is no separate `manifest.json`. The pipeline
+pointer - there is no separate `manifest.json`. The pipeline
 (`hrl-restoration-data-pipeline`) writes `projects.geojson` / `.gpkg` / `.csv`
 plus `metadata.json` per immutable version. The files in this directory are the
 fixtures the seam falls back to when `VITE_PUBLIC_SNAPSHOT_URL` is unset. The

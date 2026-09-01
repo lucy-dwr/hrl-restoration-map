@@ -68,7 +68,7 @@ applicable.
   `src/features/map/Map.tsx` now skips invalid positions when computing map
   bounds instead of letting MapLibre's `LngLatBounds.extend()` throw
   uncaught. Surfaced when the first real Azure snapshot briefly carried
-  projected-metre coordinates.
+  projected-meter coordinates.
 
 ### Changed
 
@@ -86,7 +86,7 @@ applicable.
 - Updated the top-bar title to "Healthy Rivers and Landscapes Restoration
   Dashboard".
 - Updated UI and map styling with a light-touch HRL-inspired accessible palette,
-  smoother watershed boundaries, and blue-grey stream-network hydrography.
+  smoother watershed boundaries, and blue-gray stream-network hydrography.
 - Updated project selection styling with a clearer polygon halo.
 - Renamed public project data objects to
   `public/data/hrl_restoration_projects.*` and trimmed public download fields

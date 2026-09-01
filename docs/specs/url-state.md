@@ -1,6 +1,6 @@
 # URL state sub-specification
 
-**Status:** Adopted for the current prototype  
+**Status:** Adopted; in production  
 **Parent:** [`SPEC.md`](../../SPEC.md), Sections 8 and 16
 
 The URL is the shareable map-view contract. The implementation is [`src/lib/url-state.ts`](../../src/lib/url-state.ts); this document describes the public behavior that implementation must preserve.

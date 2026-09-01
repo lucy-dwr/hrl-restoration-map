@@ -1,8 +1,8 @@
-# Prototype Feedback Intake — August 2026
+# Prototype Feedback Intake - August 2026
 
 ## A. Content, terminology, and public framing
 
-### F-01 — Review of public-facing copy
+### F-01 - Review of public-facing copy
 
 - **Type:** Content/approval
 - **Requested outcome:** Confirm whether the habitat subgroup has reviewed or
@@ -13,7 +13,7 @@
   requested within the project timeline.
 - **Owner / follow-up:** Josh Martinez review; incorporate approved edits.
 
-### F-02 — Limit acronyms
+### F-02 - Limit acronyms
 
 - **Type:** Content/terminology
 - **Requested outcome:** Limit acronyms in public copy; write out “Healthy
@@ -25,7 +25,7 @@
   Martinez’s copy review will settle any exceptions.
 - **Owner / follow-up:** Apply the convention during approved copy updates.
 
-### F-03 — Use approved accounting terminology
+### F-03 - Use approved accounting terminology
 
 - **Type:** Content/terminology
 - **Requested outcome:** Replace public-facing use of “habitat accounting”
@@ -38,7 +38,7 @@
 - **Owner / follow-up:** Include in Josh Martinez’s terminology review and
   apply approved copy updates.
 
-### F-04 — Include habitat enhancements accurately
+### F-04 - Include habitat enhancements accurately
 
 - **Type:** Content/accuracy
 - **Requested outcome:** Confirm whether the dashboard covers restoration only
@@ -53,7 +53,7 @@
 - **Owner / follow-up:** Josh Martinez to confirm program scope and approved
   terminology; apply resulting copy updates.
 
-### F-05 — Use carefully reviewed program language
+### F-05 - Use carefully reviewed program language
 
 - **Type:** Content/approval
 - **Requested outcome:** Use a carefully reviewed program description rather
@@ -69,7 +69,7 @@
   determine whether either Biological Goal should be named directly using
   regulatory language.
 
-### F-06 — Explain “reported to HRL”
+### F-06 - Explain “reported to HRL”
 
 - **Type:** Content/clarity
 - **Requested outcome:** Explain in plain language what “reported to HRL for
@@ -84,7 +84,7 @@
 - **Owner / follow-up:** Include in Josh Martinez’s copy review and apply the
   approved wording across relevant public-facing surfaces.
 
-### F-07 — State dataset coverage and exclusions
+### F-07 - State dataset coverage and exclusions
 
 - **Type:** Content/clarity
 - **Requested outcome:** State more clearly what is included and excluded from
@@ -99,7 +99,7 @@
 - **Owner / follow-up:** Include in Josh Martinez’s copy review and apply the
   approved wording where project set coverage is described.
 
-### F-08 — Link to the main HRL site
+### F-08 - Link to the main HRL site
 
 - **Type:** Navigation/content
 - **Requested outcome:** Add a top-bar path to the main CNRA Healthy Rivers and
@@ -111,7 +111,7 @@
 - **Owner / follow-up:** Completed. Retain and verify the official external
   link as part of top-bar regression checks.
 
-### F-09 — Improve Central Valley orientation
+### F-09 - Improve Central Valley orientation
 
 - **Type:** Content/context
 - **Requested outcome:** Consider adding geographic orientation for people
@@ -124,7 +124,7 @@
 
   > This dashboard focuses on Healthy Rivers and Landscapes projects in the
   > Sacramento River watershed, the Mokelumne and Tuolumne Rivers, the Yolo and
-  > Sutter Bypasses, and the Bay-Delta—part of the broader Sacramento–San
+  > Sutter Bypasses, and the Bay-Delta - part of the broader Sacramento - San
   > Joaquin watershed in the Central Valley.
   >
   > One of California’s most critical watersheds, this interconnected system
@@ -137,7 +137,7 @@
 - **Owner / follow-up:** Josh Martinez to review the wording; apply approved
   copy to the first-run and About content.
 
-### F-10 — Add public orientation resources
+### F-10 - Add public orientation resources
 
 - **Type:** Scope/content
 - **Requested outcome:** Consider public orientation additions such as
@@ -155,7 +155,7 @@
 
 ## B. Data terminology, categories, and acreage interpretation
 
-### F-11 — Explain project type categories and “Other”
+### F-11 - Explain project type categories and “Other”
 
 - **Type:** Terminology/data model
 - **Requested outcome:** Explain the “Other” project type, including whether
@@ -172,7 +172,7 @@
 - **Owner / follow-up:** Maintain any Table 27 crosswalk and category governance
   documentation outside the dashboard.
 
-### F-12 — Align or explain project stage categories
+### F-12 - Align or explain project stage categories
 
 - **Type:** Terminology/data model
 - **Requested outcome:** Confirm whether “Current project stage” should use the
@@ -191,7 +191,7 @@
   process; validate the retrofitted project records before updating the
   production dashboard.
 
-### F-13 — Filter by project stage
+### F-13 - Filter by project stage
 
 - **Type:** Interaction/filtering
 - **Requested outcome:** Add a project-stage filter to the left rail, or
@@ -203,7 +203,7 @@
 - **Owner / follow-up:** Implement after the F-12 schema update and data
   retrofit have been validated.
 
-### F-14 — Explain Project acres and HRL acres
+### F-14 - Explain Project acres and HRL acres
 
 - **Type:** Metric/clarity
 - **Requested outcome:** Explain the difference between **Project acres** and
@@ -222,7 +222,7 @@
   terminology update; verify it in the detail panel, headline tile, and
   Methodology.
 
-### F-15 — Explain the accounting assessment relationship
+### F-15 - Explain the accounting assessment relationship
 
 - **Type:** Metric/data governance
 - **Requested outcome:** Clarify the eventual relationship between displayed
@@ -238,7 +238,7 @@
   infrastructure work; do not treat the current reported metric as final or
   verified.
 
-### F-16 — Define project type labels
+### F-16 - Define project type labels
 
 - **Type:** Content/reference
 - **Requested outcome:** Provide a definition, example, or link for
@@ -250,7 +250,7 @@
 - **Owner / follow-up:** Maintain detailed category documentation outside the
   dashboard as needed.
 
-### F-17 — Confirm project set completeness
+### F-17 - Confirm project set completeness
 
 - **Type:** Scope/data completeness
 - **Requested outcome:** Review the draft Water Quality Control Plan and
@@ -265,7 +265,7 @@
 - **Owner / follow-up:** Complete the source inventory comparison as part of
   the next data release review.
 
-### F-18 — Consider salmon diversity-group context
+### F-18 - Consider salmon diversity-group context
 
 - **Type:** Scope/context
 - **Requested outcome:** If a salmon-focused framing is useful, consider NOAA
@@ -279,7 +279,7 @@
 
 ## C. Defects and coordinated view behavior
 
-### F-19 — Investigate the acreage total behavior
+### F-19 - Investigate the acreage total behavior
 
 - **Type:** Defect/metric
 - **Requested outcome:** Investigate the **HRL project acres** total. The
@@ -298,7 +298,7 @@
   for the map, project list, and headline tiles; add regression coverage if
   this filtering logic changes.
 
-### F-20 — Clarify combined filters
+### F-20 - Clarify combined filters
 
 - **Type:** Interaction/filtering
 - **Requested outcome:** Make the interaction between system filtering and
@@ -312,7 +312,7 @@
   change to filtering behavior.
 - **Owner / follow-up:** Completed. Retain the current filtering behavior.
 
-### F-21 — Clarify watershed layer persistence
+### F-21 - Clarify watershed layer persistence
 
 - **Type:** Interaction/state
 - **Requested outcome:** Clarify why project information remains visible after
@@ -324,7 +324,7 @@
 - **Owner / follow-up:** Explain the independent control behavior in the
   feedback response if needed.
 
-### F-22 — Surface early implementation status
+### F-22 - Surface early implementation status
 
 - **Type:** Interaction/filtering
 - **Requested outcome:** Make early implementation filtering and the
@@ -339,7 +339,7 @@
 
 ## D. Project list and map navigation requests
 
-### F-23 — Limit the project list to the map extent
+### F-23 - Limit the project list to the map extent
 
 - **Type:** Interaction/navigation
 - **Requested outcome:** Optionally make the project list respond to the
@@ -353,7 +353,7 @@
 - **Owner / follow-up:** Consider only if version 2.0 discovery demonstrates
   demand for an extent-based list.
 
-### F-24 — Fit the map to search or filter results
+### F-24 - Fit the map to search or filter results
 
 - **Type:** Interaction/navigation
 - **Requested outcome:** Optionally zoom or crop the map to the projects
@@ -365,7 +365,7 @@
 - **Owner / follow-up:** No change needed; include this existing capability in
   the feedback response.
 
-### F-25 — Show watershed boundaries on first load
+### F-25 - Show watershed boundaries on first load
 
 - **Type:** Interaction/navigation
 - **Requested outcome:** Consider showing watershed boundaries by default at
@@ -377,7 +377,7 @@
 - **Owner / follow-up:** Include the existing opt-in boundary controls in the
   feedback response if needed.
 
-### F-26 — Improve early implementation filtering
+### F-26 - Improve early implementation filtering
 
 - **Type:** Interaction/filtering
 - **Requested outcome:** Make it easier to filter for early implementation
@@ -389,12 +389,12 @@
 
 ## E. Boundary layers and geographic context
 
-### F-27 — Represent the below-barrier program area
+### F-27 - Represent the below-barrier program area
 
 - **Type:** Layer/context
 - **Requested outcome:** Consider truncating or subsetting tributary watershed
-  displays below relevant barriers—Le Grand Dam (Tuolumne), Oroville (Feather),
-  and Folsom (American)—to better represent the program’s spatial scale.
+  displays below relevant barriers - Le Grand Dam (Tuolumne), Oroville (Feather),
+  and Folsom (American) - to better represent the program’s spatial scale.
 - **Response / disposition:** Accept in modified form. Retain accurate,
   full-watershed boundaries rather than truncating them at dams. Add an
   optional, default-off **HRL flow-source reservoirs** reference layer to show
@@ -417,7 +417,7 @@
 - **Owner / follow-up:** Obtain authoritative point locations and confirm the
   names/labels; add the optional reference layer and test its presentation.
 
-### F-28 — Use ecological bypass boundaries
+### F-28 - Use ecological bypass boundaries
 
 - **Type:** Layer/source/design
 - **Requested outcome:** Replace or supplement the representational Yolo and
@@ -443,7 +443,7 @@
 - **Owner / follow-up:** Monitor for an authoritative generalized ecological
   floodplain dataset; otherwise retain the current DWR geometry.
 
-### F-29 — Improve watershed and river system context
+### F-29 - Improve watershed and river system context
 
 - **Type:** Layer/context
 - **Requested outcome:** Add or improve watershed/river system context for
@@ -467,7 +467,7 @@
   clutter. Update layer/help copy to distinguish drainage boundaries from
   stream lines.
 
-### F-30 — Consider additional geographic context
+### F-30 - Consider additional geographic context
 
 - **Type:** Layer/context
 - **Requested outcome:** Consider additional geographic context requested by
@@ -497,11 +497,11 @@
 ## Source traceability
 
 - **Workbook response: Louise Conrad, 2026-07-21:** F-09, F-10, F-13,
-  F-20–F-22, F-25–F-26, F-29–F-30, plus validation signals.
-- **Workbook response: Pascale Goertler, 2026-07-23:** F-01, F-06–F-07,
-  F-11–F-12, F-14–F-19, F-23–F-24, F-27–F-28
-- **Detailed numbered notes supplied with the workbook request:** F-01–F-06,
-  F-11–F-15, F-19, F-23–F-24, F-27–F-28.
+  F-20 - F-22, F-25 - F-26, F-29 - F-30, plus validation signals.
+- **Workbook response: Pascale Goertler, 2026-07-23:** F-01, F-06 - F-07,
+  F-11 - F-12, F-14 - F-19, F-23 - F-24, F-27 - F-28
+- **Detailed numbered notes supplied with the workbook request:** F-01 - F-06,
+  F-11 - F-15, F-19, F-23 - F-24, F-27 - F-28.
 
 ## Notes for later triage
 

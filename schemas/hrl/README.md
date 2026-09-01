@@ -2,7 +2,7 @@
 
 This directory vendors the LinkML schema used by the **local fixture**
 conversion workflow (`scripts/convert-gpkg.py`). Production data is validated by
-`hrl-restoration-data-pipeline`, which pins the schema directly &mdash; this
+`hrl-restoration-data-pipeline`, which pins the schema directly - this
 vendored copy does not affect production.
 
 Upstream repository: `Healthy-Rivers-and-Landscapes-Science/hrl-restoration-schema`

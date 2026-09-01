@@ -43,7 +43,7 @@ restoration-projects/
     projects.csv
 ```
 
-`current.json` is the whole pointer &mdash; there is no separate manifest file.
+`current.json` is the whole pointer - there is no separate manifest file.
 It identifies the approved snapshot and every artifact's path, relative to
 `current.json` itself:
 
@@ -66,7 +66,7 @@ The resolver reads only `snapshot_version` and the `projects.geojson` /
 `projects.gpkg` / `projects.csv` entries of `artifacts` (`metadata.json` and
 `output_checksums` are producer bookkeeping). It rejects a missing required
 field, a failed HTTP request, or an artifact URL that moves to another origin.
-It does not construct URLs from a version string &mdash; it follows only the
+It does not construct URLs from a version string - it follows only the
 approved pointer.
 
 **Serving requirements:** `current.json` is served `no-cache`; versioned
@@ -76,7 +76,7 @@ Front Door route with no storage key, SAS token, or credential.
 
 If either side's shape ever changes, update the pipeline
 (`publication.py`), the Terraform / CORS (`prod/apps`), this resolver and its
-tests, and the docs together &mdash; see
+tests, and the docs together - see
 [`PIPELINE_INFRA.md` &rarr; "Cross-repository change discipline"](https://github.com/Healthy-Rivers-and-Landscapes-Science/hrl-azure-infrastructure/blob/main/PIPELINE_INFRA.md#cross-repository-change-discipline).
 
 ## Rollback
@@ -89,13 +89,13 @@ redeploying the map.** The map shows whatever `current.json` points at.
    operator's upload with the prior version's pointer). The versioned folders
    are immutable and still present, so this is a pointer move only.
 2. Do **not** roll back to a snapshot known to be broken. In particular, never
-   point `current.json` at `2026-08-27` &mdash; it predates the CRS fix and its
+   point `current.json` at `2026-08-27` - it predates the CRS fix and its
    coordinates are wrong.
-3. The live map follows the pointer within about 10&ndash;15 minutes (Front Door
+3. The live map follows the pointer within about 10 - 15 minutes (Front Door
    edge cache), with no redeploy.
 
-If the fault is in the **map's integration** rather than the data &mdash; the
-resolver, the error handling, the build wiring &mdash; revert the offending map
+If the fault is in the **map's integration** rather than the data - the
+resolver, the error handling, the build wiring - revert the offending map
 change and deploy the previous build. The static fixtures remain as a
 development and emergency-diagnosis source.
 
@@ -112,7 +112,7 @@ the readiness gate below was met.
 Activating it immediately surfaced a bug the static fixtures never had:
 `LngLatBounds.extend()` in MapLibre throws on an out-of-range coordinate, with
 no React error boundary, so the whole tree crashed to a blank page. The
-published `projects.geojson` was in EPSG:3310 projected metres instead of WGS84
+published `projects.geojson` was in EPSG:3310 projected meters instead of WGS84
 lon/lat. Two fixes followed, one in each repo:
 
 - **Map:** `src/features/map/Map.tsx` skips invalid positions when computing map
@@ -130,7 +130,7 @@ lon/lat. Two fixes followed, one in each repo:
 2. The snapshot contains only privacy-filtered `RestorationProjectPublicRecord`
    fields.
 3. The producer emits the pointer shape above, the three named artifacts, and a
-   matching immutable version directory &mdash; unmodified `hrl-pipeline promote`
+   matching immutable version directory - unmodified `hrl-pipeline promote`
    output.
 4. `current.json` is `no-cache`; versioned artifacts are publicly readable, have
    immutable cache headers, and allow the dashboard origin through CORS.
